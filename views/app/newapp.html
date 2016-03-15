@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>新增业务</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link href="/static/assets/jquery-ui-1.11.0.custom/jquery-ui.css?version=20160314" rel="stylesheet">
+    <link href="/static/assets/bootstrap-3.3.4/css/bootstrap.min.css?version=20160314" rel="stylesheet" type="text/css" />
+    <link href="/static/assets/kendoui-2015.2.624/styles/kendo.common.min.css?version=20160314" rel="stylesheet" type="text/css" />
+    <link href="/static/assets/kendoui-2015.2.624/styles/kendo.default.min.css?version=20160314" rel="stylesheet" type="text/css" />
+    <link href="/static/assets/font-awesome/css/font-awesome.min.css?version=20160314" rel="stylesheet" type="text/css" />
+    <link href="/static/css/AdminLTE.min.css?version=20160314" rel="stylesheet" type="text/css" />
+    <link href="/static/css/skin-blue.min.css?version=20160314" rel="stylesheet" type="text/css" />
+    <link href="/static/assets/mCustomScrollbar-3.0.9/jquery.mCustomScrollbar.css?version=20160314" rel="stylesheet">
+    <link href="/static/assets/artDialog-6.0.4/css/ui-dialog.css?version=20160314" rel="stylesheet">
+    <link href="/static/bk/css/bk_base.css?version=20160314" rel="stylesheet" type="text/css">
+    <link href="/static/assets/select2-3.5.2/select2.css?version=20160314" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/static/assets/multiselect/jquery.multiselect.css?version=20160314" />
+    <link rel="stylesheet" type="text/css" href="/static/assets/multiselect/jquery.multiselect.filter.css?version=20160314" />
+    <link rel="stylesheet" type="text/css" href="/static/assets/selectmenu/jquery-ui.css?version=20160314" />
+    <link rel="stylesheet" type="text/css" href="/static/assets/icheck-1.x/skins/all.css?version=20160314" />
+    <link href="/static/css/index.css?version=20160314" rel="stylesheet" type="text/css" />
+    <link href="/static/assets/intro/introjs.css?version=20160314" rel="stylesheet" type="text/css" />
+    <!--[if lt IE 9]>
+    <script src="/static/js/html5shiv.min.js?version=20160314"></script>
+    <script src="/static/js/respond.min.js?version=20160314"></script>
+    <![endif]-->
+    <script src="/static/assets/js/jquery-1.10.2.min.js?version=20160314"></script>
+    <script src="/static/assets/bootstrap-3.3.4/js/bootstrap.min.js?version=20160314"></script>
+    <script src="/static/assets/kendoui-2015.2.624/js/kendo.all.min.js?version=20160314"></script>
+    <script src="/static/assets/artDialog-6.0.4/dist/dialog-min.js?version=20160314"></script>
+    <script type='text/javascript'>
+        (function(w){
+            window.onerror = function(){return true;};            w.cookie = {
+                get : function(name){
+                    if(document.cookie.length>0){
+                        name += '=';
+                        var allCookie = document.cookie;
+                        var startIndex = allCookie.indexOf(name);
+                        if(startIndex > -1){
+                            if(startIndex > 1){
+                                name = '; '+name;
+                                startIndex = allCookie.indexOf(name)+name.length;
+                            }else{
+                                startIndex = startIndex+name.length;
+                            }
+                        }else{
+                            return '';
+                        }
+
+                        var endIndex = allCookie.indexOf(';', startIndex);
+                        if(endIndex === -1){
+                            endIndex = document.cookie.length;
+                        }
+                        var value = decodeURIComponent(allCookie.substring(startIndex, endIndex));
+                        return value;
+                    }
+
+                    return '';
+                },
+
+                set : function(name, value, expires){
+                    var exdate = new Date();
+                    if(expires!=null){
+                        exdate.setTime(exdate.getTime() + expires*1000);
+                    }
+                    document.cookie = name +'='+ encodeURIComponent(value) + (expires==null ? ';path=/' : ';expires='+exdate.toUTCString()+';path=/');
+                }
+            };
+
+        })(window);
+
+
+        $(document).ready(function(){
+            $.ajaxSetup({
+                beforeSend : function(xhr){
+                    xhr.setRequestHeader('Token', cookie.get('token'));
+                },
+                complete:function(xhr,response)
+                {
+                    if(xhr.getResponseHeader('Timeout') == 'true')
+                    {
+                        window.location.href="/welcome/logout";
+                        return;
+                    }
+                }
+
+            });
+
+            //鼠标点击存储cookie
+            $('.c-sidebar-toggle').on('click',function(){
+                var className = $('body').prop('class');
+                var isCollapse = className.indexOf('sidebar-collapse') == -1 ? true:false;
+                if(isCollapse){
+                    cookie.set('isCollapse',1);
+                }else{
+                    cookie.set('isCollapse',0);
+            }
+            });
+
+        });
+    </script>
+</head>
+
+<body class="skin-blue sidebar-mini" id="index">
+<div class="wrapper">
+    <!-- 头部 -->
+    <header class="main-header">
+        <!-- 头部左侧Logo -->
+        <a href="/" class="logo">
+            <img src="/static/img/logo.png" alt="" height="35">
+        </a>
+        <!-- 头部右侧Navbar -->
+        <nav class="navbar navbar-static-top" role="navigation">
+            <a href="#" title="收起" class="c-sidebar-toggle" data-toggle="offcanvas" role="button">
+                <span class="sr-only">Toggle navigation</span>
+            </a>
+            <!-- 头部右侧 Menu -->
+            <div class="navbar-custom-menu">
+                <ul class="nav navbar-nav">
+                    <!-- 搜索 -->
+                    <li class="hidden-sm hidden-xs pr50">
+                        <form target='_self' action="/host/hostQuery" method='post' id="quick_search">
+                            <div class="form-group has-feedback" id="speed_search_input">
+                                <!-- <input class="form-control mt10" type="text" value="" placeholder="快速查询"> -->
+                                <textarea class="search-textarea" placeholder="快速查询" id="search-textarea"></textarea>
+                                <input type="hidden" id="IfInnerIPexact" value="">
+                                <input type="hidden" id="IfOuterexact" value="">
+                                <span class="glyphicon glyphicon-search form-control-feedback search-btn" id ="speed_search" aria-hidden="true"></span>
+                            </div>
+                        </form>
+                    </li>
+                    <!-- 帮助 -->
+                    <!--                    <li>-->
+                    <!--                        <a href="/welcome/help" class="c-nav-help">-->
+                    <!--                            <i class="fa fa-question-circle mr5 f20"></i>-->
+                    <!--                            <span>帮助</span>-->
+                    <!--                        </a>-->
+                    <!--                    </li>-->
+                    <!-- 帮助 -->
+                    <li>
+                        <a href="javascript:void(0);" class="c-nav-help dropdown-toggle" data-toggle="dropdown">
+<!--                            <i class="fa fa-question-circle mr5 f20"></i>-->
+                            <span class="question-icon mr5"></span>
+                            <span>帮助 <i class='caret'></i></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li title="配置平台概念视频"><a id="help-btn" href="javascript:void(0);">概念视频</a></li>
+                            <li title="将主机从配置平台移除"><a id="help-btn1" href="javascript:void(0);">主机移除</a></li>
+                            <li title="将主机放入配置平台"><a id="help-btn2" href="javascript:void(0);">主机放入</a></li>
+                            <li title="同一开发商下业务间转移主机"><a id="help-btn3" href="javascript:void(0);">转移主机</a></li>
+                        </ul>
+                    </li>
+                    <!-- 业务 -->
+                                                                                <li id="chooseBusiness" class="dropdown">
+                                            </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <!-- 左侧菜单 -->
+    <aside class="main-sidebar">
+        <section class="sidebar">
+            <!-- 菜单 -->
+            <ul class="sidebar-menu">
+                <!-- Optionally, you can add icons to the links -->
+                <li class=""><a href="/welcome/index"><i class="fa fa-dashboard"></i> <span>总览</span></a></li>
+                <li id="hostmng" class=""><a href="/host/hostQuery"><i class="fa fa-desktop"></i> <span>主机管理</span></a></li>
+                <li id="apptopo" class="">
+                    <a href="javascript:void(0)"><i class="fa fa-database"></i> <span>拓扑配置</span> <i class="fa fa-angle-left pull-right"></i></a>
+                    <ul class="treeview-menu">
+                        <li class="" ><a href="/topology/index"><i class="fa fa-sitemap"></i>树状视图</a></li>
+                        <li class="" ><a href="/topology/topolist"><i class="fa fa-list-ul"></i>列表视图</a></li>
+                    </ul>
+                </li>
+                <li id="process" class=""><a href="/process/index"><i class="fa fa-desktop"></i> <span>进程管理</span></a></li>
+                <li class="active"><a href="/app/index"><i class="fa fa-puzzle-piece"></i> <span>业务管理</span></a></li>
+                <li id="hostdis" class=""><a href="/host/quickImport"><i class="fa fa-graduation-cap"></i> <span>快速分配</span></a></li>
+                <!--              <li class="treeview ">
+                    <a href="javascritp:void(0)"><i class="fa fa-graduation-cap"></i> <span>主机操作</span> <i class="fa fa-angle-left pull-right"></i></a>
+                    <ul class="treeview-menu">
+                        <li style="display:none" class="treeview "><a href="/host/quickBuy"><i class="fa fa-circle-o"></i>一键购买</a></li>
+                        <li class="treeview "><a href="/host/quickImport"><i class="fa fa-circle-o"></i>快速分配</a></li>
+                    </ul>
+                </li>　-->
+            </ul>
+        </section>
+    </aside>
+    <!-- 左侧菜单 结束 -->
+    <!-- 主面板Content -->
+<link href="/static/bk/css/bk_app_theme.css" rel="stylesheet">
+<link href="/static/assets/select2-3.5.2/select2.css" rel="stylesheet">
+<div class="content-wrapper">
+    <!-- 主面板 Main-->
+    <section class="content">
+
+        <div class="row">
+            <div class="col-sm-12 col-lg-12">
+                <div class="c-panel panelMark c-panel-pageOne mb30">
+                    <div class="c-panel-header">
+                        <span>step 1：请选择您的业务类型</span><i></i>
+                    </div>
+                    <div class="c-panel-content">
+                        <div name="c-button-game">游戏</div>
+                        <div name="c-button-notgame" class="c-button-notgame">非游戏<img src="/static/img/second.jpg"/></div>
+                        <i class="clearfix"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12 col-lg-12">
+                <div class="c-panel panelMark c-panel-pageTwo mb30">
+                    <div class="c-panel-header">
+                        <span>step2：您的游戏是分区分服还是全区全服？</span><i></i>
+                    </div>
+                    <div class="c-panel-content">
+                        <div name="c-button-fqff" class="c-button-fqff">分区分服<img src="/static/img/third.jpg"/></div>
+                        <div name="c-button-qqqf" class="c-button-qqqf">全区全服<img src="/static/img/second.jpg"/></div>
+                        <i class="clearfix"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="row">
+            <div class="col-sm-12 col-lg-12">
+                <div class="c-panel c-panel-pageThree">
+
+                    <div class="c-panel-header">
+                        <span id="stepMark">step 3：请填写详细的业务信息</span><i></i>
+                    </div>
+
+                    <div class="c-panel-stepFour">
+                        <table class="table table-bordered">
+                            <thead >
+                            <tr>
+                                <th style="width:20%;">属性分组</th>
+                                <th>业务属性</th>
+                                <th style="width:40%;">属性值</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td rowspan="3">基本属性</td>
+                                <td>所属开发商</td>
+                                <td>1842605324</td>
+                            </tr>
+                            <tr>
+
+                                <td >名称</td>
+                                <td class="tl"><input type="text" value="" class="c-newyw-input c-gridinput" id="AppName"  maxlength="32" placeholder="输入创建的业务名称,必填">
+                                    <span class="c-gridinputmust">*</span></td>
+                            </tr>
+                            <tr>
+                                <td>运维人员</td>
+                                <td class="tl">
+                                    <div class="operaer c-gridinput" id="Maintainers" ></div>
+                                <!--    <select id="Maintainers" style="width:80%" placeholder="请选择运维人员,选填">
+                                                                                    <option value=""></option>
+                                                                            </select>-->
+                                    <span class="c-gridinputmust">*</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2">扩展属性</td>
+                                <td>产品人员</td>
+                                <td class="tl">
+                                    <div id="ProducterList" class="operaer c-gridinput"  ></div>
+                                    <!--<select id="ProducterList" style="width:80%" placeholder="请选择产品人员,选填">
+                                                                                    <option value=""></option>
+                                                                            </select>-->
+                                    <span class="c-gridinputmust">*</span>
+                                </td>
+                            </tr>
+                            <tr id="lifecycle">
+                                <td>生命周期</td>
+                                <td class="tl"  id="LifeCycle">
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-radio active">
+                                            <input type="radio" name="options" id="option1" autocomplete="off" value="公测">公测
+                                        </label>
+                                        <label class="btn btn-radio">
+                                            <input type="radio" name="options" id="option2" autocomplete="off" value="内测">内测
+                                        </label>
+                                        <label class="btn btn-radio">
+                                            <input type="radio" name="options" id="option3" autocomplete="off" value="不删档">不删档
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="text-center">
+                            <button class="btn btn-default cancelb">取消</button>
+                            <button class="btn btn-primary">保存</button>
+                        </div>
+
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </section>
+</div>
+<div class="control-sidebar-bg"></div>
+</div>
+<script src="/static/assets/select2-3.5.2/select2.js"></script>
+<script>
+    var UserList = $.parseJSON('[{"id":1842605324,"text2":"1842605324","text":1842605324}]');
+    var Uin = 1842605324;
+</script>
+<script src="/static/js/newapp.js?version=20160314"></script>
+
+    <div class="none video-content">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close"></span>
+            <video  id="video" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="http://bk.tencent.com/console/static/product/blueking/img/course/video.jpg"
+                    data-setup="{}">
+                <source src="http://bk.tencent.com/console/static/product/blueking/resource/cc.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="none video-content1">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close1"></span>
+            <video  id="video1" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="http://bk.tencent.com/console/static/product/blueking/img/course/cc_remove.jpg"
+                    data-setup="{}">
+                <source src="http://bk.tencent.com/console/static/product/blueking/resource/cc_remove.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="none video-content2">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close2"></span>
+            <video  id="video2" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="http://bk.tencent.com/console/static/product/blueking/img/course/cc_put.jpg"
+                    data-setup="{}">
+                <source src="http://bk.tencent.com/console/static/product/blueking/resource/cc_put.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="none video-content3">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close3"></span>
+            <video  id="video3" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="http://bk.tencent.com/console/static/product/blueking/img/course/cc_mobile.jpg"
+                    data-setup="{}">
+                <source src="http://bk.tencent.com/console/static/product/blueking/resource/cc_mobile.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="control-sidebar-bg"></div>
+    </div>
+    <link href="/static/assets/video/video-js.css" rel="stylesheet" type="text/css">
+    <script src="/static/assets/video/video.js"></script>
+    </script>
+    <script src="/static/js/common.js?version=20160314"></script>
+    <!-- 项目需要引用的js文件 -->
+    <script type='text/javascript'>
+
+        $(document).ready(function(){
+            $('.optgroup').click(function(){
+                if($(this).next("li[class!='optgroup']").length >0){
+                    return;
+                }
+                var company_id = $(this).attr('comid');
+                var company_code = $(this).attr('comcode');
+                var company_name = $(this).find('a span').text();
+                console.log(company_name);
+                var postdata = {company_id:company_id,company_code:company_code,company_name:company_name};
+                $.ajax({
+                    url: "/welcome/setDefaultCom",
+                    type: "POST",
+                    data:postdata,
+                    dataType: "json",
+                    success: function (response) {
+                        window.location.reload();
+                    }
+                });
+            })
+            videojs.options.flash.swf = "/static/assets/video/video-js.swf";
+
+                        $('.sidebar').find('li').divLoad('show');
+            
+                    });
+    </script>
+</body>
+</html>
