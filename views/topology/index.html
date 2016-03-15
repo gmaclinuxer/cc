@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>拓扑管理</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link href="/static/assets/jquery-ui-1.11.0.custom/jquery-ui.css?version=20160315" rel="stylesheet">
+    <link href="/static/assets/bootstrap-3.3.4/css/bootstrap.min.css?version=20160315" rel="stylesheet" type="text/css" />
+    <link href="/static/assets/kendoui-2015.2.624/styles/kendo.common.min.css?version=20160315" rel="stylesheet" type="text/css" />
+    <link href="/static/assets/kendoui-2015.2.624/styles/kendo.default.min.css?version=20160315" rel="stylesheet" type="text/css" />
+    <link href="/static/assets/font-awesome/css/font-awesome.min.css?version=20160315" rel="stylesheet" type="text/css" />
+    <link href="/static/css/AdminLTE.min.css?version=20160315" rel="stylesheet" type="text/css" />
+    <link href="/static/css/skin-blue.min.css?version=20160315" rel="stylesheet" type="text/css" />
+    <link href="/static/assets/mCustomScrollbar-3.0.9/jquery.mCustomScrollbar.css?version=20160315" rel="stylesheet">
+    <link href="/static/assets/artDialog-6.0.4/css/ui-dialog.css?version=20160315" rel="stylesheet">
+    <link href="/static/bk/css/bk_base.css?version=20160315" rel="stylesheet" type="text/css">
+    <link href="/static/assets/select2-3.5.2/select2.css?version=20160315" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/static/assets/multiselect/jquery.multiselect.css?version=20160315" />
+    <link rel="stylesheet" type="text/css" href="/static/assets/multiselect/jquery.multiselect.filter.css?version=20160315" />
+    <link rel="stylesheet" type="text/css" href="/static/assets/selectmenu/jquery-ui.css?version=20160315" />
+    <link rel="stylesheet" type="text/css" href="/static/assets/icheck-1.x/skins/all.css?version=20160315" />
+    <link href="/static/css/index.css?version=20160315" rel="stylesheet" type="text/css" />
+    <link href="/static/assets/intro/introjs.css?version=20160315" rel="stylesheet" type="text/css" />
+    <!--[if lt IE 9]>
+    <script src="/static/js/html5shiv.min.js?version=20160315"></script>
+    <script src="/static/js/respond.min.js?version=20160315"></script>
+    <![endif]-->
+    <script src="/static/assets/js/jquery-1.10.2.min.js?version=20160315"></script>
+    <script src="/static/assets/bootstrap-3.3.4/js/bootstrap.min.js?version=20160315"></script>
+    <script src="/static/assets/kendoui-2015.2.624/js/kendo.all.min.js?version=20160315"></script>
+    <script src="/static/assets/artDialog-6.0.4/dist/dialog-min.js?version=20160315"></script>
+    <script type='text/javascript'>
+        (function(w){
+            window.onerror = function(){return true;};            w.cookie = {
+                get : function(name){
+                    if(document.cookie.length>0){
+                        name += '=';
+                        var allCookie = document.cookie;
+                        var startIndex = allCookie.indexOf(name);
+                        if(startIndex > -1){
+                            if(startIndex > 1){
+                                name = '; '+name;
+                                startIndex = allCookie.indexOf(name)+name.length;
+                            }else{
+                                startIndex = startIndex+name.length;
+                            }
+                        }else{
+                            return '';
+                        }
+
+                        var endIndex = allCookie.indexOf(';', startIndex);
+                        if(endIndex === -1){
+                            endIndex = document.cookie.length;
+                        }
+                        var value = decodeURIComponent(allCookie.substring(startIndex, endIndex));
+                        return value;
+                    }
+
+                    return '';
+                },
+
+                set : function(name, value, expires){
+                    var exdate = new Date();
+                    if(expires!=null){
+                        exdate.setTime(exdate.getTime() + expires*1000);
+                    }
+                    document.cookie = name +'='+ encodeURIComponent(value) + (expires==null ? ';path=/' : ';expires='+exdate.toUTCString()+';path=/');
+                }
+            };
+
+        })(window);
+
+
+        $(document).ready(function(){
+            $.ajaxSetup({
+                beforeSend : function(xhr){
+                    xhr.setRequestHeader('Token', cookie.get('token'));
+                },
+                complete:function(xhr,response)
+                {
+                    if(xhr.getResponseHeader('Timeout') == 'true')
+                    {
+                        window.location.href="/welcome/logout";
+                        return;
+                    }
+                }
+
+            });
+
+            //鼠标点击存储cookie
+            $('.c-sidebar-toggle').on('click',function(){
+                var className = $('body').prop('class');
+                var isCollapse = className.indexOf('sidebar-collapse') == -1 ? true:false;
+                if(isCollapse){
+                    cookie.set('isCollapse',1);
+                }else{
+                    cookie.set('isCollapse',0);
+            }
+            });
+
+        });
+    </script>
+</head>
+
+<body class="skin-blue sidebar-mini" id="index">
+<div class="wrapper">
+    <!-- 头部 -->
+    <header class="main-header">
+        <!-- 头部左侧Logo -->
+        <a href="/" class="logo">
+            <img src="/static/img/logo.png" alt="" height="35">
+        </a>
+        <!-- 头部右侧Navbar -->
+        <nav class="navbar navbar-static-top" role="navigation">
+            <a href="#" title="收起" class="c-sidebar-toggle" data-toggle="offcanvas" role="button">
+                <span class="sr-only">Toggle navigation</span>
+            </a>
+            <!-- 头部右侧 Menu -->
+            <div class="navbar-custom-menu">
+                <ul class="nav navbar-nav">
+                    <!-- 搜索 -->
+                    <li class="hidden-sm hidden-xs pr50">
+                        <form target='_self' action="/host/hostQuery" method='post' id="quick_search">
+                            <div class="form-group has-feedback" id="speed_search_input">
+                                <!-- <input class="form-control mt10" type="text" value="" placeholder="快速查询"> -->
+                                <textarea class="search-textarea" placeholder="快速查询" id="search-textarea"></textarea>
+                                <input type="hidden" id="IfInnerIPexact" value="">
+                                <input type="hidden" id="IfOuterexact" value="">
+                                <span class="glyphicon glyphicon-search form-control-feedback search-btn" id ="speed_search" aria-hidden="true"></span>
+                            </div>
+                        </form>
+                    </li>
+                    <!-- 帮助 -->
+                    <!--                    <li>-->
+                    <!--                        <a href="/welcome/help" class="c-nav-help">-->
+                    <!--                            <i class="fa fa-question-circle mr5 f20"></i>-->
+                    <!--                            <span>帮助</span>-->
+                    <!--                        </a>-->
+                    <!--                    </li>-->
+                    <!-- 帮助 -->
+                    <li>
+                        <a href="javascript:void(0);" class="c-nav-help dropdown-toggle" data-toggle="dropdown">
+<!--                            <i class="fa fa-question-circle mr5 f20"></i>-->
+                            <span class="question-icon mr5"></span>
+                            <span>帮助 <i class='caret'></i></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li title="配置平台概念视频"><a id="help-btn" href="javascript:void(0);">概念视频</a></li>
+                            <li title="将主机从配置平台移除"><a id="help-btn1" href="javascript:void(0);">主机移除</a></li>
+                            <li title="将主机放入配置平台"><a id="help-btn2" href="javascript:void(0);">主机放入</a></li>
+                            <li title="同一开发商下业务间转移主机"><a id="help-btn3" href="javascript:void(0);">转移主机</a></li>
+                        </ul>
+                    </li>
+                    <!-- 业务 -->
+                                                                                <li id="chooseBusiness" class="dropdown">
+                                                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">
+                                <span class="first-letter mr5" title="ddddddddd">d</span>
+                                <span class="nav-group-name">ddddddddd<i class='caret'></i></span>
+                            </a>
+                            <ul class="dropdown-menu business-menu">
+                                                                    <li ><a class="defaultApp" value="4822">y<span class="text-warning">(0)</span></a></li>
+                                                                    <li ><a class="defaultApp" value="4823">球球笨笨哥<span class="text-warning">(0)</span></a></li>
+                                                                    <li class="active"><a class="defaultApp" value="4824">ddddddddd<span class="text-warning">(0)</span></a></li>
+                                                            </ul>
+                                            </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <!-- 左侧菜单 -->
+    <aside class="main-sidebar">
+        <section class="sidebar">
+            <!-- 菜单 -->
+            <ul class="sidebar-menu">
+                <!-- Optionally, you can add icons to the links -->
+                <li class=""><a href="/welcome/index"><i class="fa fa-dashboard"></i> <span>总览</span></a></li>
+                <li id="hostmng" class=""><a href="/host/hostQuery"><i class="fa fa-desktop"></i> <span>主机管理</span></a></li>
+                <li id="apptopo" class="active">
+                    <a href="javascript:void(0)"><i class="fa fa-database"></i> <span>拓扑配置</span> <i class="fa fa-angle-left pull-right"></i></a>
+                    <ul class="treeview-menu">
+                        <li class="active" ><a href="/topology/index"><i class="fa fa-sitemap"></i>树状视图</a></li>
+                        <li class="" ><a href="/topology/topolist"><i class="fa fa-list-ul"></i>列表视图</a></li>
+                    </ul>
+                </li>
+                <li id="process" class=""><a href="/process/index"><i class="fa fa-desktop"></i> <span>进程管理</span></a></li>
+                <li class=""><a href="/app/index"><i class="fa fa-puzzle-piece"></i> <span>业务管理</span></a></li>
+                <li id="hostdis" class=""><a href="/host/quickImport"><i class="fa fa-graduation-cap"></i> <span>快速分配</span></a></li>
+                <!--              <li class="treeview ">
+                    <a href="javascritp:void(0)"><i class="fa fa-graduation-cap"></i> <span>主机操作</span> <i class="fa fa-angle-left pull-right"></i></a>
+                    <ul class="treeview-menu">
+                        <li style="display:none" class="treeview "><a href="/host/quickBuy"><i class="fa fa-circle-o"></i>一键购买</a></li>
+                        <li class="treeview "><a href="/host/quickImport"><i class="fa fa-circle-o"></i>快速分配</a></li>
+                    </ul>
+                </li>　-->
+            </ul>
+        </section>
+    </aside>
+    <!-- 左侧菜单 结束 -->
+    <!-- 主面板Content -->
+<link href="/static/assets/bootstrap-switch-master/dist/css/bootstrap3/bootstrap-switch.css" rel="stylesheet">
+<link href="/static/assets/select2-3.5.2/select2.css" rel="stylesheet">
+<div class="content-wrapper">
+    <!-- 主面板 Main-->
+    <section class="content">
+        <div class="host-sidebar-left">
+            <!-- 分布拓扑 -->
+            <div class="c-host-side" id="c_host_side">
+                <h4 class="mb0">拓扑模型<i class="fa fa-close pull-right mr15 conf-delete-link" style="display:none;"></i></h4>
+                <form class="form-inline pl15 pr15 hide">
+                    <div class="form-group">
+                        <input id="key" class="form-control" />
+                    </div>
+                    <button type="submit" class="btn btn-default" id="searchBtn">查询</button>
+                </form>
+                <div class="c-conf-tree pl15 pr15">
+                    <div id="confTreeContainer" class="mt15">
+                    </div>
+                </div>
+                <!-- 空闲机池 -->
+                <div class="conf-free-group free-group pl15 pr15">
+                    <h4>空闲机池</h4>
+                    <div class="mt15 k-widget k-treeview">
+                        <ul class="k-group k-treeview-lines">
+                            <li class="k-item k-first k-last">
+                                <ul class="k-group">
+                                    <li class="k-item">
+                                        <ul class="k-group">
+                                            <li class="k-item">
+                                                <div><span class="k-in"><span class="k-sprite c-icon icon-modal"></span>空闲机</span>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- /空闲机池 -->
+            </div>
+            <!-- /分布拓扑  -->
+            <div class="c-host-switch">
+                <span class="glyphicon glyphicon-menu-left c-host-switch-img"></span>
+            </div>
+        </div>
+        <div class="row host-main-right">
+            <div class="col-md-12">
+                <div class="conf-right-box">
+            <div class="creat-container creat-nothing-container">
+    <h4 class="c-conf-title pl15 pr15">新建模块</h4>
+    <div class="c-conf-inner text-center">
+        <div class="fn-table-cell">
+            <img src="/static/img/expre_403.png" alt="">
+            <h4>您当前没有任何模块，请<a href="javascript:;" class="creat-module-btn">点此</a>创建</h4>
+        </div>
+    </div>
+</div>            <!-- 没有集群 -->
+            <!-- /没有业务 -->
+            <!-- 新建集群 -->
+<div class="creat-container creat-group-container">
+    <h4 class="c-conf-title pl15 pr15">新建集群</h4>
+    <div class="c-attr-box c-conf-inner">
+        <form class="form-inline" id="exsitGroup" style="display:none">
+            <div class="form-group pb15 col-lg-6" >
+                <label for="haveGroup" class="pr10">已有集群</label>
+                <select name="" id="" class="form-control group-select">
+                </select>
+            </div>
+            <div class="form-group pb15 col-lg-6" >
+                <label for="haveGroup" class="pr10">是否克隆</label>
+                <input type="checkbox" name="my-checkbox" id="newcloneset">
+            </div>
+        </form>
+        <table class="table table-bordered">
+            <thead>
+            <tr class="active">
+                <th>属性分组</th>
+                <th>属性名</th>
+                <th>属性值</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td rowspan="4">基本属性</td>
+                <td>名称</td>
+                <td class="tl">
+                    <input type="text" class="form-control c-gridinput" value="" id="newsetname" placeholder="创建的集群名称，必填" maxlength="64" >
+                    <span class="c-gridinputmust">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td>环境类型</td>
+                <td class="live-time" id ="new_set_envtype">
+                    <div class="btn-group" data-toggle="buttons">
+                        <label class="btn btn-radio ">
+                            <input type="radio" name="options" id="option4" autocomplete="off" value="1">测试
+                        </label>
+                        <label class="btn btn-radio">
+                            <input type="radio" name="options" id="option5" autocomplete="off" value="2">体验
+                        </label>
+                        <label class="btn btn-radio active">
+                            <input type="radio" name="options" id="option6" autocomplete="off" value="3">正式
+                        </label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>服务状态</td>
+                <td class="live-time" id ="new_set_sersta">
+                    <input type="checkbox" name="servsta-checkbox" id="servstacheck" checked>
+<!--                    <div class="btn-group" data-toggle="buttons">-->
+<!--                        <label class="btn btn-primary active">-->
+<!--                            <input type="radio" name="options" id="option4" autocomplete="off" value="开放">开放-->
+<!--                        </label>-->
+<!--                        <label class="btn btn-primary">-->
+<!--                            <input type="radio" name="options" id="option5" autocomplete="off" value="关闭">关闭-->
+<!--                        </label>-->
+<!--                    </div>-->
+                </td>
+            </tr>
+            <tr>
+                <td>中文名称</td>
+                <td >
+                    <input style="width:90%" type="text" class="form-control" value="" id="newSetChnName" placeholder="集群中文名称，非必填" maxlength="32">
+                </td>
+            </tr>
+
+            <tr>
+                <td rowspan="3">扩展属性</td>
+                <td>设计容量</td>
+                <td>
+                    <input style="width:90%" type="text" class="form-control" value="" id="newSetCapacity" placeholder="集群容量，请输入数字，非必填" maxlength="8">
+                </td>
+            </tr>
+            <tr>
+                <td>描述</td>
+                <td>
+                    <input  style="width:90%" type="text" class="form-control" value="" id="newSetdes" placeholder="您对当前集群的描述，非必填" maxlength="250">
+                </td>
+            </tr>
+            <tr>
+                <td>Openstatus</td>
+                <td>
+                    <input  style="width:90%" type="text" class="form-control" value="" id="newOpenstatus" placeholder="集群状态的扩展属性，非必填" maxlength="32">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="text-center">
+            <button class="btn btn-default" id="new_set_cancel">取消</button>
+            <button class="btn btn-primary" id="save_new_set">保存</button>
+        </div>
+    </div>
+</div>
+<!-- /新建集群 -->            <!-- 新建模块 -->
+            <div class="creat-container creat-module-container">
+    <h4 class="c-conf-title pl15 pr15">新建模块</h4>
+    <div class="c-attr-box c-conf-inner">
+        <table class="table table-bordered">
+            <thead>
+            <tr class="active">
+                <th>属性分组</th>
+                <th>属性名</th>
+                <th>属性值</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td rowspan="4">基本属性</td>
+                <td id="newmodulebe">所属集群</td>
+                <td id="newmodulegroupname" style="text-align: left;">
+                </td>
+            </tr>
+            <tr>
+                <td>名称</td>
+                <td class="tl">
+                    <input type="text" class="form-control c-gridinput" value="" id="newmoduleModuleName" placeholder="创建的模块名，必填" maxlength="60" style="width:90%">
+                    <span class="c-gridinputmust">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td>维护人</td>
+                <td class="tl">
+                    <select id="Operator" class="form-control c-gridinput">
+                    </select>
+                    <span class="c-gridinputmust">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td>备份维护人</td>
+                <td class="tl">
+                    <select id="BakOperator" class="form-control c-gridinput">
+                    </select>
+                    <span class="c-gridinputmust">*</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="text-center">
+            <button class="btn btn-default" id="new_module_cancel">取消</button>
+            <button class="btn btn-primary" id="newsavemodule">保存</button>
+        </div>
+    </div>
+</div>            <!-- /新建模块 -->
+            <!-- 集群属性修改 -->
+            <div class="creat-container edit-group-container">
+    <h4 class="c-conf-title pl15 pr15">集群(<span id="editset_property"></span>)属性</h4>
+    <div class="c-attr-box c-conf-inner">
+        <table class="table table-bordered">
+            <thead>
+            <tr class="active">
+                <th>属性分组</th>
+                <th>属性名</th>
+                <th>属性值</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td rowspan="4">基本属性</td>
+                <td>名称</td>
+                <td class="tl">
+                    <input type="text" class="form-control c-gridinput" value="" id="editSetSetName" maxlength="64">
+                    <span class="c-gridinputmust">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td>环境类型</td>
+                <td class="live-time" id ="edit_set_setenctype">
+                    <div class="btn-group" data-toggle="buttons">
+                        <label class="btn btn-radio ">
+                            <input type="radio" name="options" id="edit_option1" autocomplete="off" value="1">测试
+                        </label>
+                        <label class="btn btn-radio ">
+                            <input type="radio" name="options" id="edit_option2" autocomplete="off" value="2">体验
+                        </label>
+                        <label class="btn btn-radio">
+                            <input type="radio" name="options" id="edit_option3" autocomplete="off" value="3">正式
+                        </label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>服务状态</td>
+                <td class="live-time" id ="edit_set_sersta">
+                    <input type="checkbox" name="servsta-checkbox" id="servstacheck" checked>
+<!--                    <div class="btn-group" data-toggle="buttons">-->
+<!--                        <label class="btn btn-primary ">-->
+<!--                            <input type="radio" name="options" id="edit_option4" autocomplete="off" value="开放">开放-->
+<!--                        </label>-->
+<!--                        <label class="btn btn-primary">-->
+<!--                            <input type="radio" name="options" id="edit_option5" autocomplete="off" value="关闭">关闭-->
+<!--                        </label>-->
+<!--                    </div>-->
+                </td>
+            </tr>
+            <tr>
+                <td>中文名称</td>
+                <td>
+                    <input type="text" class="form-control" value="" id="editSetChnName" maxlength="32" style="width:90%">
+                </td>
+            </tr>
+            <tr>
+                <td rowspan="3">扩展属性</td>
+                <td>设计容量</td>
+                <td>
+                    <input type="text" class="form-control" value="" id="editSetCapacity" maxlength="8" style="width:90%">
+                </td>
+            </tr>
+            <tr>
+                <td>描述</td>
+                <td>
+                    <input type="text" class="form-control" value="" id="editSetDes" maxlength="250" style="width:90%">
+                </td>
+            </tr>
+            <tr>
+                <td>Openstatus</td>
+                <td>
+                    <input type="text" class="form-control" value="" id="editOpenstatus" maxlength="16" style="width:90%">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="text-center">
+            <button class="btn btn-danger" id="editsetdelete">删除</button>
+            <button class="btn btn-primary" id="editsetsave">保存</button>
+        </div>
+    </div>
+</div>            <!-- /集群属性修改 -->
+            <!-- 模块属性修改 -->
+            <div class="creat-container edit-module-container">
+    <h4 class="c-conf-title pl15 pr15">模块(<span id="edit_module_property"></span>)属性</h4>
+    <div class="c-attr-box c-conf-inner">
+        <table class="table table-bordered">
+            <thead>
+            <tr class="active">
+                <th>属性分组</th>
+                <th>属性名</th>
+                <th>属性值</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td rowspan="4">基本属性</td>
+                <td id="editmodulebe">所属集群</td>
+                <td id="editmodulegroup" style="text-align: left;">
+                </td>
+            </tr>
+            <tr>
+                <td>名称</td>
+                <td class="tl"> <input type="text" class="form-control c-gridinput" value="" id="editmoduleModuleName" maxlength="60">
+                    <span class="c-gridinputmust">*</span></td>
+            </tr>
+            <tr>
+                <td>维护人</td>
+                <td class="tl">
+                    <select id="editOperator" class="form-control c-gridinput">
+                    </select>
+                    <span class="c-gridinputmust">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td>备份维护人</td>
+                <td class="tl">
+                    <select id="editBakOperator" class="form-control c-gridinput">
+                    </select>
+                    <span class="c-gridinputmust">*</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="text-center">
+            <button class="btn btn-danger" id="editmoduledelete">删除</button>
+            <button class="btn btn-primary" id="editmodulesave">保存</button>
+        </div>
+    </div>
+</div>            <!-- /模块属性修改 -->
+        </div>
+                </div>
+        </div>
+    </section>
+</div>
+<div class="control-sidebar-bg"></div>
+</div>
+<!-- 项目js文件 -->
+<script id="treeview-template" type="text/kendo-ui-template">
+    <span cid='#: item.id #'>#: item.text #</span>
+    # if (item.type=='application') { #
+    # if (!item.noset){ #
+    <span class='creat-group-btn btn btn-success btn-xs' cid='#: item.id #' style='position:absolute;right:0;top:0;'><i class='fa fa-plus'></i> 集群</span>
+    # }else{ #
+    <span class='creat-module-btn btn btn-success btn-xs' cid='#: item.id #' style='position:absolute;right:0;top:0;'><i class='fa fa-plus'></i> 模块</span>
+    # } #
+    # } #
+    # if (item.type=='set') { #
+    <span class='creat-module-btn btn btn-success btn-xs' cid='#: item.id #' style='position:absolute;right:0;top:0;'><i class='fa fa-plus'></i> 模块</span>
+    # } #</script>
+<script src="/static/assets/mCustomScrollbar-3.0.9/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="/static/assets/ZeroClipboard/ZeroClipboard.min.js"></script>
+<script src="/static/assets/bootstrap-switch-master/dist/js/bootstrap-switch.js" rel="stylesheet"></script>
+<script src="/static/js/app.min.js"></script>
+<script src="/static/assets/intro/intro.js"></script>
+<script src="/static/js/topo.js?version=20160315"></script>
+<script src="/static/assets/select2-3.5.2/select2.js"></script>
+<script >
+    var appId = '4824';
+    var appName = 'ddddddddd';
+    var topo = [{"id":"5221","text":"\u7a7a\u95f2\u673a\u6c60","spriteCssClass":"c-icon icon-group hide","type":"set","expanded":true,"number":32,"items":[]}];
+    var level = 2;
+    var desetid = 5221;
+    var defaultapp = 0;
+    var emptys = 1;
+    var firstset = 0;
+    var firstmodule = 1;
+    var firstapp = 0;
+</script>
+    <div class="none video-content">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close"></span>
+            <video  id="video" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="/static/product/blueking/img/course/video.jpg"
+                    data-setup="{}">
+                <source src="/static/product/blueking/resource/cc.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="none video-content1">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close1"></span>
+            <video  id="video1" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="/static/product/blueking/img/course/cc_remove.jpg"
+                    data-setup="{}">
+                <source src="/static/product/blueking/resource/cc_remove.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="none video-content2">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close2"></span>
+            <video  id="video2" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="/static/product/blueking/img/course/cc_put.jpg"
+                    data-setup="{}">
+                <source src="/static/product/blueking/resource/cc_put.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="none video-content3">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close3"></span>
+            <video  id="video3" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="/static/product/blueking/img/course/cc_mobile.jpg"
+                    data-setup="{}">
+                <source src="/static/product/blueking/resource/cc_mobile.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="control-sidebar-bg"></div>
+    </div>
+    <link href="/static/assets/video/video-js.css" rel="stylesheet" type="text/css">
+    <script src="/static/assets/video/video.js"></script>
+    </script>
+    <script src="/static/js/common.js?version=20160315"></script>
+    <!-- 项目需要引用的js文件 -->
+    <script type='text/javascript'>
+
+        $(document).ready(function(){
+            $('.optgroup').click(function(){
+                if($(this).next("li[class!='optgroup']").length >0){
+                    return;
+                }
+                var company_id = $(this).attr('comid');
+                var company_code = $(this).attr('comcode');
+                var company_name = $(this).find('a span').text();
+                console.log(company_name);
+                var postdata = {company_id:company_id,company_code:company_code,company_name:company_name};
+                $.ajax({
+                    url: "/welcome/setDefaultCom",
+                    type: "POST",
+                    data:postdata,
+                    dataType: "json",
+                    success: function (response) {
+                        window.location.reload();
+                    }
+                });
+            })
+            videojs.options.flash.swf = "/static/assets/video/video-js.swf";
+
+            
+                        $('.defaultApp').click(function(){
+                var appId=$(this).attr('value');
+                var defaultappId = cookie.get('defaultAppId');
+                if(appId == defaultappId){
+                    return;
+                }
+                $.ajax({
+                    url: "/welcome/setDefaultApp?ApplicationID="+appId,
+                    type: "POST",
+                    dataType: "json",
+                    success: function (response) {
+//                        var setDefaultApp=$('#chooseBusiness').get(0);
+//                        var diaCopyMsg = dialog({
+//                            quickClose: true,// 点击空白处快速关闭
+//                            align:'bottom',
+//                            padding:10,
+//                            width:160,
+//                            content: '<p style="color:#fff;text-align:center; margin:0;">'+response.message+'</p>',
+//                            skin: 'c-Popuplayer-success'
+//                        });
+//                        diaCopyMsg.show(setDefaultApp);
+//                        setTimeout(function () {
+//                            diaCopyMsg.close().remove();
+//                        }, 1500);
+//
+                        if(response.success){
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 500);
+                        }
+
+                        return true;
+                    }
+                });
+            });
+                    });
+    </script>
+</body>
+</html>
