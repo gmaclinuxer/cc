@@ -4,31 +4,31 @@
     <meta charset="UTF-8">
     <title>业务管理</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <link href="/static/assets/jquery-ui-1.11.0.custom/jquery-ui.css?version=20160314" rel="stylesheet">
-    <link href="/static/assets/bootstrap-3.3.4/css/bootstrap.min.css?version=20160314" rel="stylesheet" type="text/css" />
-    <link href="/static/assets/kendoui-2015.2.624/styles/kendo.common.min.css?version=20160314" rel="stylesheet" type="text/css" />
-    <link href="/static/assets/kendoui-2015.2.624/styles/kendo.default.min.css?version=20160314" rel="stylesheet" type="text/css" />
-    <link href="/static/assets/font-awesome/css/font-awesome.min.css?version=20160314" rel="stylesheet" type="text/css" />
-    <link href="/static/css/AdminLTE.min.css?version=20160314" rel="stylesheet" type="text/css" />
-    <link href="/static/css/skin-blue.min.css?version=20160314" rel="stylesheet" type="text/css" />
-    <link href="/static/assets/mCustomScrollbar-3.0.9/jquery.mCustomScrollbar.css?version=20160314" rel="stylesheet">
-    <link href="/static/assets/artDialog-6.0.4/css/ui-dialog.css?version=20160314" rel="stylesheet">
-    <link href="/static/bk/css/bk_base.css?version=20160314" rel="stylesheet" type="text/css">
-    <link href="/static/assets/select2-3.5.2/select2.css?version=20160314" rel="stylesheet" />
-    <link rel="stylesheet" type="text/css" href="/static/assets/multiselect/jquery.multiselect.css?version=20160314" />
-    <link rel="stylesheet" type="text/css" href="/static/assets/multiselect/jquery.multiselect.filter.css?version=20160314" />
-    <link rel="stylesheet" type="text/css" href="/static/assets/selectmenu/jquery-ui.css?version=20160314" />
-    <link rel="stylesheet" type="text/css" href="/static/assets/icheck-1.x/skins/all.css?version=20160314" />
-    <link href="/static/css/index.css?version=20160314" rel="stylesheet" type="text/css" />
-    <link href="/static/assets/intro/introjs.css?version=20160314" rel="stylesheet" type="text/css" />
+    <link href="/static/assets/jquery-ui-1.11.0.custom/jquery-ui.css?version={{.today}}" rel="stylesheet">
+    <link href="/static/assets/bootstrap-3.3.4/css/bootstrap.min.css?version={{.today}}" rel="stylesheet" type="text/css" />
+    <link href="/static/assets/kendoui-2015.2.624/styles/kendo.common.min.css?version={{.today}}" rel="stylesheet" type="text/css" />
+    <link href="/static/assets/kendoui-2015.2.624/styles/kendo.default.min.css?version={{.today}}" rel="stylesheet" type="text/css" />
+    <link href="/static/assets/font-awesome/css/font-awesome.min.css?version={{.today}}" rel="stylesheet" type="text/css" />
+    <link href="/static/css/AdminLTE.min.css?version={{.today}}" rel="stylesheet" type="text/css" />
+    <link href="/static/css/skin-blue.min.css?version={{.today}}" rel="stylesheet" type="text/css" />
+    <link href="/static/assets/mCustomScrollbar-3.0.9/jquery.mCustomScrollbar.css?version={{.today}}" rel="stylesheet">
+    <link href="/static/assets/artDialog-6.0.4/css/ui-dialog.css?version={{.today}}" rel="stylesheet">
+    <link href="/static/bk/css/bk_base.css?version={{.today}}" rel="stylesheet" type="text/css">
+    <link href="/static/assets/select2-3.5.2/select2.css?version={{.today}}" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/static/assets/multiselect/jquery.multiselect.css?version={{.today}}" />
+    <link rel="stylesheet" type="text/css" href="/static/assets/multiselect/jquery.multiselect.filter.css?version={{.today}}" />
+    <link rel="stylesheet" type="text/css" href="/static/assets/selectmenu/jquery-ui.css?version={{.today}}" />
+    <link rel="stylesheet" type="text/css" href="/static/assets/icheck-1.x/skins/all.css?version={{.today}}" />
+    <link href="/static/css/index.css?version={{.today}}" rel="stylesheet" type="text/css" />
+    <link href="/static/assets/intro/introjs.css?version={{.today}}" rel="stylesheet" type="text/css" />
     <!--[if lt IE 9]>
-    <script src="/static/js/html5shiv.min.js?version=20160314"></script>
-    <script src="/static/js/respond.min.js?version=20160314"></script>
+    <script src="/static/js/html5shiv.min.js?version={{.today}}"></script>
+    <script src="/static/js/respond.min.js?version={{.today}}"></script>
     <![endif]-->
-    <script src="/static/assets/js/jquery-1.10.2.min.js?version=20160314"></script>
-    <script src="/static/assets/bootstrap-3.3.4/js/bootstrap.min.js?version=20160314"></script>
-    <script src="/static/assets/kendoui-2015.2.624/js/kendo.all.min.js?version=20160314"></script>
-    <script src="/static/assets/artDialog-6.0.4/dist/dialog-min.js?version=20160314"></script>
+    <script src="/static/assets/js/jquery-1.10.2.min.js?version={{.today}}"></script>
+    <script src="/static/assets/bootstrap-3.3.4/js/bootstrap.min.js?version={{.today}}"></script>
+    <script src="/static/assets/kendoui-2015.2.624/js/kendo.all.min.js?version={{.today}}"></script>
+    <script src="/static/assets/artDialog-6.0.4/dist/dialog-min.js?version={{.today}}"></script>
     <script type='text/javascript'>
         (function(w){
             window.onerror = function(){return true;};            w.cookie = {
@@ -271,13 +271,13 @@
 </div>
 <script src="/static/assets/kendoui-2015.2.624/js/kendo.web.min.js"></script>
 <script src="/static/assets/select2-3.5.2/select2.js"></script>
-<script src="/static/assets/intro/intro.js?version=20160314"></script>
+<script src="/static/assets/intro/intro.js?version={{.today}}"></script>
 <script src="/static/assets/jquery.zeroclipboard/jquery.zeroclipboard.min.js"></script>
 <script>
     var source = "qcloud";
     var newUser = "";
 </script>
-<script src="/static/js/app.index.js?version=20160314"></script>
+<script src="/static/js/app.index.js?version={{.today}}"></script>
 <script>
     $(document).ready(function() {
         /**
@@ -320,9 +320,9 @@
         <div class="content">
             <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close"></span>
             <video  id="video" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
-                    poster="http://bk.tencent.com/console/static/product/blueking/img/course/video.jpg"
+                    poster="/static/product/blueking/img/course/video.jpg"
                     data-setup="{}">
-                <source src="http://bk.tencent.com/console/static/product/blueking/resource/cc.mp4" type='video/mp4' />
+                <source src="/static/product/blueking/resource/cc.mp4" type='video/mp4' />
             </video>
         </div>
     </div>
@@ -330,9 +330,9 @@
         <div class="content">
             <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close1"></span>
             <video  id="video1" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
-                    poster="http://bk.tencent.com/console/static/product/blueking/img/course/cc_remove.jpg"
+                    poster="/static/product/blueking/img/course/cc_remove.jpg"
                     data-setup="{}">
-                <source src="http://bk.tencent.com/console/static/product/blueking/resource/cc_remove.mp4" type='video/mp4' />
+                <source src="/static/product/blueking/resource/cc_remove.mp4" type='video/mp4' />
             </video>
         </div>
     </div>
@@ -340,9 +340,9 @@
         <div class="content">
             <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close2"></span>
             <video  id="video2" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
-                    poster="http://bk.tencent.com/console/static/product/blueking/img/course/cc_put.jpg"
+                    poster="/static/product/blueking/img/course/cc_put.jpg"
                     data-setup="{}">
-                <source src="http://bk.tencent.com/console/static/product/blueking/resource/cc_put.mp4" type='video/mp4' />
+                <source src="/static/product/blueking/resource/cc_put.mp4" type='video/mp4' />
             </video>
         </div>
     </div>
@@ -350,18 +350,16 @@
         <div class="content">
             <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close3"></span>
             <video  id="video3" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
-                    poster="http://bk.tencent.com/console/static/product/blueking/img/course/cc_mobile.jpg"
+                    poster="/static/product/blueking/img/course/cc_mobile.jpg"
                     data-setup="{}">
-                <source src="http://bk.tencent.com/console/static/product/blueking/resource/cc_mobile.mp4" type='video/mp4' />
+                <source src="/static/product/blueking/resource/cc_mobile.mp4" type='video/mp4' />
             </video>
         </div>
     </div>
     <div class="control-sidebar-bg"></div>
-    </div>
     <link href="/static/assets/video/video-js.css" rel="stylesheet" type="text/css">
     <script src="/static/assets/video/video.js"></script>
-    </script>
-    <script src="/static/js/common.js?version=20160314"></script>
+    <script src="/static/js/common.js?version={{.today}}"></script>
     <!-- 项目需要引用的js文件 -->
     <script type='text/javascript'>
 
@@ -399,20 +397,6 @@
                     type: "POST",
                     dataType: "json",
                     success: function (response) {
-//                        var setDefaultApp=$('#chooseBusiness').get(0);
-//                        var diaCopyMsg = dialog({
-//                            quickClose: true,// 点击空白处快速关闭
-//                            align:'bottom',
-//                            padding:10,
-//                            width:160,
-//                            content: '<p style="color:#fff;text-align:center; margin:0;">'+response.message+'</p>',
-//                            skin: 'c-Popuplayer-success'
-//                        });
-//                        diaCopyMsg.show(setDefaultApp);
-//                        setTimeout(function () {
-//                            diaCopyMsg.close().remove();
-//                        }, 1500);
-//
                         if(response.success){
                             setTimeout(function () {
                                 window.location.reload();
