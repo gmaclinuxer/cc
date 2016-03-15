@@ -15,6 +15,7 @@ func init() {
 	beego.Router("/app/newapp", &controllers.AppController{}, "*:NewApp")
 	beego.Router("/app/add", &controllers.AppController{}, "*:AddApp")
 	beego.Router("/app/delete", &controllers.AppController{}, "*:DeleteApp")
+	beego.Router("/welcome/setDefaultApp", &controllers.AppController{}, "*:SetDefaultApp")
 
 	beego.Router("/topology/index", &controllers.AppController{}, "*:TopologyIndex")
 }

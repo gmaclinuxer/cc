@@ -30,6 +30,15 @@ func AddApp(m *App) (id int64, err error) {
 	return
 }
 
+func GetAppById(id int) (v *App, err error) {
+	o := orm.NewOrm()
+	v = &App{Id: id}
+	if err = o.Read(v); err == nil {
+		return v, nil
+	}
+	return nil, err
+}
+
 func IsAppExistByName(applicationName string) (isExist bool) {
 	o := orm.NewOrm()
 	return o.QueryTable("app").Filter("application_name", applicationName).Exist()

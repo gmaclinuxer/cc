@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"net/url"
+	"strconv"
 	"fmt"
 	"github.com/shwinpiocess/cc/models"
 	"strings"
@@ -20,7 +22,16 @@ func (this *AppController) Index() {
 			this.TplName = "app/index_empty.html"
 		} else {
 			this.Data["apps"] = apps
-			this.Data["defApp"] = apps[0]
+			if defaultAppId, err := strconv.Atoi(this.Ctx.GetCookie("defaultAppId")); err == nil {
+				this.Data["defaultAppId"] = defaultAppId
+				defaultAppName, _ := url.QueryUnescape(this.Ctx.GetCookie("defaultAppName"))
+				this.Data["defaultAppName"] = defaultAppName
+				fmt.Println("777777777777777777777777777777777777", this.Data["defaultAppId"], defaultAppName)
+			} else {
+				fmt.Println("8888888888888888888888888888888")
+				this.Data["defaultAppId"] = apps[0].Id
+				this.Data["defaultAppName"] = apps[0].ApplicationName
+			}
 			this.TplName = "app/index.html"
 		}
 	}
@@ -51,7 +62,10 @@ func (this *AppController) AddApp() {
 			out["errCode"] = "0007"
 			this.jsonResult(out)
 		}
-		fmt.Println("uuuuuuuuuuuuuuuuuu")
+		
+		this.Ctx.SetCookie("defaultAppId", strconv.Itoa(app.Id))
+		this.Ctx.SetCookie("defaultAppName", app.ApplicationName)
+		
 		cnt, err := models.GetAppCountByUserId(this.userId)
 		fmt.Println("cnt=", cnt, "err=", err)
 		if err == nil {
@@ -87,4 +101,25 @@ func (this *AppController) DeleteApp() {
 
 func (this *AppController) TopologyIndex() {
 	this.TplName = "topology/index.html"
+}
+
+// 切换默认业务
+func (this *AppController) SetDefaultApp() {
+	out := make(map[string]interface{})
+	if applicationId, err := this.GetInt("ApplicationID"); err != nil {
+		out["success"] = false
+		this.jsonResult(out)
+	} else {
+		if app, err := models.GetAppById(applicationId); err != nil {
+			out["success"] = false
+			this.jsonResult(out)
+		} else {
+			this.Ctx.SetCookie("defaultAppId", strconv.Itoa(applicationId))
+			this.Ctx.SetCookie("defaultAppName", url.QueryEscape(app.ApplicationName))
+			fmt.Println("-------->", app.ApplicationName)
+			out["success"] = true
+			out["message"] = "业务切换成功"
+			this.jsonResult(out)
+		}
+	}
 }
