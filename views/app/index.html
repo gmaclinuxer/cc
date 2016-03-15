@@ -163,9 +163,9 @@
                                                                     {{range $index, $elem := .apps}}
                                                                     {{if eq $elem.Id $.defApp.Id}}
                                                                     <li class="active"><a class="defaultApp" value="{{$elem.Id}}">{{$elem.ApplicationName}}<span class="text-warning">(0)</span></a></li>
-                                                                    {{end}}
+                                                                    {{else}}
                                                                     <li ><a class="defaultApp" value="{{$elem.Id}}">{{$elem.ApplicationName}}<span class="text-warning">(0)</span></a></li>
-                                                                    
+                                                                    {{end}}
                                                                     {{end}}
                                                             </ul>
                                             </li>
