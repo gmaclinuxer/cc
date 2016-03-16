@@ -24,7 +24,9 @@ func (this *AppController) Index() {
 			this.Data["apps"] = apps
 			if defaultAppId, err := strconv.Atoi(this.Ctx.GetCookie("defaultAppId")); err == nil {
 				this.Data["defaultAppId"] = defaultAppId
-				defaultAppName, _ := url.QueryUnescape(this.Ctx.GetCookie("defaultAppName"))
+				defaultAppName, err := url.QueryUnescape(this.Ctx.GetCookie("defaultAppName"))
+				fmt.Println("err--->", err)
+				fmt.Println("000000000000xxxxxxx", this.Ctx.GetCookie("defaultAppName"))
 				this.Data["defaultAppName"] = defaultAppName
 				fmt.Println("777777777777777777777777777777777777", this.Data["defaultAppId"], defaultAppName)
 			} else {
@@ -64,7 +66,7 @@ func (this *AppController) AddApp() {
 		}
 		
 		this.Ctx.SetCookie("defaultAppId", strconv.Itoa(app.Id))
-		this.Ctx.SetCookie("defaultAppName", app.ApplicationName)
+		this.Ctx.SetCookie("defaultAppName", url.QueryEscape(app.ApplicationName))
 		
 		cnt, err := models.GetAppCountByUserId(this.userId)
 		fmt.Println("cnt=", cnt, "err=", err)
