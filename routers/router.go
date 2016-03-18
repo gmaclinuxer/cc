@@ -18,4 +18,7 @@ func init() {
 	beego.Router("/welcome/setDefaultApp", &controllers.AppController{}, "*:SetDefaultApp")
 
 	beego.Router("/topology/index", &controllers.AppController{}, "*:TopologyIndex")
+	
+	// 快速分配
+	beego.Router("/host/quickImport", &controllers.AppController{}, "*:QuickImport")
 }
