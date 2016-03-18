@@ -1,12 +1,12 @@
 package controllers
 
 import (
+	"strings"
 	"net/url"
 	"strconv"
 	"fmt"
+	
 	"github.com/shwinpiocess/cc/models"
-	"strings"
-	"time"
 )
 
 type AppController struct {
@@ -14,28 +14,12 @@ type AppController struct {
 }
 
 func (this *AppController) Index() {
-	this.Data["today"] = time.Now().Format("20060102")
-	num, apps, err := models.GetApps(this.userId)
-	if err == nil {
-		// 无任何业务时
-		if num == 0 {
-			this.TplName = "app/index_empty.html"
-		} else {
-			this.Data["apps"] = apps
-			if defaultAppId, err := strconv.Atoi(this.Ctx.GetCookie("defaultAppId")); err == nil {
-				this.Data["defaultAppId"] = defaultAppId
-				defaultAppName, err := url.QueryUnescape(this.Ctx.GetCookie("defaultAppName"))
-				fmt.Println("err--->", err)
-				fmt.Println("000000000000xxxxxxx", this.Ctx.GetCookie("defaultAppName"))
-				this.Data["defaultAppName"] = defaultAppName
-				fmt.Println("777777777777777777777777777777777777", this.Data["defaultAppId"], defaultAppName)
-			} else {
-				fmt.Println("8888888888888888888888888888888")
-				this.Data["defaultAppId"] = apps[0].Id
-				this.Data["defaultAppName"] = apps[0].ApplicationName
-			}
-			this.TplName = "app/index.html"
-		}
+	fmt.Println("--------------------------------------------->")
+	fmt.Println(this.Data)
+	if this.appCount > 0 {
+		this.TplName = "app/index.html"
+	} else {
+		this.TplName = "app/help.html"
 	}
 }
 
@@ -46,45 +30,65 @@ func (this *AppController) NewApp() {
 func (this *AppController) AddApp() {
 	if this.isPost() {
 		app := new(models.App)
-		app.Type, _ = this.GetInt("Type")
-		app.Level, _ = this.GetInt("Level")
+		app.Type, _ = this.GetInt8("Type")
+		app.Level, _ = this.GetInt8("Level")
 		app.ApplicationName = strings.TrimSpace(this.GetString("ApplicationName"))
 		app.LifeCycle = strings.TrimSpace(this.GetString("LifeCycle"))
 		app.OwnerId = this.userId
+		
 		out := make(map[string]interface{})
-		if models.IsAppExistByName(app.ApplicationName) {
+		
+		if Id, err := models.AddApp(app); err != nil {
+			fmt.Println("err=", err)
 			out["errInfo"] = "同名的业务已经存在！"
 			out["success"] = false
 			out["errCode"] = "0006"
 			this.jsonResult(out)
-		}
-		if _, err := models.AddApp(app); err != nil {
-			out["errInfo"] = err.Error()
-			out["success"] = false
-			out["errCode"] = "0007"
-			this.jsonResult(out)
-		}
+		} else {
+			this.Ctx.SetCookie("defaultAppId", strconv.Itoa(Id))
+			this.Ctx.SetCookie("defaultAppName", url.QueryEscape(app.ApplicationName))
+			
+			var fields []string
+			var sortby []string
+			var order []string
+			var query map[string]string = make(map[string]string)
+			var limit int64 = 0
+			var offset int64 = 0
 		
-		this.Ctx.SetCookie("defaultAppId", strconv.Itoa(app.Id))
-		this.Ctx.SetCookie("defaultAppName", url.QueryEscape(app.ApplicationName))
+			query["owner_id"] = strconv.Itoa(this.userId)
 		
-		cnt, err := models.GetAppCountByUserId(this.userId)
-		fmt.Println("cnt=", cnt, "err=", err)
-		if err == nil {
-			if cnt > 1 {
+			apps, _ := models.GetAllApp(query, fields, sortby, order, offset, limit)
+			if len(apps) > 1 {
 				out["success"] = true
 				out["gotopo"] = 0
 				this.jsonResult(out)
+			} else {
+				out["success"] = true
+				out["gotopo"] = 1
+				this.jsonResult(out)
 			}
-
-			out["success"] = true
-			out["gotopo"] = 1
-			this.jsonResult(out)
 		}
-		out["success"] = false
-		out["errInfo"] = err.Error()
-		out["errCode"] = "0008"
-		this.jsonResult(out)
+		
+//		this.Ctx.SetCookie("defaultAppId", strconv.Itoa(app.Id))
+//		this.Ctx.SetCookie("defaultAppName", url.QueryEscape(app.ApplicationName))
+		
+//		cnt, err := models.GetAppCountByUserId(this.userId)
+//		fmt.Println("cnt=", cnt, "err=", err)
+//		if err == nil {
+//			if cnt > 1 {
+//				out["success"] = true
+//				out["gotopo"] = 0
+//				this.jsonResult(out)
+//			}
+
+//			out["success"] = true
+//			out["gotopo"] = 1
+//			this.jsonResult(out)
+//		}
+//		out["success"] = false
+//		out["errInfo"] = err.Error()
+//		out["errCode"] = "0008"
+//		this.jsonResult(out)
 	}
 }
 
@@ -102,7 +106,7 @@ func (this *AppController) DeleteApp() {
 }
 
 func (this *AppController) TopologyIndex() {
-	this.TplName = "topology/index.html"
+	this.TplName = "topology/set.html"
 }
 
 // 切换默认业务
@@ -124,4 +128,9 @@ func (this *AppController) SetDefaultApp() {
 			this.jsonResult(out)
 		}
 	}
+}
+
+// 快速分配
+func (this *AppController) QuickImport() {
+	this.TplName = "host/quickImport.html"
 }
