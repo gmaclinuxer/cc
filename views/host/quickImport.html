@@ -1,0 +1,150 @@
+{{template "base/base.html" .}}
+{{define "head"}}
+        <title>快速分配-蓝鲸配置平台</title>
+{{end}}
+{{define "content"}}
+<div class="content-wrapper">
+    <!-- 主面板 Header  -->
+    <section class="content-header">
+        <h1>快速分配</h1>
+    </section>
+    <!-- 主面板 Main-->
+    <section class="content pt0">
+        <div class="row">
+            <div class="col-sm-12 col-lg-12 c-import-table">
+                <div class="c-import-info f16 pt5" role="alert">将您的主机从快速分配池一键分配到<span class="c-import-business-name">{{.defaultAppName}}</span>的<span class="c-import-business-name">空闲机池</span>中</div>
+                
+                <div class="c-import-block">
+                    <ul class="nav nav-tabs">
+                        <li><a href="#qcloud" data-toggle="tab">腾讯云</a></li>                        <!--
+                        <li><a href="#aliyun" data-toggle="tab">阿里云</a></li>
+                        <li><a href="#amazon" data-toggle="tab">亚马逊</a></li>
+                        -->
+                        <li><a href="#private" data-toggle="tab">其它云</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade" id="qcloud">
+                        </div>
+                                        <!--
+                        <div class="tab-pane fade" id="aliyun">
+                        </div>
+                        <div class="tab-pane fade" id="amazon">
+                        </div>
+                    -->
+                        <div class="tab-pane fade" id="private">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<div class="control-sidebar-bg"></div>
+</div>
+<div class="import-page-mask none">
+    <div class="button-group">
+            <a id="syncHost" class="king-btn king-border king-primary" title="搜索">同步腾讯云主机</a>
+            <a id="importOtherHost" class="king-btn king-border king-primary" title="搜索">导入其它云主机</a>            
+    </div> 
+</div>
+<iframe name="upload_proxy" id="upload_proxy" style="display:none"></iframe>
+<!-- 项目需要引用的js文件 -->
+<script src="/static/assets/js/jquery-1.10.2.min.js?version={{.today}}"></script>
+<script src="/static/assets/bootstrap-3.3.4/js/bootstrap.min.js?version={{.today}}"></script>
+<script src="/static/assets/kendoui-2015.2.624/js/kendo.web.min.js?version={{.today}}"></script>
+<script src="/static/assets/asyncUpload-1.0/asyncUpload.min.js?version={{.today}}"></script>
+<script src="/static/assets/mCustomScrollbar-3.0.9/jquery.mCustomScrollbar.concat.min.js?version={{.today}}"></script>
+<link href="/static/assets/bootstrap-switch-master/dist/css/bootstrap3/bootstrap-switch.css?version={{.today}}" rel="stylesheet">
+<style>
+    .host-state-switcher-parent {
+        position: relative;
+        width: 134px;
+        height: 34px;
+        float: right;
+        margin: 3px 6px;
+    }
+</style>
+<script src="/static/assets/bootstrap-switch-master/dist/js/bootstrap-switch.js?version={{.today}}"></script>
+<script src="/static/assets/intro/intro.js?version={{.today}}"></script>
+<script src="/static/js/quickImport.js?version={{.today}}"></script>
+<script>
+    var isNewUser = false;
+
+    $(function(){
+    });
+</script>
+    <div class="none video-content">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close"></span>
+            <video  id="video" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="/static/product/blueking/img/course/video.jpg"
+                    data-setup="{}">
+                <source src="/static/product/blueking/resource/cc.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="none video-content1">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close1"></span>
+            <video  id="video1" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="/static/product/blueking/img/course/cc_remove.jpg"
+                    data-setup="{}">
+                <source src="/static/product/blueking/resource/cc_remove.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="none video-content2">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close2"></span>
+            <video  id="video2" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="/static/product/blueking/img/course/cc_put.jpg"
+                    data-setup="{}">
+                <source src="/static/product/blueking/resource/cc_put.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="none video-content3">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close3"></span>
+            <video  id="video3" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="/static/product/blueking/img/course/cc_mobile.jpg"
+                    data-setup="{}">
+                <source src="/static/product/blueking/resource/cc_mobile.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="control-sidebar-bg"></div>
+    </div>
+    <link href="/static/assets/video/video-js.css" rel="stylesheet" type="text/css">
+    <script src="/static/assets/video/video.js"></script>
+    </script>
+    <script src="/static/js/common.js?version={{.today}}"></script>
+    <!-- 项目需要引用的js文件 -->
+    <script type='text/javascript'>
+
+        $(document).ready(function(){
+            $('.optgroup').click(function(){
+                if($(this).next("li[class!='optgroup']").length >0){
+                    return;
+                }
+                var company_id = $(this).attr('comid');
+                var company_code = $(this).attr('comcode');
+                var company_name = $(this).find('a span').text();
+                console.log(company_name);
+                var postdata = {company_id:company_id,company_code:company_code,company_name:company_name};
+                $.ajax({
+                    url: "/welcome/setDefaultCom",
+                    type: "POST",
+                    data:postdata,
+                    dataType: "json",
+                    success: function (response) {
+                        window.location.reload();
+                    }
+                });
+            })
+            videojs.options.flash.swf = "/static/assets/video/video-js.swf";
+
+            
+                    });
+    </script>
+{{end}}

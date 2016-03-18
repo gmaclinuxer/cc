@@ -1,0 +1,213 @@
+{{template "base/base.html" .}}
+{{define "head"}}
+    <title>业务管理</title>
+{{end}}
+{{define "content"}}
+    <!-- 主面板Content -->
+<div class="content-wrapper">
+    <div class="no-host-content">
+        <img style="height:201px;" src="/static/img/expre_403.png" style="height:201px;">
+        <h4 class="pt15">对不起，您当前没有可操作的业务，您可尝试如下操作</h4>
+        <ul class="pt15" style="width:300px;">
+                            <li class="text-left">点此
+                    <div id="home_creat_one" style="display:inline-block;">
+                        <a href="/app/newapp" id="home_creat_one">新建业务</a>
+                                        </div>
+                </li>
+                        <li class="text-left">联系您公司已有权限的同事为您开通权限</li>
+        </ul>
+    </div>
+</div>
+<div class="control-sidebar-bg"></div>
+</div>
+
+<!-- 导入腾讯云项目 模态框 -->
+<div class="modal fade tencent-project " tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content c-edit-all import-qcloup">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">腾讯云项目</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-hovered table-striped">
+                    <thead>
+                    <tr>
+                        <th>项目名称</th>
+                        <th>主机个数</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                                        </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <div class="not-import-content">
+                    <div class="text-left">
+                    <span class="warning-icon"></span>
+                    <span class="warning-text"> 本次放弃导入，后续仍可以通过<a href="/app/newapp">新建业务</a>来创建项目，是否继续？</span>
+                </div></div>
+                    <button type="button" class="btn btn-default not-import no-href" >不导入</button>
+                <button type="button" class="btn btn-default  sure-not-import" style="display:none">不导入</button>
+                <button type="button" class="btn btn-success want-import">导入</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/assets/intro/intro.js?version={{.today}}"></script>
+<script src="/static/assets/mCustomScrollbar-3.0.9/jquery.mCustomScrollbar.concat.min.js?version={{.today}}"></script>
+<script type='text/javascript'>
+    $(document).ready(function(){
+        
+        $('.import-qcloup').find('.modal-body').mCustomScrollbar({
+            setHeight:300,
+            theme: "dark-thin" //设置风格
+        });
+        $('.add-porject').on("click",function (){
+            $('.introjs-button.introjs-skipbutton').trigger("click");
+        });
+
+
+        // 不导入项目时提示
+        $('.not-import.no-href').click(function (){
+            $('.modal-title').text('确认');
+            $('.modal-body').hide();
+            $('.not-import-content').show();
+            $('.not-import').hide();
+            $('.sure-not-import').show();
+
+            $('.want-import').html('导入').removeClass('want-import').addClass('continue-import');
+            $('.continue-import').click(function (){
+                $('.continue-import').addClass('want-import').removeClass('continue-import').html('导入');
+                $('.modal-body').show();
+                $('.not-import-content').hide();
+                $('.not-import').show();
+                $('.sure-not-import').hide();
+            })
+        })
+
+        $('.modal').on('hidden.bs.modal', function () {
+            $('.modal-body').show();
+            $('.not-import-content').hide();
+            $('.modal-title').text('腾讯云项目');
+            $('.not-import').show();
+            $('.sure-not-import').hide();
+        })
+        $('.sure-not-import').on("click",function (){
+            $('.modal').modal('hide');
+            })
+
+        $('.want-import').on("click",function (){
+//            if($(this).hasClass('continue-import')) {
+//                return false;
+//            }
+           $('.modal').modal('hide')
+            var d = dialog({
+                content: '<div class="c-dialogdiv2"><img class="c-dialogimg-loading" src="/static/img/loading_2_24x24.gif"></img>处理中，请稍候...</div>'
+            });
+            d.showModal();
+            //发送请求数据到后台
+            $.post("/app/sycProject",
+                {}
+                ,function(result) {
+                    rere = $.parseJSON(result);
+                    console.log(rere);
+                    if(rere.success == false)
+                    {
+                        var d = dialog({
+                            title:'错误',
+                            width:300,
+                            okValue:"确定",
+                            ok:function(){},
+                            content: '<div class="c-dialogdiv"><i class="c-dialogimg-failure"></i>同步失败</div>'
+                        });
+                        d.showModal();
+                        return;
+                    }
+                    else
+                    {
+                        setTimeout(function(){window.location.href='/app/index';},1000);
+                        return;
+                    }
+                });
+        });
+
+
+    });
+</script>    <div class="none video-content">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close"></span>
+            <video  id="video" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="/static/product/blueking/img/course/video.jpg"
+                    data-setup="{}">
+                <source src="/static/product/blueking/resource/cc.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="none video-content1">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close1"></span>
+            <video  id="video1" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="/static/product/blueking/img/course/cc_remove.jpg"
+                    data-setup="{}">
+                <source src="/static/product/blueking/resource/cc_remove.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="none video-content2">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close2"></span>
+            <video  id="video2" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="/static/product/blueking/img/course/cc_put.jpg"
+                    data-setup="{}">
+                <source src="/static/product/blueking/resource/cc_put.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="none video-content3">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close3"></span>
+            <video  id="video3" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="/static/product/blueking/img/course/cc_mobile.jpg"
+                    data-setup="{}">
+                <source src="/static/product/blueking/resource/cc_mobile.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="control-sidebar-bg"></div>
+    </div>
+    <link href="/static/assets/video/video-js.css" rel="stylesheet" type="text/css">
+    <script src="/static/assets/video/video.js"></script>
+    </script>
+    <script src="/static/js/common.js?version={{.today}}"></script>
+    <!-- 项目需要引用的js文件 -->
+    <script type='text/javascript'>
+
+        $(document).ready(function(){
+            $('.optgroup').click(function(){
+                if($(this).next("li[class!='optgroup']").length >0){
+                    return;
+                }
+                var company_id = $(this).attr('comid');
+                var company_code = $(this).attr('comcode');
+                var company_name = $(this).find('a span').text();
+                console.log(company_name);
+                var postdata = {company_id:company_id,company_code:company_code,company_name:company_name};
+                $.ajax({
+                    url: "/welcome/setDefaultCom",
+                    type: "POST",
+                    data:postdata,
+                    dataType: "json",
+                    success: function (response) {
+                        window.location.reload();
+                    }
+                });
+            })
+            videojs.options.flash.swf = "/static/assets/video/video-js.swf";
+
+                        $('.sidebar').find('li').divLoad('show');
+            
+                    });
+    </script>
+{{end}}
