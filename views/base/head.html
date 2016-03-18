@@ -1,0 +1,99 @@
+<meta charset="UTF-8">
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link href="/static/assets/jquery-ui-1.11.0.custom/jquery-ui.css?version={{.today}}" rel="stylesheet">
+        <link href="/static/assets/bootstrap-3.3.4/css/bootstrap.min.css?version={{.today}}" rel="stylesheet" type="text/css" />
+        <link href="/static/assets/kendoui-2015.2.624/styles/kendo.common.min.css?version={{.today}}" rel="stylesheet" type="text/css" />
+        <link href="/static/assets/kendoui-2015.2.624/styles/kendo.default.min.css?version={{.today}}" rel="stylesheet" type="text/css" />
+        <link href="/static/assets/font-awesome/css/font-awesome.min.css?version={{.today}}" rel="stylesheet" type="text/css" />
+        <link href="/static/css/AdminLTE.min.css?version={{.today}}" rel="stylesheet" type="text/css" />
+        <link href="/static/css/skin-blue.min.css?version={{.today}}" rel="stylesheet" type="text/css" />
+        <link href="/static/assets/mCustomScrollbar-3.0.9/jquery.mCustomScrollbar.css?version={{.today}}" rel="stylesheet">
+        <link href="/static/assets/artDialog-6.0.4/css/ui-dialog.css?version={{.today}}" rel="stylesheet">
+        <link href="/static/bk/css/bk_base.css?version={{.today}}" rel="stylesheet" type="text/css">
+        <link href="/static/assets/select2-3.5.2/select2.css?version={{.today}}" rel="stylesheet" />
+        <link rel="stylesheet" type="text/css" href="/static/assets/multiselect/jquery.multiselect.css?version={{.today}}" />
+        <link rel="stylesheet" type="text/css" href="/static/assets/multiselect/jquery.multiselect.filter.css?version={{.today}}" />
+        <link rel="stylesheet" type="text/css" href="/static/assets/selectmenu/jquery-ui.css?version={{.today}}" />
+        <link rel="stylesheet" type="text/css" href="/static/assets/icheck-1.x/skins/all.css?version={{.today}}" />
+        <link href="/static/css/index.css?version={{.today}}" rel="stylesheet" type="text/css" />
+        <link href="/static/assets/intro/introjs.css?version={{.today}}" rel="stylesheet" type="text/css" />
+        <!--[if lt IE 9]>
+        <script src="/static/js/html5shiv.min.js?version={{.today}}"></script>
+        <script src="/static/js/respond.min.js?version={{.today}}"></script>
+        <![endif]-->
+        <script src="/static/assets/js/jquery-1.10.2.min.js?version={{.today}}"></script>
+        <script src="/static/assets/bootstrap-3.3.4/js/bootstrap.min.js?version={{.today}}"></script>
+        <script src="/static/assets/kendoui-2015.2.624/js/kendo.all.min.js?version={{.today}}"></script>
+        <script src="/static/assets/artDialog-6.0.4/dist/dialog-min.js?version={{.today}}"></script>
+        <script type='text/javascript'>
+            (function(w){
+                window.onerror = function(){return true;};
+                w.cookie = {
+                    get : function(name){
+                        if(document.cookie.length>0){
+                            name += '=';
+                            var allCookie = document.cookie;
+                            var startIndex = allCookie.indexOf(name);
+                            if(startIndex > -1){
+                                if(startIndex > 1){
+                                    name = '; '+name;
+                                    startIndex = allCookie.indexOf(name)+name.length;
+                                }else{
+                                    startIndex = startIndex+name.length;
+                                }
+                            }else{
+                                return '';
+                            }
+    
+                            var endIndex = allCookie.indexOf(';', startIndex);
+                            if(endIndex === -1){
+                                endIndex = document.cookie.length;
+                            }
+                            var value = decodeURIComponent(allCookie.substring(startIndex, endIndex));
+                            return value;
+                        }
+    
+                        return '';
+                    },
+    
+                    set : function(name, value, expires){
+                        var exdate = new Date();
+                        if(expires!=null){
+                            exdate.setTime(exdate.getTime() + expires*1000);
+                        }
+                        document.cookie = name +'='+ encodeURIComponent(value) + (expires==null ? ';path=/' : ';expires='+exdate.toUTCString()+';path=/');
+                    }
+                };
+    
+            })(window);
+    
+            //鼠标点击存储cookie
+            $(document).ready(function(){
+                $.ajaxSetup({
+                    beforeSend : function(xhr){
+                        xhr.setRequestHeader('Token', cookie.get('token'));
+                    },
+                    complete:function(xhr,response)
+                    {
+                        if(xhr.getResponseHeader('Timeout') == 'true')
+                        {
+                            window.location.href="/welcome/logout";
+                            return;
+                        }
+                    }
+    
+                });
+    
+                
+                $('.c-sidebar-toggle').on('click',function(){
+                    var className = $('body').prop('class');
+                    var isCollapse = className.indexOf('sidebar-collapse') == -1 ? true:false;
+                    if(isCollapse){
+                        cookie.set('isCollapse',1);
+                    }else{
+                        cookie.set('isCollapse',0);
+                }
+                });
+    
+            });
+        </script>
