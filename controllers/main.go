@@ -16,20 +16,27 @@ type MainController struct {
 }
 
 func (this *MainController) Index() {
-	this.Data["today"] = time.Now().Format("20060102")
-	num, apps, err := models.GetApps(this.userId)
-	fmt.Println(apps)
-	if err == nil {
-		if num > 0{
-			this.TplName = "index.html"
-		} else {
-			this.redirect("/app/index")
-		}
-	}
+//	this.Data["today"] = time.Now().Format("20060102")
+//	num, apps, err := models.GetApps(this.userId)
+//	fmt.Println(apps)
+//	if err == nil {
+//		if num > 0{
+//			this.TplName = "index.html"
+//		} else {
+//			this.redirect("/app/index")
+//		}
+//	}
+	fmt.Println(this.Data)
+	this.Data["no_apps"] = false
+	this.Data["defaultAppName"] = ""
+	this.Data["defaultAppId"] = 0
+	this.TplName = "index.html"
 }
 
+// 登录
 func (this *MainController) Login() {
 	if this.userId > 0 {
+		fmt.Println("登录userid=", this.userId)
 		this.redirect("/")
 	}
 
@@ -57,6 +64,7 @@ func (this *MainController) Login() {
 				} else {
 					this.Ctx.SetCookie("auth", strconv.Itoa(user.Id)+"|"+authkey)
 				}
+				fmt.Println(this.Data)
 				this.redirect(beego.URLFor("AppController.Index"))
 			}
 			fmt.Println(errMsg)
@@ -64,6 +72,7 @@ func (this *MainController) Login() {
 
 	}
 
+	fmt.Println("登录嘻嘻嘻嘻嘻嘻嘻嘻嘻嘻嘻嘻嘻嘻嘻")
 	this.TplName = "main/login.html"
 }
 
