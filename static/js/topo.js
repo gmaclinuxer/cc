@@ -183,7 +183,8 @@
                 $.post("/App/getMainterners",
                     {}
                     ,function(result) {
-                        rere = $.parseJSON(result);
+                        // rere = $.parseJSON(result);
+                        rere = result;
                         {
                             var uinList = rere.uinList;
                             var UserNameList = rere.UserNameList;
@@ -251,7 +252,8 @@
                 $.post("/App/getMainterners",
                     {}
                     ,function(result) {
-                        rere = $.parseJSON(result);
+                        //rere = $.parseJSON(result);
+                        rere = result;
                         {
                             var uinList = rere.uinList;
                             var UserNameList = rere.UserNameList;
@@ -302,7 +304,8 @@
                 $.post("/Set/getSetInfoById",
                     {ApplicationID:ApplicationID,SetID:SetID}
                     ,function(result) {
-                        rere = $.parseJSON(result);
+                        // rere = $.parseJSON(result);
+                        rere = result;
                         if (rere.success == false) {
                             CC.hostConf.showWindow(rere.errInfo,'notice');
                         }
@@ -417,7 +420,8 @@
                     {ApplicationID:ApplicationID,SetName:SetName,EnviType:EnviType,ServiceStatus:ServiceStatus,
                         ChnName:ChnName,Capacity:Capacity,Des:Des,Openstatus:Openstatus}
                     ,function(result) {
-                        rere = $.parseJSON(result);
+                        // rere = $.parseJSON(result);
+                        rere = result;
                         if (rere.success == false) {
                             CC.hostConf.showWindow(rere.errInfo,'notice');
                             return;
@@ -445,7 +449,8 @@
                         $.post("/Set/delSet",
                             {ApplicationID:ApplicationID,SetID:SetID}
                             ,function(result) {
-                                rere = $.parseJSON(result);
+                                // rere = $.parseJSON(result);
+                                rere = result;
                                 if (rere.success == false) {
                                     CC.hostConf.showWindow(rere.errInfo,'notice');
                                     return;
