@@ -1,6 +1,7 @@
 package models
 
 import (
+	"strconv"
 	"errors"
 	"fmt"
 	"reflect"
@@ -43,6 +44,34 @@ func GetAppById(id int) (v *App, err error) {
 		return v, nil
 	}
 	return nil, err
+}
+
+func GetAppTopoById(id int) (ml []interface{}, err error) {
+//	[{"id":"5524","text":"aaa","spriteCssClass":"c-icon icon-group","type":"set","expanded":false,"number":32,"items":[{"id":"7025","spriteCssClass":"c-icon icon-modal","text":"1","operator":"1842605324","bakoperator":"1842605324","type":"module","number":32}]}]
+	var fields []string
+	var sortby []string
+	var order []string
+	var query map[string]string = make(map[string]string)
+	var limit int64 = 0
+	var offset int64 = 0
+	
+	query["application_id"] = strconv.Itoa(id)
+	query["default"] = "0"
+	
+	
+	s, err := GetAllSet(query, fields, sortby, order, offset, limit)
+	for _, v := range s {
+		m := make(map[string]interface{})
+		m["id"] = v.(Set).SetID
+		m["text"] = v.(Set).SetName
+		m["spriteCssClass"] = "c-icon icon-group"
+		m["type"] = "set"
+		m["expanded"] = false
+		m["number"] = 32
+//		m["items"] = make([...]interface{})
+		ml = append(ml, m)
+	}
+	return
 }
 
 // GetAllApp retrieves all App matches certain condition. Returns empty list if
