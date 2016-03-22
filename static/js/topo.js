@@ -330,7 +330,7 @@
                             $("#editSetChnName").val(set.ChnName);
                             $("#editSetCapacity").val(set.Capacity);
                             $("#editSetDes").val(set.Description);
-                            $("#editOpenstatus").val(set.Openstatus);
+                            $("#editOpenstatus").val(set.OpenStatus);
                         }
                     });
                 $('.creat-container').css('display','none');
@@ -541,7 +541,8 @@
                     {ApplicationID:ApplicationID,SetName:SetName,SetEnviType:EnviType,ServiceStatus:ServiceStatus,
                         ChnName:ChnName,Capacity:Capacity,Des:Des,SetID:SetID,Openstatus:Openstatus}
                     ,function(result) {
-                        rere = $.parseJSON(result);
+                        // rere = $.parseJSON(result);
+                        rere = result;
                         if (rere.success == false) {
                             CC.hostConf.showWindow(rere.errInfo,'notice');
                             return;
@@ -602,7 +603,8 @@
                 $.post("/Module/newModule",
                     {ApplicationID:ApplicationID,SetID:SetID,ModuleName:ModuleName,Operator:Operator,BakOperator:BakOperator}
                     ,function(result) {
-                        rere = $.parseJSON(result);
+                        // rere = $.parseJSON(result);
+                        rere = result;
                         if (rere.success == false) {
                             CC.hostConf.showWindow(rere.errInfo,'notice');
                             return;
