@@ -4,8 +4,210 @@
 {{end}}
 
 {{define "content"}}
-<h4>测试</h4>
-{{end}}
-{{define "scripts"}}
-<script language='javascript' type='text/javascript'>window.location.href='/app/index'</script>
+<!-- 主面板Content -->
+        <div class="content-wrapper">
+            <!-- 主面板 Header  -->
+            <section class="content-header">
+                <h1>我的服务资源</h1>
+            </section>
+            <!-- 主面板 Main-->
+            <section class="content">
+                <div class="row">
+                    <!-- 业务数量 -->
+                    <div class="col-md-4 col-xs-12">
+                        <div class="small-box c-bg1">
+                            <div class="div-img fl"><span class="today-icon icon1"></span></div>
+                            <div class="div-text fl">
+                                                                <p>集群数</p>
+                                <h3>0</h3>
+                                                            </div>
+                        </div>
+                    </div>
+                    <!-- /业务数量 -->
+                    <!-- 设备数量 -->
+                    <div class="col-md-4 col-xs-12">
+                        <div class="small-box c-bg2">
+                            <div class="div-img fl"><span class="today-icon icon2"></span></div>
+                            <div class="div-text fl">
+                                <p>设备数</p>
+                                <h3>0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /设备数量 -->
+                    <!-- 当前余额 -->
+                    <div class="col-md-4 col-xs-12">
+                        <div class="small-box c-bg3">
+                            <div class="div-img fl"><span class="today-icon icon4"></span></div>
+                            <div class="div-text fl">
+                                <p>空闲设备</p>
+                                <h3>0<span></span></h3>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /当前余额 -->
+                </div>
+                <div class="row">
+                    <div class="col-lg-8 col-md-12 col-sm-12">
+                        <!-- 主机月趋势 -->
+                        <div class="c-host-trend k-content">
+                            <div class="page-header">
+                                <h4>云主机数近一周的趋势图 <small>a</small></h4>
+                            </div>
+                            <div id="chostnumber" class="c-host-number" style="height:288px;"></div>
+                        </div>
+                        <!-- /主机月趋势 -->
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-sm-12">
+                        <!-- 主机过期分布图 -->
+                        <div class="c-outdate-wrapper">
+                        <div class="page-header">
+                            <h4>主机过期分布图</h4>
+                        </div>
+                        <div id="chostdate" class="c-host-date" style="height:288px;"></div>
+                        </div>
+                        <!-- /主机过期分布图 -->
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <!-- 主机分布图 -->
+                        <div class="c-host-wapper">
+                            <div class="page-header">
+                                <h4>主机分布图</h4>
+                            </div>
+                            <div class="c-host-area" id="host-area">
+                            </div>
+                        </div>
+                        <!-- /主机分布图 -->
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <!-- 操作记录 -->
+                        <ul class="c-host-opt">
+                            <div class="page-header">
+                                <h4>操作记录 <small><a href="/operationLog/">查看全部</a></small></h4>
+                            </div>
+                            <div id="opt_box" class="opt-box">
+                            <ul class="king-timeline-simple">
+                                                                <li class="info">
+                                <div class="timeline-simple-wrap">
+                                    <p class="info-title">1842605324 新增业务</p>
+                                    <span class="timeline-simple-date">12小时前 00:28</span>
+<!--                                    <p class="info-time"><small>--><!--</small></p>-->
+                                            <p>业务名：[a]</p>
+<!--                                            <p>公网IP：<span class='info-text'>eip-61tn12av</span></p>-->
+                                </div>
+                                </li>
+                                                                <li class="info">
+                                <div class="timeline-simple-wrap">
+                                    <p class="info-title">1842605324 新增集群</p>
+                                    <span class="timeline-simple-date">12小时前 00:28</span>
+<!--                                    <p class="info-time"><small>--><!--</small></p>-->
+                                            <p>集群名[空闲机池]</p>
+<!--                                            <p>公网IP：<span class='info-text'>eip-61tn12av</span></p>-->
+                                </div>
+                                </li>
+                                                                <li class="info">
+                                <div class="timeline-simple-wrap">
+                                    <p class="info-title">1842605324 新增模块</p>
+                                    <span class="timeline-simple-date">12小时前 00:28</span>
+<!--                                    <p class="info-time"><small>--><!--</small></p>-->
+                                            <p>模块名:[空闲机]</p>
+<!--                                            <p>公网IP：<span class='info-text'>eip-61tn12av</span></p>-->
+                                </div>
+                                </li>
+                                                            </ul>
+                        </div>
+                        <!-- /操作记录 -->
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="control-sidebar-bg"></div>
+    </div>
+        <!-- 项目js文件 -->
+        <script src="/static/assets/map/raphael-min.js"></script>
+        <script src="/static/assets/map/map.js"></script>
+        <script src="/static/assets/mCustomScrollbar-3.0.9/jquery.mCustomScrollbar.concat.min.js"></script>
+        <script src="/static/js/app.min.js"></script>
+        <script>
+            CC.index.deadLineTime=[];
+            CC.index.hostTrend={"categories":["2016-03-16","2016-03-17","2016-03-18","2016-03-19","2016-03-20","2016-03-21","2016-03-22"],"data":[0,0,0,0,0,0,0]};
+            CC.index.hostMap=[];
+            $(function(){
+                 CC.index.init();
+            })
+        </script>
+    <div class="none video-content">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close"></span>
+            <video  id="video" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="/static/product/blueking/img/course/video.jpg"
+                    data-setup="{}">
+                <source src="/static/product/blueking/resource/cc.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="none video-content1">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close1"></span>
+            <video  id="video1" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="/static/product/blueking/img/course/cc_remove.jpg"
+                    data-setup="{}">
+                <source src="/static/product/blueking/resource/cc_remove.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="none video-content2">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close2"></span>
+            <video  id="video2" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="/static/product/blueking/img/course/cc_put.jpg"
+                    data-setup="{}">
+                <source src="/static/product/blueking/resource/cc_put.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="none video-content3">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close3"></span>
+            <video  id="video3" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="/static/product/blueking/img/course/cc_mobile.jpg"
+                    data-setup="{}">
+                <source src="/static/product/blueking/resource/cc_mobile.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="control-sidebar-bg"></div>
+    </div>
+    <link href="/static/assets/video/video-js.css" rel="stylesheet" type="text/css">
+    <script src="/static/assets/video/video.js"></script>
+    </script>
+    <script src="/static/js/common.js?version={{.today}}"></script>
+    <!-- 项目需要引用的js文件 -->
+    <script type='text/javascript'>
+
+        $(document).ready(function(){
+            $('.optgroup').click(function(){
+                if($(this).next("li[class!='optgroup']").length >0){
+                    return;
+                }
+                var company_id = $(this).attr('comid');
+                var company_code = $(this).attr('comcode');
+                var company_name = $(this).find('a span').text();
+                console.log(company_name);
+                var postdata = {company_id:company_id,company_code:company_code,company_name:company_name};
+                $.ajax({
+                    url: "/welcome/setDefaultCom",
+                    type: "POST",
+                    data:postdata,
+                    dataType: "json",
+                    success: function (response) {
+                        window.location.reload();
+                    }
+                });
+            })
+            videojs.options.flash.swf = "/static/assets/video/video-js.swf";
+
+            
+                    });
+    </script>
 {{end}}
