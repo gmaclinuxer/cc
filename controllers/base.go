@@ -1,12 +1,13 @@
 package controllers
 
 import (
-	"net/url"
+	"reflect"
 	"fmt"
-	"time"
+	"net/url"
 	"strconv"
 	"strings"
-	
+	"time"
+
 	"github.com/astaxie/beego"
 
 	"github.com/shwinpiocess/cc/models"
@@ -15,25 +16,29 @@ import (
 
 type BaseController struct {
 	beego.Controller
-	controllerName string
-	actionName     string
-	user           *models.User
+//	controllerName string
+//	actionName     string
+//	user           *models.User
 	userId         int
 	userName       string
-	pageSize       int
-	appCount       int
+	
+	requestPath string
+	today string
+	
+	firstApp bool
+	firstSet bool
+	firtModule bool
+	defaultAppId string
+	defaultAppName string
 }
 
 func (this *BaseController) Prepare() {
-	this.pageSize = 20
-	controllerName, actionName := this.GetControllerAndAction()
-	this.controllerName = strings.ToLower(controllerName[0 : len(controllerName)-10])
-	this.actionName = strings.ToLower(actionName)
+	this.requestPath = this.Ctx.Input.URL()
+	fmt.Println("requestPath=", this.requestPath, "typeof requestPath", reflect.TypeOf(this.requestPath))
+	this.today = time.Now().Format("20060102")
+	
 	this.auth()
 
-	this.Data["path"] = this.Ctx.Request.RequestURI
-	this.Data["today"] = time.Now().Format("20060102")
-	
 	var fields []string
 	var sortby []string
 	var order []string
@@ -45,31 +50,41 @@ func (this *BaseController) Prepare() {
 	fmt.Println("query=", query)
 
 	apps, _ := models.GetAllApp(query, fields, sortby, order, offset, limit)
-	this.appCount = len(apps)
 	
-	var defaultAppId int
-	var defaultAppName string
-	if this.appCount > 0 {
-		defaultAppId, _ = strconv.Atoi(this.Ctx.GetCookie("defaultAppId"))
-		defaultAppName =  this.Ctx.GetCookie("defaultAppName")
-		if app, _:= models.GetAppById(defaultAppId); app == nil {
-			defaultApp := apps[0].(models.App)
-			defaultAppId = defaultApp.Id
-			defaultAppName = defaultApp.ApplicationName
-			this.Ctx.SetCookie("defaultAppId", strconv.Itoa(defaultAppId))
-			this.Ctx.SetCookie("defaultAppName", url.QueryEscape(defaultAppName))
-		} else {
-			defaultAppName, _ = url.QueryUnescape(defaultAppName)
+	if len(apps) > 0 {
+		this.defaultAppId = this.Ctx.GetCookie("defaultAppId")
+		this.defaultAppName = this.Ctx.GetCookie("defaultAppName")
+		
+		if defaultAppId, err := strconv.Atoi(this.defaultAppId); err == nil {
+			if _, err := models.GetAppById(defaultAppId); err != nil {
+				defaultApp := apps[0].(models.App)
+				this.defaultAppId = strconv.Itoa(defaultApp.Id)
+				this.defaultAppName = defaultApp.ApplicationName
+				this.Ctx.SetCookie("defaultAppId", this.defaultAppId)
+				this.Ctx.SetCookie("defaultAppName", url.QueryEscape(this.defaultAppName))
+			} else {
+				this.defaultAppName, _ = url.QueryUnescape(this.defaultAppName)
+			}
 		}
+	} else {
+		this.firstApp = true
+		this.firstSet = true
+		this.firtModule = true
 	}
-	this.Data["defaultAppId"] = defaultAppId
-	this.Data["defaultAppName"] = defaultAppName
+	
+	this.Data["requestPath"] = this.requestPath
+	this.Data["today"] = this.today
+	this.Data["defaultAppId"] = this.defaultAppId
+	this.Data["defaultAppName"] = this.defaultAppName
 	this.Data["apps"] = apps
-	this.Data["curRoute"] = this.controllerName + "." + this.actionName
-	this.Data["curController"] = this.controllerName
-	this.Data["curAction"] = this.actionName
-	this.Data["loginUserId"] = this.userId
-	this.Data["loginUserName"] = this.userName
+	this.Data["firstApp"] = this.firstApp
+	this.Data["firstSet"] = this.firstSet
+	this.Data["firstModule"] = this.firtModule
+//	this.Data["curRoute"] = this.controllerName + "." + this.actionName
+//	this.Data["curController"] = this.controllerName
+//	this.Data["curAction"] = this.actionName
+//	this.Data["loginUserId"] = this.userId
+//	this.Data["loginUserName"] = this.userName
 }
 
 func (this *BaseController) getClientIP() string {
@@ -101,12 +116,12 @@ func (this *BaseController) auth() {
 			if err == nil && password == utils.Md5([]byte(this.getClientIP()+"|"+user.Password+user.Salt)) {
 				this.userId = user.Id
 				this.userName = user.UserName
-				this.user = user
+//				this.user = user
 			}
 		}
 	}
 
-	if this.userId == 0 && (this.controllerName != "main" || (this.controllerName == "main" && this.actionName != "logout" && this.actionName != "login")) {
+	if this.userId == 0 && this.requestPath != beego.URLFor("MainController.Login") && this.requestPath != beego.URLFor("MainController.Logout") {
 		this.redirect(beego.URLFor("MainController.Login"))
 	}
 }
