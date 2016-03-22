@@ -106,7 +106,14 @@ func (this *AppController) DeleteApp() {
 }
 
 func (this *AppController) TopologyIndex() {
-	this.TplName = "topology/set.html"
+	if this.defaultApp.Level == 3 {
+		topo, err := models.GetAppTopoById(this.defaultApp.Id)
+		this.Data["topo"] = topo
+		fmt.Println("topo=", topo, "err=", err)
+		this.TplName = "topology/set.html"
+	} else {
+		this.TplName = "topology/index.html"
+	}
 }
 
 // 切换默认业务
@@ -133,4 +140,15 @@ func (this *AppController) SetDefaultApp() {
 // 快速分配
 func (this *AppController) QuickImport() {
 	this.TplName = "host/quickImport.html"
+}
+
+func (this *AppController) GetMainterners() {
+	var uinList = [...]int{10001, 10002}
+	var UserNameList = [...]string{"张三", "李四"}
+	var mainterners = make(map[string]interface{})
+	mainterners["uinList"] = uinList
+	mainterners["UserNameList"] = UserNameList
+
+	this.Data["json"] = mainterners
+	this.ServeJSON()
 }
