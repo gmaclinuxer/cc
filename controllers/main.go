@@ -16,21 +16,12 @@ type MainController struct {
 }
 
 func (this *MainController) Index() {
-//	this.Data["today"] = time.Now().Format("20060102")
-//	num, apps, err := models.GetApps(this.userId)
-//	fmt.Println(apps)
-//	if err == nil {
-//		if num > 0{
-//			this.TplName = "index.html"
-//		} else {
-//			this.redirect("/app/index")
-//		}
-//	}
-	fmt.Println(this.Data)
-	this.Data["no_apps"] = false
-	this.Data["defaultAppName"] = ""
-	this.Data["defaultAppId"] = 0
-	this.TplName = "index.html"
+	fmt.Println("this.firstApp=", this.firstApp)
+	if this.firstApp {
+		this.TplName = "app/help.html"
+	} else {
+		fmt.Println("2222222222222")
+	}
 }
 
 // 登录
