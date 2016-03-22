@@ -59,18 +59,44 @@ func GetAppTopoById(id int) (ml []interface{}, err error) {
 	query["default"] = "0"
 	
 	
-	s, err := GetAllSet(query, fields, sortby, order, offset, limit)
-	for _, v := range s {
-		m := make(map[string]interface{})
-		m["id"] = v.(Set).SetID
-		m["text"] = v.(Set).SetName
-		m["spriteCssClass"] = "c-icon icon-group"
-		m["type"] = "set"
-		m["expanded"] = false
-		m["number"] = 32
-//		m["items"] = make([...]interface{})
-		ml = append(ml, m)
+	
+	if sets, err := GetAllSet(query, fields, sortby, order, offset, limit); err == nil {
+		for _, set := range sets {
+			s := make(map[string]interface{})
+			s["id"] = set.(Set).SetID
+			s["text"] = set.(Set).SetName
+			s["spriteCssClass"] = "c-icon icon-group"
+			s["type"] = "set"
+			s["expanded"] = false
+			s["number"] = 32
+			var items []interface{}
+			var fields []string
+			var sortby []string
+			var order []string
+			var query map[string]string = make(map[string]string)
+			var limit int64 = 0
+			var offset int64 = 0
+	
+			query["application_id"] = strconv.Itoa(id)
+			query["set_id"] = strconv.Itoa(set.(Set).SetID)
+			if mods, err := GetAllModule(query, fields, sortby, order, offset, limit); err == nil {
+				for _, mod := range mods {
+					m := make(map[string]interface{})
+					m["id"] = mod.(Module).Id
+					m["text"] = mod.(Module).ModuleName
+					m["spriteCssClass"] = "c-icon icon-modal"
+					m["type"] = "module"
+					m["operator"] = mod.(Module).Operator
+					m["bakoperator"] = mod.(Module).BakOperator
+					m["number"] = 32
+					items = append(items, m)
+				}
+				s["items"] = items
+			}
+			ml = append(ml, s)
+		}
 	}
+	
 	return
 }
 
