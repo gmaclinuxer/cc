@@ -1,201 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>拓扑管理</title>
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <link href="/static/assets/jquery-ui-1.11.0.custom/jquery-ui.css?version=20160315" rel="stylesheet">
-    <link href="/static/assets/bootstrap-3.3.4/css/bootstrap.min.css?version=20160315" rel="stylesheet" type="text/css" />
-    <link href="/static/assets/kendoui-2015.2.624/styles/kendo.common.min.css?version=20160315" rel="stylesheet" type="text/css" />
-    <link href="/static/assets/kendoui-2015.2.624/styles/kendo.default.min.css?version=20160315" rel="stylesheet" type="text/css" />
-    <link href="/static/assets/font-awesome/css/font-awesome.min.css?version=20160315" rel="stylesheet" type="text/css" />
-    <link href="/static/css/AdminLTE.min.css?version=20160315" rel="stylesheet" type="text/css" />
-    <link href="/static/css/skin-blue.min.css?version=20160315" rel="stylesheet" type="text/css" />
-    <link href="/static/assets/mCustomScrollbar-3.0.9/jquery.mCustomScrollbar.css?version=20160315" rel="stylesheet">
-    <link href="/static/assets/artDialog-6.0.4/css/ui-dialog.css?version=20160315" rel="stylesheet">
-    <link href="/static/bk/css/bk_base.css?version=20160315" rel="stylesheet" type="text/css">
-    <link href="/static/assets/select2-3.5.2/select2.css?version=20160315" rel="stylesheet" />
-    <link rel="stylesheet" type="text/css" href="/static/assets/multiselect/jquery.multiselect.css?version=20160315" />
-    <link rel="stylesheet" type="text/css" href="/static/assets/multiselect/jquery.multiselect.filter.css?version=20160315" />
-    <link rel="stylesheet" type="text/css" href="/static/assets/selectmenu/jquery-ui.css?version=20160315" />
-    <link rel="stylesheet" type="text/css" href="/static/assets/icheck-1.x/skins/all.css?version=20160315" />
-    <link href="/static/css/index.css?version=20160315" rel="stylesheet" type="text/css" />
-    <link href="/static/assets/intro/introjs.css?version=20160315" rel="stylesheet" type="text/css" />
-    <!--[if lt IE 9]>
-    <script src="/static/js/html5shiv.min.js?version=20160315"></script>
-    <script src="/static/js/respond.min.js?version=20160315"></script>
-    <![endif]-->
-    <script src="/static/assets/js/jquery-1.10.2.min.js?version=20160315"></script>
-    <script src="/static/assets/bootstrap-3.3.4/js/bootstrap.min.js?version=20160315"></script>
-    <script src="/static/assets/kendoui-2015.2.624/js/kendo.all.min.js?version=20160315"></script>
-    <script src="/static/assets/artDialog-6.0.4/dist/dialog-min.js?version=20160315"></script>
-    <script type='text/javascript'>
-        (function(w){
-            window.onerror = function(){return true;};            w.cookie = {
-                get : function(name){
-                    if(document.cookie.length>0){
-                        name += '=';
-                        var allCookie = document.cookie;
-                        var startIndex = allCookie.indexOf(name);
-                        if(startIndex > -1){
-                            if(startIndex > 1){
-                                name = '; '+name;
-                                startIndex = allCookie.indexOf(name)+name.length;
-                            }else{
-                                startIndex = startIndex+name.length;
-                            }
-                        }else{
-                            return '';
-                        }
-
-                        var endIndex = allCookie.indexOf(';', startIndex);
-                        if(endIndex === -1){
-                            endIndex = document.cookie.length;
-                        }
-                        var value = decodeURIComponent(allCookie.substring(startIndex, endIndex));
-                        return value;
-                    }
-
-                    return '';
-                },
-
-                set : function(name, value, expires){
-                    var exdate = new Date();
-                    if(expires!=null){
-                        exdate.setTime(exdate.getTime() + expires*1000);
-                    }
-                    document.cookie = name +'='+ encodeURIComponent(value) + (expires==null ? ';path=/' : ';expires='+exdate.toUTCString()+';path=/');
-                }
-            };
-
-        })(window);
-
-
-        $(document).ready(function(){
-            $.ajaxSetup({
-                beforeSend : function(xhr){
-                    xhr.setRequestHeader('Token', cookie.get('token'));
-                },
-                complete:function(xhr,response)
-                {
-                    if(xhr.getResponseHeader('Timeout') == 'true')
-                    {
-                        window.location.href="/welcome/logout";
-                        return;
-                    }
-                }
-
-            });
-
-            //鼠标点击存储cookie
-            $('.c-sidebar-toggle').on('click',function(){
-                var className = $('body').prop('class');
-                var isCollapse = className.indexOf('sidebar-collapse') == -1 ? true:false;
-                if(isCollapse){
-                    cookie.set('isCollapse',1);
-                }else{
-                    cookie.set('isCollapse',0);
-            }
-            });
-
-        });
-    </script>
-</head>
-
-<body class="skin-blue sidebar-mini" id="index">
-<div class="wrapper">
-    <!-- 头部 -->
-    <header class="main-header">
-        <!-- 头部左侧Logo -->
-        <a href="/" class="logo">
-            <img src="/static/img/logo.png" alt="" height="35">
-        </a>
-        <!-- 头部右侧Navbar -->
-        <nav class="navbar navbar-static-top" role="navigation">
-            <a href="#" title="收起" class="c-sidebar-toggle" data-toggle="offcanvas" role="button">
-                <span class="sr-only">Toggle navigation</span>
-            </a>
-            <!-- 头部右侧 Menu -->
-            <div class="navbar-custom-menu">
-                <ul class="nav navbar-nav">
-                    <!-- 搜索 -->
-                    <li class="hidden-sm hidden-xs pr50">
-                        <form target='_self' action="/host/hostQuery" method='post' id="quick_search">
-                            <div class="form-group has-feedback" id="speed_search_input">
-                                <!-- <input class="form-control mt10" type="text" value="" placeholder="快速查询"> -->
-                                <textarea class="search-textarea" placeholder="快速查询" id="search-textarea"></textarea>
-                                <input type="hidden" id="IfInnerIPexact" value="">
-                                <input type="hidden" id="IfOuterexact" value="">
-                                <span class="glyphicon glyphicon-search form-control-feedback search-btn" id ="speed_search" aria-hidden="true"></span>
-                            </div>
-                        </form>
-                    </li>
-                    <!-- 帮助 -->
-                    <!--                    <li>-->
-                    <!--                        <a href="/welcome/help" class="c-nav-help">-->
-                    <!--                            <i class="fa fa-question-circle mr5 f20"></i>-->
-                    <!--                            <span>帮助</span>-->
-                    <!--                        </a>-->
-                    <!--                    </li>-->
-                    <!-- 帮助 -->
-                    <li>
-                        <a href="javascript:void(0);" class="c-nav-help dropdown-toggle" data-toggle="dropdown">
-<!--                            <i class="fa fa-question-circle mr5 f20"></i>-->
-                            <span class="question-icon mr5"></span>
-                            <span>帮助 <i class='caret'></i></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li title="配置平台概念视频"><a id="help-btn" href="javascript:void(0);">概念视频</a></li>
-                            <li title="将主机从配置平台移除"><a id="help-btn1" href="javascript:void(0);">主机移除</a></li>
-                            <li title="将主机放入配置平台"><a id="help-btn2" href="javascript:void(0);">主机放入</a></li>
-                            <li title="同一开发商下业务间转移主机"><a id="help-btn3" href="javascript:void(0);">转移主机</a></li>
-                        </ul>
-                    </li>
-                    <!-- 业务 -->
-                                                                                <li id="chooseBusiness" class="dropdown">
-                                                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">
-                                <span class="first-letter mr5" title="ddddddddd">d</span>
-                                <span class="nav-group-name">ddddddddd<i class='caret'></i></span>
-                            </a>
-                            <ul class="dropdown-menu business-menu">
-                                                                    <li ><a class="defaultApp" value="4822">y<span class="text-warning">(0)</span></a></li>
-                                                                    <li ><a class="defaultApp" value="4823">球球笨笨哥<span class="text-warning">(0)</span></a></li>
-                                                                    <li class="active"><a class="defaultApp" value="4824">ddddddddd<span class="text-warning">(0)</span></a></li>
-                                                            </ul>
-                                            </li>
-                </ul>
-            </div>
-        </nav>
-    </header>
-    <!-- 左侧菜单 -->
-    <aside class="main-sidebar">
-        <section class="sidebar">
-            <!-- 菜单 -->
-            <ul class="sidebar-menu">
-                <!-- Optionally, you can add icons to the links -->
-                <li class=""><a href="/welcome/index"><i class="fa fa-dashboard"></i> <span>总览</span></a></li>
-                <li id="hostmng" class=""><a href="/host/hostQuery"><i class="fa fa-desktop"></i> <span>主机管理</span></a></li>
-                <li id="apptopo" class="active">
-                    <a href="javascript:void(0)"><i class="fa fa-database"></i> <span>拓扑配置</span> <i class="fa fa-angle-left pull-right"></i></a>
-                    <ul class="treeview-menu">
-                        <li class="active" ><a href="/topology/index"><i class="fa fa-sitemap"></i>树状视图</a></li>
-                        <li class="" ><a href="/topology/topolist"><i class="fa fa-list-ul"></i>列表视图</a></li>
-                    </ul>
-                </li>
-                <li id="process" class=""><a href="/process/index"><i class="fa fa-desktop"></i> <span>进程管理</span></a></li>
-                <li class=""><a href="/app/index"><i class="fa fa-puzzle-piece"></i> <span>业务管理</span></a></li>
-                <li id="hostdis" class=""><a href="/host/quickImport"><i class="fa fa-graduation-cap"></i> <span>快速分配</span></a></li>
-                <!--              <li class="treeview ">
-                    <a href="javascritp:void(0)"><i class="fa fa-graduation-cap"></i> <span>主机操作</span> <i class="fa fa-angle-left pull-right"></i></a>
-                    <ul class="treeview-menu">
-                        <li style="display:none" class="treeview "><a href="/host/quickBuy"><i class="fa fa-circle-o"></i>一键购买</a></li>
-                        <li class="treeview "><a href="/host/quickImport"><i class="fa fa-circle-o"></i>快速分配</a></li>
-                    </ul>
-                </li>　-->
-            </ul>
-        </section>
-    </aside>
-    <!-- 左侧菜单 结束 -->
+{{template "base/base.html" .}}
+{{define "head"}}
+        <title>拓扑管理</title>
+{{end}}
+{{define "content"}}
     <!-- 主面板Content -->
 <link href="/static/assets/bootstrap-switch-master/dist/css/bootstrap3/bootstrap-switch.css" rel="stylesheet">
 <link href="/static/assets/select2-3.5.2/select2.css" rel="stylesheet">
@@ -559,29 +366,19 @@
 <script src="/static/assets/bootstrap-switch-master/dist/js/bootstrap-switch.js" rel="stylesheet"></script>
 <script src="/static/js/app.min.js"></script>
 <script src="/static/assets/intro/intro.js"></script>
-<script src="/static/js/topo.js?version=20160315"></script>
+<script src="/static/js/topo.js?version={{.today}}"></script>
 <script src="/static/assets/select2-3.5.2/select2.js"></script>
 <script >
-    //var appId = '4824';
-    //var appName = 'ddddddddd';
-    //var topo = [{"id":"5221","text":"\u7a7a\u95f2\u673a\u6c60","spriteCssClass":"c-icon icon-group hide","type":"set","expanded":true,"number":32,"items":[]}];
-    //var level = 2;
-    //var desetid = 5221;
-    //var defaultapp = 0;
-    //var emptys = 1;
-    //var firstset = 0;
-    //var firstmodule = 1;
-    //var firstapp = 0;
-    var appId = '4863';
-    var appName = 'y';
-    var topo = [];
-    var level = 3;
-    var desetid = 0;
+    var appId = '5170';
+    var appName = 'b';
+    var topo = [{"id":"5585","text":"\u7a7a\u95f2\u673a\u6c60","spriteCssClass":"c-icon icon-group hide","type":"set","expanded":true,"number":32,"items":[]}];
+    var level = 2;
+    var desetid = 5585;
     var defaultapp = 0;
-    var emptys = 0;
-    var firstset = 1;
+    var emptys = 1;
+    var firstset = 0;
     var firstmodule = 0;
-    var firstapp = 0;
+    var firstapp = {{.firstApp}};
 </script>
     <div class="none video-content">
         <div class="content">
@@ -628,7 +425,7 @@
     <link href="/static/assets/video/video-js.css" rel="stylesheet" type="text/css">
     <script src="/static/assets/video/video.js"></script>
     </script>
-    <script src="/static/js/common.js?version=20160315"></script>
+    <script src="/static/js/common.js?version={{.today}}"></script>
     <!-- 项目需要引用的js文件 -->
     <script type='text/javascript'>
 
@@ -692,5 +489,4 @@
             });
                     });
     </script>
-</body>
-</html>
+{{end}}
