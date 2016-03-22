@@ -20,7 +20,7 @@ func (this *MainController) Index() {
 	if this.firstApp {
 		this.TplName = "app/help.html"
 	} else {
-		fmt.Println("2222222222222")
+		this.TplName = "index.html"
 	}
 }
 
