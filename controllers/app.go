@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"strings"
+	"fmt"
 	"net/url"
 	"strconv"
-	"fmt"
-	
+	"strings"
+
 	"github.com/shwinpiocess/cc/models"
 )
 
@@ -16,10 +16,10 @@ type AppController struct {
 func (this *AppController) Index() {
 	fmt.Println("--------------------------------------------->")
 	fmt.Println(this.Data)
-	if this.appCount > 0 {
-		this.TplName = "app/index.html"
-	} else {
+	if this.firstApp {
 		this.TplName = "app/help.html"
+	} else {
+		this.TplName = "app/index.html"
 	}
 }
 
@@ -35,9 +35,9 @@ func (this *AppController) AddApp() {
 		app.ApplicationName = strings.TrimSpace(this.GetString("ApplicationName"))
 		app.LifeCycle = strings.TrimSpace(this.GetString("LifeCycle"))
 		app.OwnerId = this.userId
-		
+
 		out := make(map[string]interface{})
-		
+
 		if Id, err := models.AddApp(app); err != nil {
 			fmt.Println("err=", err)
 			out["errInfo"] = "同名的业务已经存在！"
@@ -45,18 +45,18 @@ func (this *AppController) AddApp() {
 			out["errCode"] = "0006"
 			this.jsonResult(out)
 		} else {
-			this.Ctx.SetCookie("defaultAppId", strconv.Itoa(Id))
+			this.Ctx.SetCookie("defaultAppId", strconv.FormatInt(Id, 10))
 			this.Ctx.SetCookie("defaultAppName", url.QueryEscape(app.ApplicationName))
-			
+
 			var fields []string
 			var sortby []string
 			var order []string
 			var query map[string]string = make(map[string]string)
 			var limit int64 = 0
 			var offset int64 = 0
-		
+
 			query["owner_id"] = strconv.Itoa(this.userId)
-		
+
 			apps, _ := models.GetAllApp(query, fields, sortby, order, offset, limit)
 			if len(apps) > 1 {
 				out["success"] = true
@@ -68,27 +68,27 @@ func (this *AppController) AddApp() {
 				this.jsonResult(out)
 			}
 		}
-		
-//		this.Ctx.SetCookie("defaultAppId", strconv.Itoa(app.Id))
-//		this.Ctx.SetCookie("defaultAppName", url.QueryEscape(app.ApplicationName))
-		
-//		cnt, err := models.GetAppCountByUserId(this.userId)
-//		fmt.Println("cnt=", cnt, "err=", err)
-//		if err == nil {
-//			if cnt > 1 {
-//				out["success"] = true
-//				out["gotopo"] = 0
-//				this.jsonResult(out)
-//			}
 
-//			out["success"] = true
-//			out["gotopo"] = 1
-//			this.jsonResult(out)
-//		}
-//		out["success"] = false
-//		out["errInfo"] = err.Error()
-//		out["errCode"] = "0008"
-//		this.jsonResult(out)
+		//		this.Ctx.SetCookie("defaultAppId", strconv.Itoa(app.Id))
+		//		this.Ctx.SetCookie("defaultAppName", url.QueryEscape(app.ApplicationName))
+
+		//		cnt, err := models.GetAppCountByUserId(this.userId)
+		//		fmt.Println("cnt=", cnt, "err=", err)
+		//		if err == nil {
+		//			if cnt > 1 {
+		//				out["success"] = true
+		//				out["gotopo"] = 0
+		//				this.jsonResult(out)
+		//			}
+
+		//			out["success"] = true
+		//			out["gotopo"] = 1
+		//			this.jsonResult(out)
+		//		}
+		//		out["success"] = false
+		//		out["errInfo"] = err.Error()
+		//		out["errCode"] = "0008"
+		//		this.jsonResult(out)
 	}
 }
 
