@@ -4,18 +4,36 @@
                     <!-- 菜单 -->
                     <ul class="sidebar-menu">
                         <!-- Optionally, you can add icons to the links -->
-                        <li {{if eq .path "/welcome/index"}}class="active"{{else}}class=""{{end}}><a href="/welcome/index"><i class="fa fa-dashboard"></i> <span>总览</span></a></li>
-                        <li id="hostmng" {{if eq .path "/host/hostQuery"}}class="active"{{else}}class=""{{end}}><a href="/host/hostQuery"><i class="fa fa-desktop"></i> <span>主机管理</span></a></li>
+                        <li {{if eq .requestPath "/welcome/index"}}class="active"{{else}}class=""{{end}}><a href="/welcome/index"><i class="fa fa-dashboard"></i> <span>总览</span></a></li>
+                        <li id="hostmng" {{if eq .requestPath "/host/hostQuery"}}class="active"{{else}}class=""{{end}}><a href="/host/hostQuery"><i class="fa fa-desktop"></i> <span>主机管理</span></a></li>
+                        {{if eq .requestPath "/topology/index"}}
+                        <li id="apptopo" class="active">
+                            <a href="javascript:void(0)"><i class="fa fa-database"></i> <span>拓扑配置</span> <i class="fa fa-angle-left pull-right"></i></a>
+                            <ul class="treeview-menu">
+                                <li class="active"><a href="/topology/index"><i class="fa fa-sitemap"></i>树状视图</a></li>
+                                <li class=""><a href="/topology/topolist"><i class="fa fa-list-ul"></i>列表视图</a></li>
+                            </ul>
+                        </li>
+                        {{else if  eq .requestPath "/topology/topolist"}}
+                        <li id="apptopo" class="active">
+                            <a href="javascript:void(0)"><i class="fa fa-database"></i> <span>拓扑配置</span> <i class="fa fa-angle-left pull-right"></i></a>
+                            <ul class="treeview-menu">
+                                <li class=""><a href="/topology/index"><i class="fa fa-sitemap"></i>树状视图</a></li>
+                                <li class="active"><a href="/topology/topolist"><i class="fa fa-list-ul"></i>列表视图</a></li>
+                            </ul>
+                        </li>
+                        {{else}}
                         <li id="apptopo" class="">
                             <a href="javascript:void(0)"><i class="fa fa-database"></i> <span>拓扑配置</span> <i class="fa fa-angle-left pull-right"></i></a>
                             <ul class="treeview-menu">
-                                <li {{if eq .path "/topology/index"}}class="active"{{else}}class=""{{end}}><a href="/topology/index"><i class="fa fa-sitemap"></i>树状视图</a></li>
-                                <li {{if eq .path "/topology/topolist"}}class="active"{{else}}class=""{{end}}><a href="/topology/topolist"><i class="fa fa-list-ul"></i>列表视图</a></li>
+                                <li class=""><a href="/topology/index"><i class="fa fa-sitemap"></i>树状视图</a></li>
+                                <li class=""><a href="/topology/topolist"><i class="fa fa-list-ul"></i>列表视图</a></li>
                             </ul>
                         </li>
-                        <li id="process" {{if eq .path "/process/index"}}class="active"{{else}}class=""{{end}}><a href="/process/index"><i class="fa fa-desktop"></i> <span>进程管理</span></a></li>
-                        <li {{if eq .path "/app/index"}}class="active"{{else}}class=""{{end}}><a href="/app/index"><i class="fa fa-puzzle-piece"></i> <span>业务管理</span></a></li>
-                        <li id="hostdis" {{if eq .path "/host/hostQuery"}}class="active"{{else}}class=""{{end}}><a href="/host/quickImport"><i class="fa fa-graduation-cap"></i> <span>快速分配</span></a></li>
+                        {{end}}
+                        <li id="process" {{if eq .requestPath "/process/index"}}class="active"{{else}}class=""{{end}}><a href="/process/index"><i class="fa fa-desktop"></i> <span>进程管理</span></a></li>
+                        <li {{if eq .requestPath "/app/index"}}class="active"{{else}}class=""{{end}}><a href="/app/index"><i class="fa fa-puzzle-piece"></i> <span>业务管理</span></a></li>
+                        <li id="hostdis" {{if eq .requestPath "/host/hostQuery"}}class="active"{{else}}class=""{{end}}><a href="/host/quickImport"><i class="fa fa-graduation-cap"></i> <span>快速分配</span></a></li>
                     </ul>
                 </section>
             </aside>
