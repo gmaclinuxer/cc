@@ -1,9 +1,8 @@
 package controllers
 
 import (
-	"reflect"
-	"fmt"
 	"net/url"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -16,9 +15,7 @@ import (
 
 type BaseController struct {
 	beego.Controller
-//	controllerName string
-//	actionName     string
-//	user           *models.User
+
 	userId         int
 	userName       string
 	
@@ -28,13 +25,12 @@ type BaseController struct {
 	firstApp bool
 	firstSet bool
 	firtModule bool
-	defaultAppId string
-	defaultAppName string
+	
+	defaultApp *models.App
 }
 
 func (this *BaseController) Prepare() {
 	this.requestPath = this.Ctx.Input.URL()
-	fmt.Println("requestPath=", this.requestPath, "typeof requestPath", reflect.TypeOf(this.requestPath))
 	this.today = time.Now().Format("20060102")
 	
 	this.auth()
@@ -47,23 +43,20 @@ func (this *BaseController) Prepare() {
 	var offset int64 = 0
 
 	query["owner_id"] = strconv.Itoa(this.userId)
-	fmt.Println("query=", query)
 
 	apps, _ := models.GetAllApp(query, fields, sortby, order, offset, limit)
 	
 	if len(apps) > 0 {
-		this.defaultAppId = this.Ctx.GetCookie("defaultAppId")
-		this.defaultAppName = this.Ctx.GetCookie("defaultAppName")
+		defaultAppId := this.Ctx.GetCookie("defaultAppId")
 		
-		if defaultAppId, err := strconv.Atoi(this.defaultAppId); err == nil {
-			if _, err := models.GetAppById(defaultAppId); err != nil {
+		if defaultAppId, err := strconv.Atoi(defaultAppId); err == nil {
+			if app, err := models.GetAppById(defaultAppId); err != nil {
 				defaultApp := apps[0].(models.App)
-				this.defaultAppId = strconv.Itoa(defaultApp.Id)
-				this.defaultAppName = defaultApp.ApplicationName
-				this.Ctx.SetCookie("defaultAppId", this.defaultAppId)
-				this.Ctx.SetCookie("defaultAppName", url.QueryEscape(this.defaultAppName))
+				this.defaultApp = &defaultApp
+				this.Ctx.SetCookie("defaultAppId", strconv.Itoa(this.defaultApp.Id))
+				this.Ctx.SetCookie("defaultAppName", url.QueryEscape(this.defaultApp.ApplicationName))
 			} else {
-				this.defaultAppName, _ = url.QueryUnescape(this.defaultAppName)
+				this.defaultApp = app
 			}
 		}
 	} else {
@@ -71,20 +64,15 @@ func (this *BaseController) Prepare() {
 		this.firstSet = true
 		this.firtModule = true
 	}
-	
+	fmt.Println("this.defaultApp=", this.defaultApp)
 	this.Data["requestPath"] = this.requestPath
 	this.Data["today"] = this.today
-	this.Data["defaultAppId"] = this.defaultAppId
-	this.Data["defaultAppName"] = this.defaultAppName
+
+	this.Data["defaultApp"] = this.defaultApp
 	this.Data["apps"] = apps
 	this.Data["firstApp"] = this.firstApp
 	this.Data["firstSet"] = this.firstSet
 	this.Data["firstModule"] = this.firtModule
-//	this.Data["curRoute"] = this.controllerName + "." + this.actionName
-//	this.Data["curController"] = this.controllerName
-//	this.Data["curAction"] = this.actionName
-//	this.Data["loginUserId"] = this.userId
-//	this.Data["loginUserName"] = this.userName
 }
 
 func (this *BaseController) getClientIP() string {
@@ -116,7 +104,6 @@ func (this *BaseController) auth() {
 			if err == nil && password == utils.Md5([]byte(this.getClientIP()+"|"+user.Password+user.Salt)) {
 				this.userId = user.Id
 				this.userName = user.UserName
-//				this.user = user
 			}
 		}
 	}
