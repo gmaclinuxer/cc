@@ -39,19 +39,21 @@
                             </li>
                             <!-- 业务 -->
                             <li id="chooseBusiness" class="dropdown">
+                                {{with .defaultApp}}
                                 <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">
-                                    <span class="first-letter mr5" title="{{.defaultAppName}}">{{substr .defaultAppName 0 1}}</span>
-                                    <span class="nav-group-name">{{.defaultAppName}}<i class='caret'></i></span>
+                                    <span class="first-letter mr5" title="{{$.defaultApp.ApplicationName}}">{{substr $.defaultApp.ApplicationName 0 1}}</span>
+                                    <span class="nav-group-name">{{$.defaultApp.ApplicationName}}<i class='caret'></i></span>
                                 </a>
                                 <ul class="dropdown-menu business-menu">
-                                    {{range $index, $elem := .apps}}
-                                    {{if eq $elem.ApplicationName $.defaultAppName}}
+                                    {{range $index, $elem := $.apps}}
+                                    {{if eq $elem.ApplicationName $.defaultApp.ApplicationName}}
                                     <li class="active"><a class="defaultApp" value="{{$elem.Id}}">{{$elem.ApplicationName}}<span class="text-warning">(0)</span></a></li>
                                     {{else}}
                                     <li ><a class="defaultApp" value="{{$elem.Id}}">{{$elem.ApplicationName}}<span class="text-warning">(0)</span></a></li>
                                     {{end}}
                                     {{end}}
                                 </ul>
+                                {{end}}
                             </li>
                         </ul>
                     </div>
