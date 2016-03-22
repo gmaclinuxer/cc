@@ -20,7 +20,7 @@ type Set struct {
 	Description   string    `orm:"column(description);size(255);null"`
 	EnviType      int      `orm:"column(envi_type)"`
 	LastTime      time.Time `orm:"column(last_time);type(timestamp);null"`
-	OpenStatus    int      `orm:"column(open_status)"`
+	OpenStatus    string      `orm:"column(open_status);size(255)"`
 	ParentID      int       `orm:"column(parent_id);null"`
 	ServiceStatus int      `orm:"column(service_status)"`
 	SetName       string    `orm:"column(set_name);size(255)"`
