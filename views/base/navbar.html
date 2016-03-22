@@ -45,7 +45,7 @@
                                 </a>
                                 <ul class="dropdown-menu business-menu">
                                     {{range $index, $elem := .apps}}
-                                    {{if eq $elem.Id $.defaultAppId}}
+                                    {{if eq $elem.ApplicationName $.defaultAppName}}
                                     <li class="active"><a class="defaultApp" value="{{$elem.Id}}">{{$elem.ApplicationName}}<span class="text-warning">(0)</span></a></li>
                                     {{else}}
                                     <li ><a class="defaultApp" value="{{$elem.Id}}">{{$elem.ApplicationName}}<span class="text-warning">(0)</span></a></li>
