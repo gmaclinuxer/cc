@@ -31,4 +31,7 @@ func init() {
 	
 	// 快速分配
 	beego.Router("/host/quickImport", &controllers.AppController{}, "*:QuickImport")
+	
+	beego.Router("/host/importPrivateHostByExcel", &controllers.HostController{}, "post:ImportPrivateHostByExcel")
+	beego.Router("/host/getHost4QuickImport", &controllers.HostController{}, "post:GetHost4QuickImport")
 }
