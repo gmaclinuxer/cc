@@ -58,6 +58,11 @@ func (this *BaseController) Prepare() {
 			} else {
 				this.defaultApp = app
 			}
+		} else {
+			defaultApp := apps[0].(models.App)
+			this.defaultApp = &defaultApp
+			this.Ctx.SetCookie("defaultAppId", strconv.Itoa(this.defaultApp.Id))
+			this.Ctx.SetCookie("defaultAppName", url.QueryEscape(this.defaultApp.ApplicationName))
 		}
 	} else {
 		this.firstApp = true
