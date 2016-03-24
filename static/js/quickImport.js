@@ -168,7 +168,7 @@ $(document).ready(function() {
         toolbar: [//头部工具栏kendoToolBar,可以参考ui.toolbar的api
             {text:'分配至',name:'quickDistribute',attr:{"href":"javascript:void(0);","disabled":"true"}},
             {text:'导入主机',template:"<a class=\"k-button\" id=\"importPrivateHostByExcel\" href=\"javascript:void(0);\"><span class=\"\"></span>导入主机</a>"},
-            // {text:'下载模板',attr:{"id":"getCCTemplate","href":"/static/excel/importToCC.xls"}},
+            // {text:'下载模板',attr:{"id":"getCCTemplate","href":"/static/excel/importToCC.xlsx"}},
             {text:'删除',name:'delete',attr:{"href":"javascript:void(0);","disabled":"true"}},
             {text:'搜索',template:"<div class=\"c-import-search\"><input id=\"filter-private\" type=\"text\" class=\"form-control pull-left\" placeholder=\"搜索...\" /><i class=\"glyphicon glyphicon-search\"></i></div>"},
             {text:'切换',template:"<div class=\"switch host-state-switcher-parent\"><input type=\"checkbox\" name=\"host-state-witcher\" class=\"host-state-switcher\"></div>"}
@@ -830,7 +830,7 @@ $(document).ready(function() {
                          '</a>'+
                          '<span class="import-file-name ml15"></span>'+
                          '<p style="color:#666;padding:10px 0 0 5px;"></p>'+
-                         '<p class="text-warning">（温馨提示：1.文件类型只支持.xls;  2.<a href="/static/excel/importToCC.xls">下载模版</a>） </p>'+
+                         '<p class="text-warning">（温馨提示：1.文件类型只支持.xlsx;  2.<a href="/static/excel/importToCC.xlsx">下载模版</a>） </p>'+
                          // '<img src="/static/img/loading_2_24x24.gif" alt="" id="loader" style="display:none;">'+
                          '</form>'+
                          '</div>',
@@ -869,7 +869,7 @@ $(document).ready(function() {
                          '</a>'+
                          '<span class="import-file-name ml15"></span>'+
                          '<p style="color:#666;padding:10px 0 0 5px;"></p>'+
-                         '<p class="text-warning">（温馨提示：1.文件类型只支持.xls;  2.<a href="/static/excel/importToCmdb.xls">下载模版</a>） </p>'+
+                         '<p class="text-warning">（温馨提示：1.文件类型只支持.xlsx;  2.<a href="/static/excel/importToCmdb.xls">下载模版</a>） </p>'+
                          // '<img src="/static/img/loading_2_24x24.gif" alt="" id="loader" style="display:none;">'+
                          '</form>'+
                          '</div>',
