@@ -12,9 +12,9 @@ import (
 type Module struct {
 	Id            int    `orm:"column(id);auto"`
 	ModuleName    string `orm:"column(module_name);size(255)"`
-	Operator      int   `orm:"column(operator)"`
-	BakOperator   int   `orm:"column(bak_operator)"`
-	ApplicationId int   `orm:"column(application_id)"`
+	Operator      int    `orm:"column(operator)"`
+	BakOperator   int    `orm:"column(bak_operator)"`
+	ApplicationId int    `orm:"column(application_id)"`
 	Owner         int    `orm:"column(owner);null"`
 	SetId         int    `orm:"column(set_id);null"`
 }
@@ -147,5 +147,12 @@ func DeleteModule(id int) (err error) {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}
+	return
+}
+
+// 根据集群ID删除模块
+func DeleteModuleByAppId(id int) (num int64, err error) {
+	o := orm.NewOrm()
+	num, err = o.QueryTable("module").Filter("ApplicationId", id).Delete()
 	return
 }
