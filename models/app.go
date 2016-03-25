@@ -1,10 +1,10 @@
 package models
 
 import (
-	"strconv"
 	"errors"
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/astaxie/beego/orm"
@@ -16,7 +16,8 @@ type App struct {
 	ApplicationName string `orm:"column(application_name);size(255)"`
 	LifeCycle       string `orm:"column(life_cycle);size(255)"`
 	Level           int8   `orm:"column(level)"`
-	OwnerId         int   `orm:"column(owner_id)"`
+	OwnerId         int    `orm:"column(owner_id)"`
+	Default         bool   `orm:"column(default);null"`
 }
 
 func (t *App) TableName() string {
@@ -35,6 +36,72 @@ func AddApp(m *App) (id int64, err error) {
 	return
 }
 
+func AddDefApp(userId int) {
+	if ExistByName("资源池") {
+		return
+	}
+	defApp := new(App)
+	defApp.Type = 0
+	defApp.Level = 3
+	defApp.ApplicationName = "资源池"
+	defApp.LifeCycle = "公测"
+	defApp.OwnerId = userId
+	defApp.Default = true
+
+	o := orm.NewOrm()
+	if id, err := o.Insert(defApp); err == nil {
+		s := new(Set)
+		s.ApplicationID = int(id)
+		s.SetName = "空闲机池"
+		s.EnviType = 3
+		s.ServiceStatus = 1
+		s.Default = true
+		s.Owner = userId
+		if setId, err := AddSet(s); err == nil {
+			m := new(Module)
+			m.ApplicationId = int(id)
+			m.SetId = int(setId)
+			m.ModuleName = "空闲机"
+			m.Owner = userId
+			AddModule(m)
+		}
+	}
+	return
+}
+
+func GetDefAppByUserId(userId int) (info map[string]interface{}, err error) {
+	var app App
+	var set Set
+	var mod Module
+
+	info = make(map[string]interface{})
+	o := orm.NewOrm()
+
+	if err = o.QueryTable("app").Filter("OwnerId", userId).Filter("ApplicationName", "资源池").One(&app); err == nil {
+		fmt.Println("app=", app)
+		if err1 := o.QueryTable("set").Filter("ApplicationID", app.Id).One(&set); err1 == nil {
+			if err2 := o.QueryTable("module").Filter("ApplicationId", app.Id).Filter("SetId", set.SetID).One(&mod); err2 == nil {
+				fmt.Println("iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii app=", app, "set=", set, "mod=", mod)
+				fmt.Println("app.id", app.Id)
+				info["AppId"] = app.Id
+				info["AppName"] = app.ApplicationName
+				info["SetId"] = set.SetID
+				info["SetName"] = set.SetName
+				info["ModuleId"] = mod.Id
+				info["ModuleName"] = mod.ModuleName
+				return info, err
+			} else {
+				fmt.Println("err2", err2)
+			}
+		} else {
+			fmt.Println("err1=", err1)
+		}
+	} else {
+		fmt.Println("err=", err)
+	}
+	return
+}
+
 // GetAppById retrieves App by Id. Returns error if
 // Id doesn't exist
 func GetAppById(id int) (v *App, err error) {
@@ -46,28 +113,42 @@ func GetAppById(id int) (v *App, err error) {
 	return nil, err
 }
 
+func ExistByName(name string) bool {
+	o := orm.NewOrm()
+	return o.QueryTable("app").Filter("ApplicationName", name).Exist()
+}
+
 func GetAppTopoById(id int) (ml []interface{}, err error) {
-//	[{"id":"5524","text":"aaa","spriteCssClass":"c-icon icon-group","type":"set","expanded":false,"number":32,"items":[{"id":"7025","spriteCssClass":"c-icon icon-modal","text":"1","operator":"1842605324","bakoperator":"1842605324","type":"module","number":32}]}]
+	//	[{"id":"5524","text":"aaa","spriteCssClass":"c-icon icon-group","type":"set","expanded":false,"number":32,"items":[{"id":"7025","spriteCssClass":"c-icon icon-modal","text":"1","operator":"1842605324","bakoperator":"1842605324","type":"module","number":32}]}]
 	var fields []string
 	var sortby []string
 	var order []string
 	var query map[string]string = make(map[string]string)
 	var limit int64 = 0
 	var offset int64 = 0
-	
+
 	query["application_id"] = strconv.Itoa(id)
-	query["default"] = "0"
-	
-	
-	
+	app, _ := GetAppById(id)
+	if app.Level == 3 {
+		query["default"] = "0"
+	} else {
+		query["default"] = "1"
+	}
+
 	if sets, err := GetAllSet(query, fields, sortby, order, offset, limit); err == nil {
 		for _, set := range sets {
 			s := make(map[string]interface{})
 			s["id"] = set.(Set).SetID
 			s["text"] = set.(Set).SetName
-			s["spriteCssClass"] = "c-icon icon-group"
+			if app.Level == 3 {
+				s["spriteCssClass"] = "c-icon icon-group"
+				s["expanded"] = false
+			} else {
+				s["spriteCssClass"] = "c-icon icon-group hide"
+				s["expanded"] = true
+			}
 			s["type"] = "set"
-			s["expanded"] = false
+
 			s["number"] = 32
 			var items []interface{}
 			var fields []string
@@ -76,27 +157,112 @@ func GetAppTopoById(id int) (ml []interface{}, err error) {
 			var query map[string]string = make(map[string]string)
 			var limit int64 = 0
 			var offset int64 = 0
-	
+
 			query["application_id"] = strconv.Itoa(id)
 			query["set_id"] = strconv.Itoa(set.(Set).SetID)
 			if mods, err := GetAllModule(query, fields, sortby, order, offset, limit); err == nil {
 				for _, mod := range mods {
-					m := make(map[string]interface{})
-					m["id"] = mod.(Module).Id
-					m["text"] = mod.(Module).ModuleName
-					m["spriteCssClass"] = "c-icon icon-modal"
-					m["type"] = "module"
-					m["operator"] = mod.(Module).Operator
-					m["bakoperator"] = mod.(Module).BakOperator
-					m["number"] = 32
-					items = append(items, m)
+					if mod.(Module).ModuleName != "空闲机" {
+						m := make(map[string]interface{})
+						m["id"] = mod.(Module).Id
+						m["text"] = mod.(Module).ModuleName
+						m["spriteCssClass"] = "c-icon icon-modal"
+						m["type"] = "module"
+						m["operator"] = mod.(Module).Operator
+						m["bakoperator"] = mod.(Module).BakOperator
+						m["number"] = 32
+						items = append(items, m)
+					}
 				}
 				s["items"] = items
 			}
 			ml = append(ml, s)
 		}
 	}
-	
+
+	return
+}
+
+func GetEmptyById(id int) (info map[string]interface{}, err error) {
+	info = make(map[string]interface{})
+	var topo []interface{}
+	var setItems []interface{}
+	var emptyItems []interface{}
+	var app *App
+	var sets []interface{}
+	var mods []interface{}
+
+	// 1. 获取业务信息
+	if app, err = GetAppById(id); err != nil {
+		return
+	}
+
+	// 2.获取业务下集群信息，2级结构需要特殊处理
+	var fields []string
+	var sortby []string
+	var order []string
+	var query map[string]string = make(map[string]string)
+	var limit int64 = 0
+	var offset int64 = 0
+
+	query["application_id"] = strconv.Itoa(id)
+
+	if sets, err = GetAllSet(query, fields, sortby, order, offset, limit); err != nil {
+		return
+	}
+
+	query["application_id"] = strconv.Itoa(id)
+
+	if mods, err = GetAllModule(query, fields, sortby, order, offset, limit); err != nil {
+		return
+	}
+
+	for _, set := range sets {
+		s := set.(Set)
+		setItem := make(map[string]interface{})
+		setItem["id"] = s.SetID
+		setItem["appId"] = app.Id
+		setItem["Name"] = s.SetName
+		setItem["spriteCssClass"] = "c-icon icon-group fa-hide set"
+		setItem["type"] = "set"
+		setItem["expanded"] = false
+		setItem["number"], _ = GetHostCount(s.SetID, "SetID")
+		var modItems []interface{}
+		for _, mod := range mods {
+			m := mod.(Module)
+			if m.SetId == s.SetID {
+				modItem := make(map[string]interface{})
+				modItem["id"] = m.Id
+				modItem["appId"] = app.Id
+				modItem["Name"] = m.ModuleName
+				modItem["spriteCssClass"] = "c-icon icon-modal module"
+				modItem["type"] = "module"
+				modItem["number"], _ = GetHostCount(m.Id, "ModuleID")
+				modItems = append(modItems, modItem)
+				if m.ModuleName == "空闲机" {
+					emptyItems = append(emptyItems, modItem)
+				}
+			}
+		}
+		if !s.Default {
+			setItem["items"] = modItems
+			setItems = append(setItems, setItem)
+		}
+	}
+
+	topoItem := make(map[string]interface{})
+	topoItem["id"] = app.Id
+	topoItem["Name"] = app.ApplicationName
+	topoItem["type"] = "application"
+	topoItem["spriteCssClass"] = "c-icon icon-app application"
+	topoItem["expanded"] = true
+	topoItem["lvl"] = app.Level
+	topoItem["number"], _ = GetHostCount(app.Id, "ApplicationID")
+	topoItem["items"] = setItems
+	topo = append(topo, topoItem)
+	info["topo"] = topo
+	info["empty"] = emptyItems
+
 	return
 }
 
@@ -192,8 +358,11 @@ func UpdateAppById(m *App) (err error) {
 // DeleteApp deletes App by Id and returns error if
 // the record to be deleted doesn't exist
 func DeleteApp(id int) (err error) {
+	// TODO: 检测要删除业务下是否有主机
 	o := orm.NewOrm()
 	v := App{Id: id}
+	DeleteSetByAppId(id)
+	DeleteModuleByAppId(id)
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
