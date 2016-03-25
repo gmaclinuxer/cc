@@ -30,8 +30,14 @@ func init() {
 	beego.Router("/Module/newModule", &controllers.ModuleController{}, "*:NewModule")
 	
 	// 快速分配
-	beego.Router("/host/quickImport", &controllers.AppController{}, "*:QuickImport")
+	beego.Router("/host/quickImport", &controllers.HostController{}, "*:QuickImport")
+	beego.Router("host/hostQuery", &controllers.HostController{}, "*:HostQuery")
 	
+	beego.Router("/host/getHostById", &controllers.HostController{}, "post:GetHostById")
 	beego.Router("/host/importPrivateHostByExcel", &controllers.HostController{}, "post:ImportPrivateHostByExcel")
 	beego.Router("/host/getHost4QuickImport", &controllers.HostController{}, "post:GetHost4QuickImport")
+	beego.Router("/host/delPrivateDefaultApplicationHost", &controllers.HostController{}, "post:DelPrivateDefaultApplicationHost")
+	beego.Router("/host/quickDistribute", &controllers.HostController{}, "post:QuickDistribute")
+	beego.Router("/host/details", &controllers.HostController{}, "post:Details")
+	beego.Router("/host/resHostModule/", &controllers.HostController{}, "post:ResHostModule")
 }
