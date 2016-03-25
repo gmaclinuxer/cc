@@ -33,7 +33,7 @@
                         {{end}}
                         <li id="process" {{if eq .requestPath "/process/index"}}class="active"{{else}}class=""{{end}}><a href="/process/index"><i class="fa fa-desktop"></i> <span>进程管理</span></a></li>
                         <li {{if eq .requestPath "/app/index"}}class="active"{{else}}class=""{{end}}><a href="/app/index"><i class="fa fa-puzzle-piece"></i> <span>业务管理</span></a></li>
-                        <li id="hostdis" {{if eq .requestPath "/host/hostQuery"}}class="active"{{else}}class=""{{end}}><a href="/host/quickImport"><i class="fa fa-graduation-cap"></i> <span>快速分配</span></a></li>
+                        <li id="hostdis" {{if eq .requestPath "/host/quickImport"}}class="active"{{else}}class=""{{end}}><a href="/host/quickImport"><i class="fa fa-graduation-cap"></i> <span>快速分配</span></a></li>
                     </ul>
                 </section>
             </aside>
