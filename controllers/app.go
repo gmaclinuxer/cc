@@ -38,13 +38,37 @@ func (this *AppController) AddApp() {
 
 		out := make(map[string]interface{})
 
-		if Id, err := models.AddApp(app); err != nil {
-			fmt.Println("err=", err)
+		if models.ExistByName(app.ApplicationName) {
 			out["errInfo"] = "同名的业务已经存在！"
 			out["success"] = false
 			out["errCode"] = "0006"
 			this.jsonResult(out)
+		}
+		
+		if Id, err := models.AddApp(app); err != nil {
+			out["errInfo"] = err.Error()
+			out["success"] = false
+			out["errCode"] = "0006"
+			this.jsonResult(out)
 		} else {
+			s := new(models.Set)
+			s.ApplicationID = int(Id)
+			s.SetName = "空闲机池"
+			s.EnviType = 3
+			s.ServiceStatus = 1
+			s.Default = true
+			s.Owner = this.userId
+			if setId, err := models.AddSet(s); err == nil {
+				m := new(models.Module)
+				m.ApplicationId = int(Id)
+				m.SetId = int(setId)
+				m.ModuleName = "空闲机"
+				m.Owner = this.userId
+				models.AddModule(m)
+			}
+			
+			models.AddDefApp(this.userId)
+			
 			this.Ctx.SetCookie("defaultAppId", strconv.FormatInt(Id, 10))
 			this.Ctx.SetCookie("defaultAppName", url.QueryEscape(app.ApplicationName))
 
@@ -56,6 +80,7 @@ func (this *AppController) AddApp() {
 			var offset int64 = 0
 
 			query["owner_id"] = strconv.Itoa(this.userId)
+			query["default"] = strconv.FormatBool(false)
 
 			apps, _ := models.GetAllApp(query, fields, sortby, order, offset, limit)
 			if len(apps) > 1 {
@@ -106,12 +131,16 @@ func (this *AppController) DeleteApp() {
 }
 
 func (this *AppController) TopologyIndex() {
-	if this.defaultApp.Level == 3 {
+	
 		topo, err := models.GetAppTopoById(this.defaultApp.Id)
 		this.Data["topo"] = topo
 		fmt.Println("topo=", topo, "err=", err)
+	if this.defaultApp.Level == 3 {
+		this.Data["desetid"] = 0
 		this.TplName = "topology/set.html"
 	} else {
+		s := models.GetDesetidByAppId(this.defaultApp.Id)
+		this.Data["desetid"] = s.SetID
 		this.TplName = "topology/index.html"
 	}
 }
@@ -135,11 +164,6 @@ func (this *AppController) SetDefaultApp() {
 			this.jsonResult(out)
 		}
 	}
-}
-
-// 快速分配
-func (this *AppController) QuickImport() {
-	this.TplName = "host/quickImport.html"
 }
 
 func (this *AppController) GetMainterners() {
