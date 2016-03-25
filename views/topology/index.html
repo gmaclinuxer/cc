@@ -369,14 +369,14 @@
 <script src="/static/js/topo.js?version={{.today}}"></script>
 <script src="/static/assets/select2-3.5.2/select2.js"></script>
 <script >
-    var appId = '5170';
-    var appName = 'b';
-    var topo = [{"id":"5585","text":"\u7a7a\u95f2\u673a\u6c60","spriteCssClass":"c-icon icon-group hide","type":"set","expanded":true,"number":32,"items":[]}];
+    var appId = '{{.defaultApp.Id}}';
+    var appName = '{{.defaultApp.ApplicationName}}';
+    var topo = {{.topo}};
     var level = 2;
-    var desetid = 5585;
+    var desetid = {{.desetid}};
     var defaultapp = 0;
     var emptys = 1;
-    var firstset = 0;
+    var firstset = {{.firstSet}};
     var firstmodule = 0;
     var firstapp = {{.firstApp}};
 </script>
