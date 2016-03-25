@@ -1,0 +1,863 @@
+{{template "base/base.html" .}}
+{{define "head"}}
+        <title>主机查询-蓝鲸配置平台</title>
+{{end}}
+{{define "content"}}
+    <!-- 主面板Content -->
+<div class="content-wrapper">
+    <!-- 主面板 Header  -->
+    <!-- 主面板 Main-->
+    <section class="content">
+        <div class="host-sidebar-left">
+            <!-- 分布拓扑 -->
+            <div class="c-host-side" id="c_host_side">
+                <h4>拓扑视图</h4>
+                <!-- <form class="form-inline pl15 pr15 hide">
+                    <div class="form-group">
+                        <input id="key" class="form-control" />
+                    </div>
+                    <button type="submit" class="btn btn-default" id="searchBtn">查询</button>
+                </form> -->
+                <!-- <div class="pl15 pr15 f15">
+                    快速导航：<a class="btn btn-success btn-xs" href="/topology/index">添加集群</a>
+                    <a class="btn btn-success btn-xs" href="/topology/index">添加模块</a>
+                </div> -->
+                <div class="c-tree-box pl15 pr15">
+                    <div id="treeContainer" class="mt15"></div>
+                </div>
+                <!-- 空闲机池 -->
+                <div class="free-group pl15 pr15">
+                    <h4>空闲机池</h4>
+                    <div id="emptyContainer" class="mt15 k-widget k-treeview">
+                    </div>
+                </div>
+                <!-- /空闲机池 -->
+            </div>
+            <!-- /分布拓扑  -->
+            <div class="c-host-switch">
+                <span class="glyphicon glyphicon-menu-left c-host-switch-img"></span>
+            </div>
+        </div>
+        <div class="row host-main-right">
+            <div class="col-md-12">
+                <div class="c-search-box">
+                    <div class="panel-heading" id="collapseOneBtn">
+                        <h4 class="panel-title" style="    display: inline-block;">查询条件 </h4>
+                        <div class="c-collapse-btn-group">
+                            <button class="btn btn-success btn-xs" id="filter_module_mine">我</button>
+                            <button class="btn btn-success btn-xs" id="filter_module_all">ALL</button>
+                            <button class="btn btn-success btn-xs" id="filter_module_empty">空闲机</button>
+                            <span class="fa fa-angle-down" aria-hidden="true"></span>
+                        </div> 
+                    </h4>
+                    </div>
+                    <div id="collapseOne" class="panel-collapse collapse">
+                        <div class="search-content">
+                            <div class="col-lg-4">
+                                <div class="input-group pb10 input-group-height">
+                                    <label for="InnerIP" class="input-group-addon">内网IP：</label>
+                                    <textarea placeholder="请输入内网IP" value="" id="InnerIP" name="InnerIP" class="form-control"></textarea>
+                                    <label for="InnerIP" class="input-group-addon"><input type="checkbox" name="IfInnerIPexact">精确</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="input-group pb10 input-group-height">
+                                    <label for="OuterIP" class="input-group-addon">外网IP：</label>
+                                    <textarea placeholder="请输入外网IP" value="" id="OuterIP" name="OuterIP" class="form-control"></textarea>
+                                    <label for="OuterIP" class="input-group-addon"><input type="checkbox" name="IfOuterexact">精确</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="input-group pb10 input-group-height">
+                                    <label for="AssetID" class="input-group-addon">固资编号：</label>
+                                    <textarea placeholder="请输入固资编号" value="" id="AssetID" name="AssetID" class="form-control"></textarea>
+                                </div>
+                            </div>
+                                                        <div class="input-group col-xs-12 pb10 pl15 pr15">
+                                <div class="input-group-addon">模块名称</div>
+                                <select placeholder="(不选为全部)" class="select2_src form-control" multiple="" name="ModuleID" id="module_select" style="display: none;">
+                                    <option value="7236">空闲机</option><option value="7241">哈哈</option>                                </select>
+                            </div>
+                            <div class="col-lg-6" id="HostNameLabel" style="display:none;" >
+                                        <div class="input-group pb10 input-group-height">
+                                            <label class="input-group-addon">主机名称</label>
+                                            <textarea placeholder="请输入主机名称" value="" id="HostName" name="HostName" class="form-control"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6" id="SNLabel" style="display:none;" >
+                                        <div class="input-group pb10 input-group-height">
+                                            <label class="input-group-addon">SN</label>
+                                            <textarea placeholder="请输入SN" value="" id="SN" name="SN" class="form-control"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <!-- <div class="col-lg-6" id="c" style="display:none;">
+                                       <div class="input-group pb10 input-group-height">
+                                            <label class="input-group-addon">自动续费</label>
+                                            <div class="form-control">
+                                                <label class="mt10 iCheckbox"><input type="radio" name="AutoRenew" value="1"><span>是</span></label>
+                                                <label class="ml30 iCheckbox"><input type="radio" name="AutoRenew" value="0"><span>否</span></label>
+                                            </div>
+                                        </div>
+                                    </div> -->
+
+                                    <div class="col-lg-6" id="OperatorLabel" style="display:none;" >
+                                        <div class="input-group pb10 input-group-height">
+                                            <label class="input-group-addon">维护人</label>
+                                            <div class="form-control">
+                                                    <div style="width:100%;" class="mt5" id="Operator"></div>
+                                                    <div class="edit-area"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6" id="BakOperatorLabel" style="display:none;" >
+                                       <div class="input-group pb10 input-group-height">
+                                            <label class="input-group-addon">备份维护人</label>
+                                            <div class="form-control">
+                                                    <div style="width:100%;" class="mt5" id="BakOperator"></div>
+                                                    <div class="edit-area"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6" id="CreateTimeLabel" style="display:none;">
+                                       <div class="input-group pb10 input-group-height">
+                                            <label class="input-group-addon">创建时间</label>
+                                            <div class="form-control">
+                                                <input type="text" class=" mt5" id="CreateTime" placeholder="选择日期..." style="width:100%;">
+                                            </div>    
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6" id="DeadLineTimeLabel" style="display:none;">
+                                        <div class="input-group pb10 input-group-height">
+                                            <label class="input-group-addon">到期时间</label>
+                                            <div class="form-control">
+                                                <input type="text" class=" mt5" id="DeadLineTime" placeholder="选择日期..." style="width:100%;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6" id="DeviceClassLabel" style="display:none;">
+                                        <div class="input-group pb10 input-group-height">
+                                            <label class="input-group-addon">设备类型</label>
+                                            <div class="form-control">
+                                                    <div style="width:100%;" class="mt5" id="DeviceClass"></div>
+                                                    <div class="edit-area"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6" id="OSNameLabel" style="display:none;">
+                                        <div class="input-group pb10 input-group-height">
+                                            <label class="input-group-addon">操作系统</label>
+                                            <div class="form-control">
+                                                    <div style="width:100%;" class="mt5" id="OSName"></div>
+                                                    <div class="edit-area"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6" id="RegionLabel" style="display:none;">
+                                        <div class="input-group pb10 input-group-height">
+                                            <label class="input-group-addon">机房城市</label>
+                                            <div class="form-control">
+                                                    <div style="width:100%;" class="mt5" id="Region"></div>
+                                                    <div class="edit-area"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6" id="SourceLabel" style="display:none;">
+                                        <div class="input-group pb10 input-group-height">
+                                            <label class="input-group-addon">云区域</label>
+                                            <div class="form-control">
+                                                    <div style="width:100%;" class="mt5" id="Source"></div>
+                                                    <div class="edit-area"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6" id="StatusLabel" style="display:none;">
+                                        <div class="input-group pb10 input-group-height">
+                                            <label class="input-group-addon">运行状态</label>
+                                            <div class="form-control">
+                                                    <div style="width:100%;" class="mt5" id="Status"></div>
+                                                    <div class="edit-area"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+
+                                    <div class="clearfix"></div>
+                                    <div class="col-xs-12 text-center" style="float:none;">
+                                        <div class="topology-conditionMore">
+                                            <button class="btn btn-default mr10 conditionMore-button">更多条件<span class="glyphicon glyphicon-triangle-bottom"></span></button>
+                                            <div class="conditionMore-div tl">
+
+                                                <div class="close-div"><span class="button-cancel">×</span></div>
+                                                
+                                                <h5 class="mt0">必选条件</h5>
+                                                <div class="select selected">
+                                                    <div class="row">
+                                                        <div class="col-4"><label class="iCheckbox_square"><input type="checkbox" disabled="" checked="checked" / ><span>内网IP</span></label></div>
+                                                        <div class="col-4"><label class="iCheckbox_square"><input type="checkbox" checked="checked" disabled="" /><span>外网IP</span></label></div>
+                                                        <div class="col-4"><label class="iCheckbox_square"><input type="checkbox" checked="checked" disabled="" /><span>固资编号</span></label></div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-4"><label class="iCheckbox_square"><input type="checkbox" checked="checked" disabled="" /><span>集群名称</span></label></div>
+                                                        <div class="col-4"><label class="iCheckbox_square"><input type="checkbox" checked="checked" disabled="" /><span>模块名称</span></label></div>
+                                                    </div>
+                                                </div>
+                                                <h5>可选条件</h5>
+                                                <div class="select">
+                                                    <div class="row pb10">
+                                                        <div class="col-4"><label class="iCheckbox"><input type="checkbox"  data-rel="#HostNameLabel" /><span>主机名称</span></label></div>
+                                                        <div class="col-4"><label class="iCheckbox"><input type="checkbox"  data-rel="#SNLabel" /><span>SN</span></label></div>
+                                                        <div class="col-4"><label class="iCheckbox"><input type="checkbox"  data-rel="#SourceLabel" /><span>云区域</span></label></div>
+                                                        <!-- <div class="col-4"><label class="iCheckbox"><input type="checkbox" data-rel="#c" /><span>自动续费</span></label></div> -->
+                                                    </div>
+                                                    <div class="row pb10">
+                                                        <div class="col-4"><label class="iCheckbox"><input type="checkbox"  data-rel="#OperatorLabel" /><span>维护人</span></label></div>
+                                                        <div class="col-4"><label class="iCheckbox"><input type="checkbox"  data-rel="#BakOperatorLabel" /><span>备份维护人</span></label></div>
+                                                        <div class="col-4"><label class="iCheckbox"><input type="checkbox"  data-rel="#CreateTimeLabel" /><span>创建时间</span></label></div>
+                                                    </div>
+                                                    <div class="row pb10">
+                                                        <div class="col-4"><label class="iCheckbox"><input type="checkbox"  data-rel="#DeadLineTimeLabel" /><span>到期时间</span></label></div>
+                                                        <div class="col-4"><label class="iCheckbox"><input type="checkbox"  data-rel="#DeviceClassLabel" /><span>设备类型</span></label></div>
+                                                        <div class="col-4"><label class="iCheckbox"><input type="checkbox"  data-rel="#OSNameLabel" /><span>操作系统</span></label></div>
+                                                    </div>
+                                                    <div class="row pb10">
+                                                        <div class="col-4"><label class="iCheckbox"><input type="checkbox"  data-rel="#RegionLabel" /><span>机房城市</span></label></div>
+                                                        <div class="col-4"><label class="iCheckbox"><input type="checkbox"  data-rel="#StatusLabel" /><span>运行状态</span></label></div>
+                                                    </div>
+                                                                                                    
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-default" id="host_query_reset">重置</button>
+                                        <button class="btn btn-primary" id="host_query_submit">查询</button>                       
+                                    </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 主机列表 -->
+                <div class="c-edit-set">
+                    <h4 class="c-search-title">查询结果  <i class="fa fa-gear cc-column-edit"></i></h4>
+                    <div class="column-edit-block" style="display:none">
+                        <h4 class="pl15">主机显示字段
+                         <button class="btn btn-info mr10 edit-btn-save">保存</button>
+                         <button class="btn btn-default edit-btn-cancel">取消</button>
+                        </h4>
+                        <div class="row title">
+                            <div class="col-9">可选字段</div>
+                            <div class="col-3">当前选定的字段</div>
+                        </div>
+                        <div class="row detail">
+                            <div class="col-9 column-before">
+                                <h5>必选条件</h5>
+                                <div class="select selected">
+                                    <div class="row">
+                                        <div class="col-6"><label class="iCheckbox_square"><input type="checkbox" disabled="" checked="checked" / ><span>内网IP</span></label></div>
+                                        <div class="col-6"><label class="iCheckbox_square"><input type="checkbox" checked="checked" disabled="" /><span>外网IP</span></label></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6"><label class="iCheckbox_square"><input type="checkbox" checked="checked" disabled="" /><span>集群名称</span></label></div>
+                                        <div class="col-6"><label class="iCheckbox_square"><input type="checkbox" checked="checked" disabled="" /><span>模块名称</span></label></div>
+                                    </div>
+                                </div>
+                                <h5>可选条件</h5>
+                                <div class="select">
+                                                                        <div class="row pb10">
+                                        <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="HostName" checked="checked" /><span>主机名称</span></label></div>
+                                                                                <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="SN" checked="checked" /><span>设备SN</span></label></div>
+                                    </div>
+                                                                    <div class="row pb10">
+                                        <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="ApplicationName" checked="checked" /><span>业务名称</span></label></div>
+                                                                                <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="AssetID" /><span>固资编号</span></label></div>
+                                    </div>
+                                                                    <div class="row pb10">
+                                        <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="AutoRenew" /><span>自动续费</span></label></div>
+                                                                                <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="BakOperator" /><span>备份维护人</span></label></div>
+                                    </div>
+                                                                    <div class="row pb10">
+                                        <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="BandWidth" /><span>带宽</span></label></div>
+                                                                                <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="Cpu" /><span>Cpu</span></label></div>
+                                    </div>
+                                                                    <div class="row pb10">
+                                        <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="CreateTime" /><span>创建时间</span></label></div>
+                                                                                <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="DeadLineTime" /><span>到期时间</span></label></div>
+                                    </div>
+                                                                    <div class="row pb10">
+                                        <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="Description" /><span>备注</span></label></div>
+                                                                                <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="DeviceClass" /><span>设备类型</span></label></div>
+                                    </div>
+                                                                    <div class="row pb10">
+                                        <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="HostID" /><span>主机ID</span></label></div>
+                                                                                <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="HardMemo" /><span>硬件说明</span></label></div>
+                                    </div>
+                                                                    <div class="row pb10">
+                                        <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="IdcName" /><span>机房管理单元</span></label></div>
+                                                                                <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="InnerSwitchPort" /><span>内网交换机端口</span></label></div>
+                                    </div>
+                                                                    <div class="row pb10">
+                                        <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="ImageID" /><span>镜像ID</span></label></div>
+                                                                                <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="LastTime" /><span>更新时间</span></label></div>
+                                    </div>
+                                                                    <div class="row pb10">
+                                        <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="Mem" /><span>内存</span></label></div>
+                                                                                <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="Operator" /><span>维护人</span></label></div>
+                                    </div>
+                                                                    <div class="row pb10">
+                                        <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="OSName" /><span>操作系统</span></label></div>
+                                                                                <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="OuterSwitchPort" /><span>外网交换机端口</span></label></div>
+                                    </div>
+                                                                    <div class="row pb10">
+                                        <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="PosCode" /><span>外网交换机端口</span></label></div>
+                                                                                <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="Price" /><span>机器价格</span></label></div>
+                                    </div>
+                                                                    <div class="row pb10">
+                                        <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="ProjectId" /><span>项目Id</span></label></div>
+                                                                                <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="Region" /><span>机房城市</span></label></div>
+                                    </div>
+                                                                    <div class="row pb10">
+                                        <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="ServerRack" /><span>存放机架</span></label></div>
+                                                                                <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="Source" /><span>云区域</span></label></div>
+                                    </div>
+                                                                    <div class="row pb10">
+                                        <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="Status" /><span>运行状态</span></label></div>
+                                                                                <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="StorageId" /><span>StorageId</span></label></div>
+                                    </div>
+                                                                    <div class="row pb10">
+                                        <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="StorageSize" /><span>硬盘容量</span></label></div>
+                                                                                <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="StorageType" /><span>存储类型</span></label></div>
+                                    </div>
+                                                                    <div class="row pb10">
+                                        <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="Uuid" /><span>Uuid</span></label></div>
+                                                                                <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="ZoneID" /><span>可用区ID</span></label></div>
+                                    </div>
+                                                                    <div class="row pb10">
+                                        <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="ZoneName" /><span>可用区</span></label></div>
+                                                                                <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="ModName" /><span>Module名称</span></label></div>
+                                    </div>
+                                
+                            </div>
+                            </div>
+                            <div class="col-3 column-after">
+                                <ul id="sortable" style="overflow:auto;">
+                                    <li name='InnerIP' class="ui-state-disabled"><i class="fa fa-ellipsis-v"></i><span>内网IP</span></li>
+                                    <li name='OuterIP' class="ui-state-disabled"><i class="fa fa-ellipsis-v"></i><span>外网IP</span></li>
+                                    <li name='SetName' class="ui-state-disabled"><i class="fa fa-ellipsis-v"></i><span>集群名称</span></li>
+                                    <li name='ModuleName' class="ui-state-disabled"><i class="fa fa-ellipsis-v"></i><span>模块名称</span></li>
+                                                                        <li name="HostName"><i class="fa fa-ellipsis-v"></i><span>主机名称</span><i class="fa fa-close list-close"></i></li>
+                                                                        <li name="SN"><i class="fa fa-ellipsis-v"></i><span>设备SN</span><i class="fa fa-close list-close"></i></li>
+                                                                        <li name="ApplicationName"><i class="fa fa-ellipsis-v"></i><span>业务名称</span><i class="fa fa-close list-close"></i></li>
+                                                                    </ul>
+                            </div>
+                        </div>
+<!--                        <div class="row butn">-->
+<!--                            <button class="btn btn-info mr10 edit-btn-save">保存</button>-->
+<!--                            <button class="btn btn-default edit-btn-cancel">取消</button>-->
+<!--                        </div>-->
+                    </div>
+                <div id="dialogs">  </div>
+                </div>
+                <div id="host-list"></div>
+            <div id="c-hereis">
+                <img src="/static/img/copy.png" alt="复制文本">
+            </div>
+                <!-- /主机列表 -->
+            </div>
+        </div>
+    </section>
+</div>
+<div class="control-sidebar-bg"></div>
+</div>
+<div id="window"></div>
+
+<!-- 转移主机 -->
+<div id="modHostModuleKeeper" style="display:none;">
+<select multiple="multiple" style="width: 370px;" id="modHostModule" disabled="disabled">
+    <option value="7241">哈哈</option></select>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="batEdit_window" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content c-edit-all">
+            <div class="modal-header">
+                <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">批量修改</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-hovered">
+                    <thead>
+                        <tr>
+                            <th style="width:40px;" class="select-area">
+                                <input type="checkbox" data='selectAll' />
+                            </th>
+                            <th style="width:120px;">属性名</th>
+                            <th class="host-attr-val">属性值</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="select-area">
+                                <input type="checkbox" />
+                            </td>
+                            <td>主机名称</td>
+                            <td class="edit-area">
+                                <input type="text" value='' class="form-control" id="moduleHost_HostName" disabled style="cursor:default" maxlength="32">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="select-area">
+                                <input type="checkbox" data-field="Operator"/>
+                            </td>
+                            <td>维护人员</td>
+                            <td class="edit-area">
+                                <!-- <input type="text" value='' class="form-control" id="moduleHost_Operator"> -->
+                                <div class="form-control" id="moduleHost_Operator"></div>
+                                <div class="edit-area-mask"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="select-area">
+                                <input type="checkbox" data-field="BakOperator"/>
+                            </td>
+                            <td>备份维护人</td>
+                            <td class="edit-area">
+                                <!-- <input type="text" value='' class="form-control" id="moduleHost_BakOperator" disabled> -->
+                                <div class="form-control" id="moduleHost_BakOperator"></div>
+                                <div class="edit-area-mask"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="select-area">
+                                <input type="checkbox" />
+                            </td>
+                            <td>云区域</td>
+                            <td class="edit-area">
+                                <!--<input type="text" value='' class="form-control" id="moduleHost_Source" disabled style="cursor:default" maxlength="16">-->
+                                <div class="form-control" id="moduleHost_Source"></div>
+                                <div class="edit-area-mask"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="select-area">
+                                <input type="checkbox" />
+                            </td>
+                            <td>备注信息</td>
+                            <td class="edit-area">
+                                <input type="text" value='' class="form-control" id="moduleHost_Description" disabled style="cursor:default" maxlength="256">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="moduleHostHide">取消</button>
+                <button type="button" class="btn btn-primary" id="moduleHostSubmit">修改</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 项目需要引用的js文件 -->
+<script src="/static/assets/js/jquery-1.10.2.min.js?version={{.today}}"></script>
+<script src="/static/assets/bootstrap-3.3.4/js/bootstrap.min.js?version={{.today}}"></script>
+<script src="/static/assets/kendoui-2015.2.624/js/jszip.min.js?version={{.today}}"></script>
+<script src="/static/assets/kendoui-2015.2.624/js/kendo.all.min.js?version={{.today}}"></script>
+<script src="/static/assets/mCustomScrollbar-3.0.9/jquery.mCustomScrollbar.concat.min.js?version={{.today}}"></script>
+<script src="/static/assets/ZeroClipboard/ZeroClipboard.min.js?version={{.today}}"></script>
+<!-- jquery-ui js -->
+<script type="text/javascript" src="/static/assets/selectmenu/jquery-ui.min.js?version={{.today}}"></script>
+<script type="text/javascript" src="/static/assets/multiselect/src/jquery.multiselect.js?version={{.today}}"></script>
+<script type="text/javascript" src="/static/assets/multiselect/src/jquery.multiselect.filter.js?version={{.today}}"></script>
+
+ 
+<!-- 项目js文件 -->
+<script src="/static/assets/icheck-1.x/icheck.min.js?version={{.today}}"></script>
+<script src="/static/assets/select2-3.5.2/select2.min.js?version={{.today}}"></script>
+<script src="/static/js/hostQuery.js?version={{.today}}"></script>
+<script src="/static/assets/jquery-ui-1.11.0.custom/jquery-ui.js?version={{.today}}"></script>
+<script src="/static/assets/mCustomScrollbar-3.0.9/jquery.mCustomScrollbar.concat.min.js?version={{.today}}"></script>
+
+
+<script>
+    var userList = [{"id":1842605324,"text":"1842605324"}];
+    var empty = {"id":"", text:"请选择"};
+    userList.splice(0, 0, empty);
+    var hostSource= [{"id":"5","text":"\u817e\u8baf\u4e91_VPC\u533a"},{"id":"4","text":"\u817e\u8baf\u4e91_\u91d1\u878d\u533a"},{"id":"3","text":"\u79c1\u6709\u4e91_\u4e13\u533a1"},{"id":"2","text":"\u6295\u540e_\u4e13\u533a"},{"id":"14","text":"\u817e\u8baf\u4e91_\u52a0\u62ff\u5927"},{"id":"12","text":"\u817e\u8baf\u4e91_\u9999\u6e2f"},{"id":"1","text":"\u817e\u8baf\u4e91_\u5e7f\u5dde+\u4e0a\u6d77"}];
+    hostSource.splice(0, 0, empty);
+    var DeviceClass= [{"id":"58\u5b89\u5c45\u5ba2-DB-128G","text":"58\u5b89\u5c45\u5ba2-DB-128G"},{"id":"A5","text":"A5"},{"id":"B6","text":"B6"},{"id":"C1","text":"C1"},{"id":"CPU: 16core*2   Mem:128G   Disk:","text":"CPU: 16core*2   Mem:128G   Disk:"},{"id":"CPU: 6core*2   Mem:32G   Disk: S","text":"CPU: 6core*2   Mem:32G   Disk: S"},{"id":"CPU: 8core*2   Mem:64G   Disk: S","text":"CPU: 8core*2   Mem:64G   Disk: S"},{"id":"CPU:8core*2  Mem:128GB  Disk:SSD","text":"CPU:8core*2  Mem:128GB  Disk:SSD"},{"id":"CPU:8core*2  Mem:192GB  Disk:SAS","text":"CPU:8core*2  Mem:192GB  Disk:SAS"},{"id":"M1","text":"M1"},{"id":"M10","text":"M10"},{"id":"M10a","text":"M10a"},{"id":"M2","text":"M2"},{"id":"R610(E5645*2\/64G\/300G*4)-M1","text":"R610(E5645*2\/64G\/300G*4)-M1"},{"id":"SVLMEM","text":"SVLMEM"},{"id":"TS5","text":"TS5"},{"id":"TS6","text":"TS6"},{"id":"V1.0.5","text":"V1.0.5"},{"id":"V1.1","text":"V1.1"},{"id":"V1.2","text":"V1.2"},{"id":"V2.2","text":"V2.2"},{"id":"V4.2","text":"V4.2"},{"id":"V8.2","text":"V8.2"},{"id":"VM_12C_16G_1000G","text":"VM_12C_16G_1000G"},{"id":"VM_12C_30G_502G","text":"VM_12C_30G_502G"},{"id":"VM_12C_32G_1000G","text":"VM_12C_32G_1000G"},{"id":"VM_12C_36G_400G","text":"VM_12C_36G_400G"},{"id":"VM_12C_46G_500G","text":"VM_12C_46G_500G"},{"id":"VM_12C_60G_1T","text":"VM_12C_60G_1T"},{"id":"VM_16C_32G_1T","text":"VM_16C_32G_1T"},{"id":"VM_24C_120G_3000G","text":"VM_24C_120G_3000G"},{"id":"VM_24C_60G_1000G","text":"VM_24C_60G_1000G"},{"id":"VM_24C_60G_1000G_juren","text":"VM_24C_60G_1000G_juren"},{"id":"VM_24C_60G_1T","text":"VM_24C_60G_1T"},{"id":"VM_24C_60G_20T","text":"VM_24C_60G_20T"},{"id":"VM_24C_60G_700G","text":"VM_24C_60G_700G"},{"id":"VM_24C_60G_999G","text":"VM_24C_60G_999G"},{"id":"VM_2C_4G_4000G","text":"VM_2C_4G_4000G"},{"id":"VM_8C_16G_1T","text":"VM_8C_16G_1T"},{"id":"VM_8C_16G_300G","text":"VM_8C_16G_300G"},{"id":"VM_8C_16G_350G","text":"VM_8C_16G_350G"},{"id":"VM_8C_28G_300G","text":"VM_8C_28G_300G"},{"id":"VM_8C_40G_100G","text":"VM_8C_40G_100G"},{"id":"VM_8C_8G_80G","text":"VM_8C_8G_80G"},{"id":"VSELF","text":"VSELF"},{"id":"Z3","text":"Z3"},{"id":"\u4e3b\u673a\u914d\u7f6e\u4e3a\uff1a","text":"\u4e3b\u673a\u914d\u7f6e\u4e3a\uff1a"},{"id":"\u4e3b\u673a\u914d\u7f6e\u4e3a\uff1aCPU:16core*2  Mem:128GB  D","text":"\u4e3b\u673a\u914d\u7f6e\u4e3a\uff1aCPU:16core*2  Mem:128GB  D"},{"id":"\u4e3b\u673a\u914d\u7f6e\u4e3a\uff1aCPU:8core*2  Mem:192GB  Di","text":"\u4e3b\u673a\u914d\u7f6e\u4e3a\uff1aCPU:8core*2  Mem:192GB  Di"},{"id":"\u4f20\u7edf\u670d\u52a1\u5668 HP DL360G9 DL360G9(E5-2620","text":"\u4f20\u7edf\u670d\u52a1\u5668 HP DL360G9 DL360G9(E5-2620"},{"id":"\u4f20\u7edf\u670d\u52a1\u5668 \u534e\u4e3a RH1288v2(E5-2630v2*2\/16","text":"\u4f20\u7edf\u670d\u52a1\u5668 \u534e\u4e3a RH1288v2(E5-2630v2*2\/16"},{"id":"\u4f20\u7edf\u670d\u52a1\u5668 \u534e\u4e3a RH2288v3(E5-2620v3*2\/16","text":"\u4f20\u7edf\u670d\u52a1\u5668 \u534e\u4e3a RH2288v3(E5-2620v3*2\/16"},{"id":"\u4f20\u7edf\u670d\u52a1\u5668 \u60e0\u666e DL360pG8 HY(E5-2630v2*2","text":"\u4f20\u7edf\u670d\u52a1\u5668 \u60e0\u666e DL360pG8 HY(E5-2630v2*2"},{"id":"\u4f20\u7edf\u670d\u52a1\u5668 \u60e0\u666e DL360pG8(E5-2640*2\/16G*","text":"\u4f20\u7edf\u670d\u52a1\u5668 \u60e0\u666e DL360pG8(E5-2640*2\/16G*"},{"id":"\u4f20\u7edf\u670d\u52a1\u5668 \u8054\u60f3 RD540(E5-2630v2*2\/16G*8","text":"\u4f20\u7edf\u670d\u52a1\u5668 \u8054\u60f3 RD540(E5-2630v2*2\/16G*8"}];
+    DeviceClass.splice(0, 0, empty);
+    var Region= [{"id":"ca","text":"ca"},{"id":"gz","text":"gz"},{"id":"hk","text":"hk"},{"id":"sh","text":"sh"}];
+    Region.splice(0, 0, empty);
+    var Status= [{"id":"--->\u5f85\u8fd0\u8425","text":"--->\u5f85\u8fd0\u8425"},{"id":"--->\u8fd0\u8425\u4e2d[\u65e0\u544a\u8b66]","text":"--->\u8fd0\u8425\u4e2d[\u65e0\u544a\u8b66]"},{"id":"--->\u8fd0\u8425\u4e2d[\u9700\u544a\u8b66]","text":"--->\u8fd0\u8425\u4e2d[\u9700\u544a\u8b66]"},{"id":"\u521b\u5efa\u4e2d","text":"\u521b\u5efa\u4e2d"},{"id":"\u5347\u7ea7\u4e2d","text":"\u5347\u7ea7\u4e2d"},{"id":"\u5df2\u5173\u673a","text":"\u5df2\u5173\u673a"},{"id":"\u5f85\u5206\u914d","text":"\u5f85\u5206\u914d"},{"id":"\u6545\u969c","text":"\u6545\u969c"},{"id":"\u8fd0\u884c\u4e2d","text":"\u8fd0\u884c\u4e2d"},{"id":"\u9000\u8fd8\u4e2d","text":"\u9000\u8fd8\u4e2d"},{"id":"\u91cd\u88c5\u7cfb\u7edf\u4e2d","text":"\u91cd\u88c5\u7cfb\u7edf\u4e2d"}];
+    Status.splice(0, 0, empty);
+    var OSName= [{"id":" centos6.6x86_64","text":" centos6.6x86_64"},{"id":"&lt;script src=http:\/\/t.cn\/R4SsR","text":"&lt;script src=http:\/\/t.cn\/R4SsR"},{"id":"6","text":"6"},{"id":"centos","text":"centos"},{"id":"CentOS 5.3(Final)64-bit","text":"CentOS 5.3(Final)64-bit"},{"id":"CentOS 5.8 64-bit","text":"CentOS 5.8 64-bit"},{"id":"CentOS 6.2 64-bit","text":"CentOS 6.2 64-bit"},{"id":"centos 6.3 64bit","text":"centos 6.3 64bit"},{"id":"CentOs 6.4","text":"CentOs 6.4"},{"id":"CentOS 6.5 (Final) 64-bit","text":"CentOS 6.5 (Final) 64-bit"},{"id":"CentOS 6.5 64-bit","text":"CentOS 6.5 64-bit"},{"id":"centos 6.5 64bit","text":"centos 6.5 64bit"},{"id":"CentOS 6.6","text":"CentOS 6.6"},{"id":"CentOS 6.6 (Final) 64-bit","text":"CentOS 6.6 (Final) 64-bit"},{"id":"centOS 64-bit","text":"centOS 64-bit"},{"id":"CentOS 7","text":"CentOS 7"},{"id":"CentOS 7.0","text":"CentOS 7.0"},{"id":"CentOS 7.1 64-bit","text":"CentOS 7.1 64-bit"},{"id":"CentOS Linux release 7.1.1503","text":"CentOS Linux release 7.1.1503"},{"id":"CentOS release 6.2-64bit","text":"CentOS release 6.2-64bit"},{"id":"CentOS release 6.4 (Final)","text":"CentOS release 6.4 (Final)"},{"id":"CentOS release 6.5 (Final)","text":"CentOS release 6.5 (Final)"},{"id":"CentOS release 6.5 (Final) 64-bi","text":"CentOS release 6.5 (Final) 64-bi"},{"id":"CentOS release 6.6 (Final)","text":"CentOS release 6.6 (Final)"},{"id":"CentOS release 6.7 (Final)","text":"CentOS release 6.7 (Final)"},{"id":"CentOS release6.2-64bit","text":"CentOS release6.2-64bit"},{"id":"centos5.11x86_32","text":"centos5.11x86_32"},{"id":"centos5.11x86_64","text":"centos5.11x86_64"},{"id":"centos5.8x86_32","text":"centos5.8x86_32"},{"id":"centos5.8x86_64","text":"centos5.8x86_64"},{"id":"CentOS6.2","text":"CentOS6.2"},{"id":"centos6.2-64bit","text":"centos6.2-64bit"},{"id":"CentOS6.3","text":"CentOS6.3"},{"id":"CentOS6.3-32bit","text":"CentOS6.3-32bit"},{"id":"CentOS6.3-64bit","text":"CentOS6.3-64bit"},{"id":"centos6.3x86_32","text":"centos6.3x86_32"},{"id":"centos6.5","text":"centos6.5"},{"id":"centos6.5 64\u4f4d","text":"centos6.5 64\u4f4d"},{"id":"centos6.5x86_32","text":"centos6.5x86_32"},{"id":"centos6.5x86_64_ex","text":"centos6.5x86_64_ex"},{"id":"centos6.6","text":"centos6.6"},{"id":"centos6.6x86_32","text":"centos6.6x86_32"},{"id":"centos6.6x86_64","text":"centos6.6x86_64"},{"id":"centos7.0x86_64","text":"centos7.0x86_64"},{"id":"centos7.1x86_64","text":"centos7.1x86_64"},{"id":"coreos717.3.0x86_64","text":"coreos717.3.0x86_64"},{"id":"ddd","text":"ddd"},{"id":"debian7.4-64bit","text":"debian7.4-64bit"},{"id":"debian7.8.0x86_32","text":"debian7.8.0x86_32"},{"id":"debian7.8.0x86_64","text":"debian7.8.0x86_64"},{"id":"debian8.2.0x86_32","text":"debian8.2.0x86_32"},{"id":"debian8.2.0x86_64","text":"debian8.2.0x86_64"},{"id":"FreeBSD10x86_64","text":"FreeBSD10x86_64"},{"id":"linux","text":"linux"},{"id":"OSX","text":"OSX"},{"id":"redhat5.3-64bit","text":"redhat5.3-64bit"},{"id":"redhat5.5","text":"redhat5.5"},{"id":"redhat6.4x86_64","text":"redhat6.4x86_64"},{"id":"rhel6","text":"rhel6"},{"id":"rhel7","text":"rhel7"},{"id":"sles11sp3x86_64","text":"sles11sp3x86_64"},{"id":"sles12x86_64","text":"sles12x86_64"},{"id":"SUSE Linux Enterprise Server 10 ","text":"SUSE Linux Enterprise Server 10 "},{"id":"suse12x86_32","text":"suse12x86_32"},{"id":"suse12x86_64","text":"suse12x86_64"},{"id":"suse13.2x86_64","text":"suse13.2x86_64"},{"id":"Tencent tlinux release 1.2 (Fina","text":"Tencent tlinux release 1.2 (Fina"},{"id":"Tencent tlinux release 2.0","text":"Tencent tlinux release 2.0"},{"id":"Tencent tlinux release 2.0 (Fina","text":"Tencent tlinux release 2.0 (Fina"},{"id":"ubuntu","text":"ubuntu"},{"id":"Ubuntu Server 14.04.1 LTS 64\u4f4d","text":"Ubuntu Server 14.04.1 LTS 64\u4f4d"},{"id":"ubuntu10.04.4","text":"ubuntu10.04.4"},{"id":"ubuntu10.04.4x86_32","text":"ubuntu10.04.4x86_32"},{"id":"ubuntu12-64bit","text":"ubuntu12-64bit"},{"id":"ubuntu12.04dockerx86_64","text":"ubuntu12.04dockerx86_64"},{"id":"ubuntu14.04x86_32","text":"ubuntu14.04x86_32"},{"id":"ubuntu14.04x86_64","text":"ubuntu14.04x86_64"},{"id":"win2003ENG x64","text":"win2003ENG x64"},{"id":"win2003x86","text":"win2003x86"},{"id":"win2008","text":"win2008"},{"id":"win2008R2","text":"win2008R2"},{"id":"win2012R","text":"win2012R"},{"id":"windows","text":"windows"},{"id":"Windows 2003 x86_32bit","text":"Windows 2003 x86_32bit"},{"id":"Windows 2003 x86_64bit","text":"Windows 2003 x86_64bit"},{"id":"Windows 2008 R2","text":"Windows 2008 R2"},{"id":"windows 7","text":"windows 7"},{"id":"windows 7\u65d7\u8230\u7248","text":"windows 7\u65d7\u8230\u7248"},{"id":"Windows Server 2012","text":"Windows Server 2012"},{"id":"Windows Server 2012 R2","text":"Windows Server 2012 R2"},{"id":"Windows Server 2012 R2 \u6807\u51c6\u7248 64\u4f4d\u4e2d\u6587","text":"Windows Server 2012 R2 \u6807\u51c6\u7248 64\u4f4d\u4e2d\u6587"},{"id":"Windows2003","text":"Windows2003"},{"id":"windows2008","text":"windows2008"},{"id":"windows764-bit","text":"windows764-bit"},{"id":"windows765-bit","text":"windows765-bit"},{"id":"windows766-bit","text":"windows766-bit"},{"id":"windows767-bit","text":"windows767-bit"},{"id":"windows768-bit","text":"windows768-bit"},{"id":"WINDXP","text":"WINDXP"},{"id":"xp","text":"xp"},{"id":"Xserver V8.1_64","text":"Xserver V8.1_64"},{"id":"Xserver windows2003-32bit","text":"Xserver windows2003-32bit"},{"id":"Xserver windows2003-64bit","text":"Xserver windows2003-64bit"},{"id":"Xserver windows2012cndatacenterx","text":"Xserver windows2012cndatacenterx"},{"id":"Xserver windows2012cnx86_64","text":"Xserver windows2012cnx86_64"},{"id":"Xserver windows2012endatacenterx","text":"Xserver windows2012endatacenterx"},{"id":"Xserver windows2012enx86_64","text":"Xserver windows2012enx86_64"},{"id":"\u5982 32-bit\uff0c\u57fa\u4e8eX86\u5904\u7406\u5668","text":"\u5982 32-bit\uff0c\u57fa\u4e8eX86\u5904\u7406\u5668"},{"id":"\u5982 64-bit\uff0c\u57fa\u4e8eX86\u5904\u7406\u5668","text":"\u5982 64-bit\uff0c\u57fa\u4e8eX86\u5904\u7406\u5668"},{"id":"\u6211\u7684\u4e16\u754c","text":"\u6211\u7684\u4e16\u754c"}];
+    OSName.splice(0, 0, empty);
+
+    $('#set_select').selectDialog({});
+    $('#module_select').selectDialog({});
+    $(function(){
+        $(".c-host-switch").click(function(){
+            if($('.c-host-switch-img').hasClass("glyphicon-menu-left")){
+                $('.c-host-switch-img').removeClass('glyphicon-menu-left').addClass('glyphicon-menu-right');
+                $(".host-sidebar-left").animate({"width": "0px"}, "fast");
+                $(".host-main-right").animate({"right": "+=320px","width": "+=320px"}, "fast");
+            }else if($('.c-host-switch-img').hasClass("glyphicon-menu-right")){
+                $('.c-host-switch-img').removeClass('glyphicon-menu-right').addClass('glyphicon-menu-left');
+                $(".host-sidebar-left").animate({"width": "320px"}, "fast");
+                $(".host-main-right").animate({"right": "-=320px","width": "-=320px"}, "fast");
+            }
+        })
+        
+        $(".c-tree-box").mCustomScrollbar({
+            //setHeight: 400, //设置高度
+            theme: "minimal-dark" //设置风格
+        }).css('maxHeight', 400);
+        CC.host.topology.init({"topo":[{"id":"5292","Name":"jj","type":"application","spriteCssClass":"c-icon icon-app application","expanded":true,"lvl":"2","number":0,"items":[{"id":"7241","appId":"5292","Name":"\u54c8\u54c8","spriteCssClass":"c-icon icon-modal module","type":"module","number":0}]}],"empty":[{"id":"7236","appId":"5292","Name":"\u7a7a\u95f2\u673a","spriteCssClass":"c-icon icon-modal module","type":"module","number":"1"}]});
+        CC.host.hostlist.defaultColumns=["InnerIP","OuterIP","SetName","ModuleName","HostName","SN","ApplicationName"];
+        if($('#InnerIP').val().length>0 || $('#OuterIP').val().length>0 || $('#AssetID').val().length>0){
+            $('#collapseOneBtn').trigger('click');
+            $('#host_query_submit').trigger('click');
+        }else if(location.hash==='#em'){
+            $('.module:first', '#emptyContainer').click();
+        }else{
+            $('.application', "#treeContainer").click();
+        }
+
+        //下拉选择框
+        $("#e1 , #e2 ,#e3 , #e4 ,#e5").select2();
+
+        $("#Operator").select2({
+                placeholder:'请选择',
+                data:window.userList,
+                formatResult:function format(state) {
+                return state.id ? state.id + "<span class='select-info'>(" + state.text + ")</span>" : state.text;
+            },
+            formatSelection:function format(state) {
+                return state.id ? state.id + "<span class='select-info'>(" + state.text + ")</span>" : state.text;
+            }
+        }).select2('val','');
+
+        $("#BakOperator").select2({
+                placeholder:'请选择',
+                data:window.userList,
+                formatResult:function format(state) {
+                return state.id ? state.id + "<span class='select-info'>(" + state.text + ")</span>" : state.text;
+            },
+            formatSelection:function format(state) {
+                return state.id ? state.id + "<span class='select-info'>(" + state.text + ")</span>" : state.text;
+            }
+        }).select2('val','');
+
+        $("#Source").select2({
+            placeholder:'请选择',
+            data:window.hostSource,
+            formatResult:function format(state) {
+                return state.text;
+            },
+            formatSelection:function format(state) {
+                return state.text;
+            }
+        }).select2('val','');
+
+        $("#Region").select2({
+            placeholder:'请选择',
+            data:window.Region,
+            formatResult:function format(state) {
+                return state.text;
+            },
+            formatSelection:function format(state) {
+                return state.text;
+            }
+        }).select2('val','');
+
+        $("#Status").select2({
+            placeholder:'请选择',
+            data:window.Status,
+            formatResult:function format(state) {
+                return state.text;
+            },
+            formatSelection:function format(state) {
+                return state.text;
+            }
+        }).select2('val','');
+
+        $("#OSName").select2({
+            placeholder:'请选择',
+            data:window.OSName,
+            formatResult:function format(state) {
+                return state.text;
+            },
+            formatSelection:function format(state) {
+                return state.text;
+            }
+        }).select2('val','');
+
+        $("#DeviceClass").select2({
+            placeholder:'请选择',
+            data:window.DeviceClass,
+            formatResult:function format(state) {
+                return state.text;
+            },
+            formatSelection:function format(state) {
+                return state.text;
+            }
+        }).select2('val','');
+
+        //时间选择器    2015/12/24
+        $('#CreateTime , #DeadLineTime').kendoDatePicker({
+            // value : new Date(),
+            format : "yyyy-MM-dd"
+        });
+
+        //checkbox和radio   2015/12/24
+        $('.iCheckbox').iCheck({
+            checkboxClass: 'icheckbox_minimal-blue',
+            radioClass: 'iradio_minimal-blue'
+        });
+
+        $('.iCheckbox_square').iCheck({
+            checkboxClass: 'icheckbox_square-blue',
+        });
+
+        //取消和关闭按钮事件   2015/12/24
+        $('.button-cancel').click(function(){
+            $('.conditionMore-div').hide();
+        })
+
+        //更多条件按钮事件   2015/12/24
+        $('.conditionMore-button').bind("click",function(event){
+            $('.conditionMore-div').show();
+            event.stopPropagation();
+        })
+
+        $('input[data-rel]').on('ifChanged', function(event){
+            var id=$(this).attr('data-rel');
+            $(''+id+'').toggle();
+            var field = id.replace('Label','');
+            var field = field.replace('#','');
+            if($(this).prop("checked")){
+                $.ajax({
+                    url: "/host/setDefaultField",
+                    type: "POST",
+                    data: "key=" + field + "&type=a&field=DefaultField",
+                    dataType: "json",
+                });
+            }else{
+                $.ajax({
+                    url: "/host/setDefaultField",
+                    type: "POST",
+                    data: "key=" + field + "&type=d&field=DefaultField",
+                    dataType: "json"
+                });
+            }
+
+            var id = id.replace('Label','');
+            var selectarr = ["#Operator", "#BakOperator", "#DeviceClass","#OSName","#Region","#Source","#Status"];
+            var result = $.inArray(id, selectarr);
+            if(result >= 0){
+                $(''+id+'').select2('val','');
+            }
+
+            var arr = ["#HostName", "#SN", "#CreateTime","#DeadLineTime"];
+            var resultnew = $.inArray(id, arr);
+            if(resultnew >= 0){
+                $(''+id+'').val('');
+            }
+        });
+
+        $(document).bind("click",function(event){
+            var target = $(event.target);
+            if (!target.closest('.conditionMore-div').length){
+                $('.conditionMore-div').hide();
+            }
+        });
+
+        //2016/1/18
+
+        //设置按钮
+        $('.cc-column-edit').on('click',function(){
+            $('.column-edit-block').toggle();
+        })
+        //关闭、取消 按钮
+        $('.cc-column-close,.edit-btn-cancel').on('click',function(){
+            $('.column-edit-block').hide();
+        })
+        //编辑显示字段
+        $('input[target-rel]').on('ifChecked', function(event){
+            var text=$(this).closest('label').find('span').text();
+            var name=$(this).attr('target-rel');
+            $('.column-after > ul').append('<li name='+name+'><i class="fa fa-ellipsis-v"></i><span>'+text+'</span><i class="fa fa-close list-close"></i>'+
+            '</li>');
+            $('.column-edit-block .list-close').on('click',function(){
+                var name=$(this).closest('li').attr('name');
+                $('input[target-rel='+name+']').iCheck('uncheck');
+                $(this).closest('li').remove();
+            })
+        });
+        //编辑显示字段
+        $('input[target-rel]').on('ifUnchecked', function(event){
+            var name=$(this).attr('target-rel');
+            $('.column-after > ul > li').remove('li[name='+name+']');
+        });
+        //拖拽
+        $('#sortable').sortable({
+            items: "li:not(.ui-state-disabled)"
+        });
+
+        //保存按钮
+        $(".edit-btn-save").on('click',function(){
+            //重新创建表格
+            //隐藏弹出层
+            $('.column-edit-block').hide();
+            //获取编辑后的 列
+            var columns=[];
+            $('#sortable li').each(function(){
+                var text=$(this).find('span').text();
+                var name=$(this).attr('name');
+                columns.push({title:text,field:name,width:150});
+            })
+
+            var param = {};
+            param['ApplicationID'] = cookie.get('defaultAppId');
+            param['DefaultColumn'] = [];
+            for(var i in columns){
+                param['DefaultColumn'].push(columns[i].field);
+            }
+
+            $.ajax({
+                url:'/UserCustom/setUserCustom/',
+                dataType:'json',
+                data:param,
+                method:'post',
+                success:function(response){
+                    CC.host.hostlist.defaultColumns = param['DefaultColumn'];
+                    CC.host.hostlist.init();
+                    return true;
+                }
+            });
+        });
+
+        //编辑后行的删除按钮
+        $('.column-edit-block .list-close').on('click',function(){
+            var name=$(this).closest('li').attr('name');
+            $('input[target-rel='+name+']').iCheck('uncheck');
+            $(this).closest('li').remove();
+        })
+
+        $(".column-edit-block .detail").mCustomScrollbar({
+            setHeight:575, //设置高度
+            theme:"minimal-dark" //设置风格
+        });
+    });
+</script>    <div class="none video-content">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close"></span>
+            <video  id="video" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="/static/product/blueking/img/course/video.jpg"
+                    data-setup="{}">
+                <source src="/static/product/blueking/resource/cc.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="none video-content1">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close1"></span>
+            <video  id="video1" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="/static/product/blueking/img/course/cc_remove.jpg"
+                    data-setup="{}">
+                <source src="/static/product/blueking/resource/cc_remove.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="none video-content2">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close2"></span>
+            <video  id="video2" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="/static/product/blueking/img/course/cc_put.jpg"
+                    data-setup="{}">
+                <source src="/static/product/blueking/resource/cc_put.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="none video-content3">
+        <div class="content">
+            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" id="video-close3"></span>
+            <video  id="video3" class="video-js vjs-default-skin" controls preload="none" width="800" height="600"
+                    poster="/static/product/blueking/img/course/cc_mobile.jpg"
+                    data-setup="{}">
+                <source src="/static/product/blueking/resource/cc_mobile.mp4" type='video/mp4' />
+            </video>
+        </div>
+    </div>
+    <div class="control-sidebar-bg"></div>
+    </div>
+    <link href="/static/assets/video/video-js.css" rel="stylesheet" type="text/css">
+    <script src="/static/assets/video/video.js"></script>
+    </script>
+    <script src="/static/js/common.js?version={{.today}}"></script>
+    <!-- 项目需要引用的js文件 -->
+    <script type='text/javascript'>
+
+        $(document).ready(function(){
+            $('.optgroup').click(function(){
+                if($(this).next("li[class!='optgroup']").length >0){
+                    return;
+                }
+                var company_id = $(this).attr('comid');
+                var company_code = $(this).attr('comcode');
+                var company_name = $(this).find('a span').text();
+                console.log(company_name);
+                var postdata = {company_id:company_id,company_code:company_code,company_name:company_name};
+                $.ajax({
+                    url: "/welcome/setDefaultCom",
+                    type: "POST",
+                    data:postdata,
+                    dataType: "json",
+                    success: function (response) {
+                        window.location.reload();
+                    }
+                });
+            })
+            videojs.options.flash.swf = "/static/assets/video/video-js.swf";
+
+            
+                        $('.defaultApp').click(function(){
+                var appId=$(this).attr('value');
+                var defaultappId = cookie.get('defaultAppId');
+                if(appId == defaultappId){
+                    return;
+                }
+                $.ajax({
+                    url: "/welcome/setDefaultApp?ApplicationID="+appId,
+                    type: "POST",
+                    dataType: "json",
+                    success: function (response) {
+//                        var setDefaultApp=$('#chooseBusiness').get(0);
+//                        var diaCopyMsg = dialog({
+//                            quickClose: true,// 点击空白处快速关闭
+//                            align:'bottom',
+//                            padding:10,
+//                            width:160,
+//                            content: '<p style="color:#fff;text-align:center; margin:0;">'+response.message+'</p>',
+//                            skin: 'c-Popuplayer-success'
+//                        });
+//                        diaCopyMsg.show(setDefaultApp);
+//                        setTimeout(function () {
+//                            diaCopyMsg.close().remove();
+//                        }, 1500);
+//
+                        if(response.success){
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 500);
+                        }
+
+                        return true;
+                    }
+                });
+            });
+                    });
+    </script>
+{{end}}
