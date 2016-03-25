@@ -11,20 +11,20 @@ import (
 )
 
 type Set struct {
-	SetID            int       `orm:"column(id);auto"`
-	ApplicationID int      `orm:"column(application_id)"`
+	SetID         int       `orm:"column(id);auto"`
+	ApplicationID int       `orm:"column(application_id)"`
 	Capacity      int       `orm:"column(capacity)"`
 	ChnName       string    `orm:"column(chn_name);size(255);null"`
 	CreateTime    time.Time `orm:"column(create_time);type(timestamp);null"`
-	Default       int      `orm:"column(default);null"`
+	Default       bool      `orm:"column(default);null"`
 	Description   string    `orm:"column(description);size(255);null"`
-	EnviType      int      `orm:"column(envi_type)"`
+	EnviType      int       `orm:"column(envi_type)"`
 	LastTime      time.Time `orm:"column(last_time);type(timestamp);null"`
-	OpenStatus    string      `orm:"column(open_status);size(255)"`
+	OpenStatus    string    `orm:"column(open_status);size(255)"`
 	ParentID      int       `orm:"column(parent_id);null"`
-	ServiceStatus int      `orm:"column(service_status)"`
+	ServiceStatus int       `orm:"column(service_status)"`
 	SetName       string    `orm:"column(set_name);size(255)"`
-	Owner         int      `orm:"column(owner)"`
+	Owner         int       `orm:"column(owner)"`
 }
 
 func (t *Set) TableName() string {
@@ -154,6 +154,23 @@ func DeleteSet(id int) (err error) {
 		if num, err = o.Delete(&Set{SetID: id}); err == nil {
 			fmt.Println("Number of records deleted in database:", num)
 		}
+	}
+	return
+}
+
+// 根据业务ID删除集群
+func DeleteSetByAppId(id int) (num int64, err error) {
+	o := orm.NewOrm()
+	num, err = o.QueryTable("set").Filter("ApplicationID", id).Delete()
+	return
+}
+
+// 根据业务ID查询默认setId
+func GetDesetidByAppId(id int) (s Set) {
+	o := orm.NewOrm()
+	err := o.QueryTable("set").Filter("SetName", "空闲机池").Filter("ApplicationID", id).One(&s)
+	if err != nil {
+		return
 	}
 	return
 }
