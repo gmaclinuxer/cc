@@ -11,7 +11,7 @@ import (
 )
 
 type Host struct {
-	HostID              int       `orm:"column(id);auto"`
+	HostID          int       `orm:"column(id);auto"`
 	AssetID         string    `orm:"column(asset_id);size(255);null"`
 	AutoRenew       int8      `orm:"column(auto_renew);null"`
 	BakOperator     int       `orm:"column(bak_operator);null"`
@@ -39,8 +39,8 @@ type Host struct {
 	Region          string    `orm:"column(region);size(255);null"`
 	ServerRack      string    `orm:"column(server_rack);size(255);null"`
 	ServerType      string    `orm:"column(server_type);size(255);null"`
-	SN              int64    `orm:"column(sn);null"`
-	Source          int8     `orm:"column(source)"`
+	SN              int64     `orm:"column(sn);null"`
+	Source          int8      `orm:"column(source)"`
 	Status          string    `orm:"column(status);size(255);null"`
 	StorageId       int       `orm:"column(storage_id);null"`
 	StorageSize     float64   `orm:"column(storage_size);null"`
@@ -59,7 +59,7 @@ type Host struct {
 	ApplicationName string    `orm:"column(application_name);size(255);null"`
 	Owner           string    `orm:"column(owner);size(255);null"`
 	Checked         string    `orm:"column(checked);size(255);null"`
-	IsDistributed   uint8     `orm:"column(is_distributed)"`
+	IsDistributed   bool      `orm:"column(is_distributed)"`
 }
 
 func (t *Host) TableName() string {
@@ -75,9 +75,9 @@ func init() {
 func AddHost(hosts []*Host) (err error) {
 	o := orm.NewOrm()
 	err = o.Begin()
-	
+
 	_, err = o.InsertMulti(len(hosts), hosts)
-	
+
 	if err == nil {
 		o.Commit()
 	} else {
@@ -99,21 +99,21 @@ func GetHostById(id int) (v *Host, err error) {
 
 // GetHostById retrieves Host by Id. Returns error if
 // Id doesn't exist
-func GetHostBySn(sn int64) (bool) {
+func GetHostBySn(sn int64) bool {
 	o := orm.NewOrm()
 	return o.QueryTable("host").Filter("sn", sn).Exist()
 }
 
 // GetHostById retrieves Host by Id. Returns error if
 // Id doesn't exist
-func GetHostByInnerIp(inner_ip string) (bool) {
+func GetHostByInnerIp(inner_ip string) bool {
 	o := orm.NewOrm()
 	return o.QueryTable("host").Filter("inner_ip", inner_ip).Exist()
 }
 
 // GetAllHost retrieves all Host matches certain condition. Returns empty list if
 // no records exist
-func GetAllHost(query map[string]string, fields []string, sortby []string, order []string,
+func GetAllHost(query map[string]interface{}, fields []string, sortby []string, order []string,
 	offset int64, limit int64) (ml []interface{}, err error) {
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(Host))
@@ -200,6 +200,30 @@ func UpdateHostById(m *Host) (err error) {
 	return
 }
 
+// 分配主机
+func UpdateHostToApp(ids []int, appID int) (num int64, err error) {
+	var set Set
+	var mod Module
+	o := orm.NewOrm()
+	if err = o.QueryTable("set").Filter("ApplicationID", appID).Filter("SetName", "空闲机池").One(&set); err != nil {
+		return
+	}
+
+	if err = o.QueryTable("module").Filter("ApplicationId", appID).Filter("SetId", set.SetID).One(&mod); err != nil {
+		return
+	}
+
+	num, err = o.QueryTable("host").Filter("HostID__in", ids).Update(orm.Params{
+		"ApplicationID": appID,
+		//		"ApplicationName": app
+		"SetID": set.SetID,
+		//		"SetName": set.SetName,
+		"ModuleID":      mod.Id,
+		"IsDistributed": true,
+	})
+	return
+}
+
 // DeleteHost deletes Host by Id and returns error if
 // the record to be deleted doesn't exist
 func DeleteHost(id int) (err error) {
@@ -211,6 +235,22 @@ func DeleteHost(id int) (err error) {
 		if num, err = o.Delete(&Host{HostID: id}); err == nil {
 			fmt.Println("Number of records deleted in database:", num)
 		}
+	}
+	return
+}
+
+func DeleteHosts(id []int) (num int64, err error) {
+	o := orm.NewOrm()
+	num, err = o.QueryTable("host").Filter("HostID__in", id).Delete()
+	return
+}
+
+func GetHostCount(id int, field string) (cnt int64, err error) {
+	o := orm.NewOrm()
+	if field == "ApplicationID" {
+		cnt, err = o.QueryTable("host").Exclude("ModuleName", "空闲机").Filter(field, id).Count()
+	} else {
+		cnt, err = o.QueryTable("host").Filter(field, id).Count()
 	}
 	return
 }
