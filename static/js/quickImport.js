@@ -687,7 +687,7 @@ $(document).ready(function() {
             }
 
             if(d[i].Checked==='checked'){
-                var tmp = d[i].ApplicationID.split(',');
+                /*var tmp = d[i].ApplicationID.split(',');
                 if(tmp.length==1){
                     if($.inArray(d[i].ApplicationID, appId)==-1){
                         appId.push(d[i].ApplicationID);
@@ -699,7 +699,7 @@ $(document).ready(function() {
                             appId.push(tmp[j]);
                         }
                     }
-                }
+                }*/
 
                 hostId.push(d[i].HostID);
             }
@@ -718,7 +718,7 @@ $(document).ready(function() {
 
         param['HostID'] = hostId.join(',');
         /*重构完成后，需改动*/
-        param['ApplicationID'] = appId.join(',');//标签上放appId
+        //param['ApplicationID'] = appId.join(',');//标签上放appId
         var options = {
             title:'确认',
             width:300,
