@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"net/url"
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -43,6 +42,7 @@ func (this *BaseController) Prepare() {
 	var offset int64 = 0
 
 	query["owner_id"] = strconv.Itoa(this.userId)
+	query["default"] = strconv.FormatBool(false)
 
 	apps, _ := models.GetAllApp(query, fields, sortby, order, offset, limit)
 	
@@ -69,7 +69,7 @@ func (this *BaseController) Prepare() {
 		this.firstSet = true
 		this.firtModule = true
 	}
-	fmt.Println("this.defaultApp=", this.defaultApp)
+
 	this.Data["requestPath"] = this.requestPath
 	this.Data["today"] = this.today
 
