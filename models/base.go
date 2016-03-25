@@ -27,7 +27,7 @@ func init() {
 	}
 	orm.RegisterDataBase("default", "mysql", dsn)
 
-//	if beego.AppConfig.String("runmode") == "dev" {
-//		orm.Debug = true
-//	}
+		if beego.AppConfig.String("runmode") == "dev" {
+			orm.Debug = true
+		}
 }
