@@ -54,6 +54,9 @@ func (this *HostController) ImportPrivateHostByExcel() {
 			var ips string
 			var sns string
 			
+			defApp, w := models.GetDefAppByUserId(this.userId)
+			fmt.Println("defApp=", defApp, "w=", w)
+			
 			for _, sheet := range xlFile.Sheets {
 				for index, row := range sheet.Rows {
 					fmt.Println("len(row.cells", len(row.Cells))
@@ -90,6 +93,12 @@ func (this *HostController) ImportPrivateHostByExcel() {
 							host.Operator = Operator
 							host.OSName = OsName
 							host.Source = 3
+							host.ApplicationID = defApp["AppId"].(int)
+							host.ApplicationName = defApp["AppName"].(string)
+							host.SetID = defApp["SetId"].(int)
+							host.SetName = defApp["SetName"].(string)
+							host.ModuleID = defApp["ModuleId"].(int)
+							host.ModuleName = defApp["ModuleName"].(string)
 							hosts = append(hosts, host)
 						}
 					}
@@ -143,29 +152,19 @@ func (this *HostController) ImportPrivateHostByExcel() {
 // @Success 200 {object} models.Host
 // @Failure 403 :id is empty
 // @router /:id [get]
-func (this *HostController) GetOne() {
-	idStr := this.Ctx.Input.Param(":id")
-	id, _ := strconv.Atoi(idStr)
-	v, err := models.GetHostById(id)
+func (this *HostController) Details() {
+	//ApplicationID	5295
+	// HostID	3668910
+	id, _ := this.GetInt("HostID")
+	_, err := models.GetHostById(id)
 	if err != nil {
-		this.Data["json"] = err.Error()
+		this.TplName = "host/details.html"
 	} else {
-		this.Data["json"] = v
+		this.TplName = "host/details.html"
 	}
-	this.ServeJSON()
 }
 
-// @Title Get All
-// @Description get Host
-// @Param	query	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
-// @Param	fields	query	string	false	"Fields returned. e.g. col1,col2 ..."
-// @Param	sortby	query	string	false	"Sorted-by fields. e.g. col1,col2 ..."
-// @Param	order	query	string	false	"Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ..."
-// @Param	limit	query	string	false	"Limit the size of result set. Must be an integer"
-// @Param	offset	query	string	false	"Start position of result set. Must be an integer"
-// @Success 200 {object} models.Host
-// @Failure 403
-// @router / [get]
+
 func (this *HostController) GetHost4QuickImport() {
 	isDistributed, _ := this.GetBool("IsDistributed")
 	source := this.GetString("Source")
@@ -174,11 +173,11 @@ func (this *HostController) GetHost4QuickImport() {
 	var fields []string
 	var sortby []string
 	var order []string
-	var query map[string]string = make(map[string]string)
+	var query = make(map[string]interface{})
 	var limit int64 = 0
 	var offset int64 = 0
 	
-	query["is_distributed"] = strconv.FormatBool(isDistributed)
+	query["is_distributed"] = isDistributed
 	query["source"] = source
 	
 	if isDistributed {
@@ -235,13 +234,6 @@ func (this *HostController) GetHost4QuickImport() {
 	}
 }
 
-// @Title Update
-// @Description update the Host
-// @Param	id		path 	string	true		"The id you want to update"
-// @Param	body		body 	models.Host	true		"body for Host content"
-// @Success 200 {object} models.Host
-// @Failure 403 :id is not int
-// @router /:id [put]
 func (this *HostController) Put() {
 	idStr := this.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
@@ -258,19 +250,100 @@ func (this *HostController) Put() {
 	this.ServeJSON()
 }
 
-// @Title Delete
-// @Description delete the Host
-// @Param	id		path 	string	true		"The id you want to delete"
-// @Success 200 {string} delete success!
-// @Failure 403 id is empty
-// @router /:id [delete]
-func (this *HostController) Delete() {
-	idStr := this.Ctx.Input.Param(":id")
-	id, _ := strconv.Atoi(idStr)
-	if err := models.DeleteHost(id); err == nil {
-		this.Data["json"] = "OK"
-	} else {
-		this.Data["json"] = err.Error()
+// 删除主机
+func (this *HostController) DelPrivateDefaultApplicationHost() {
+	idStr := this.GetString("HostID")
+	var ids []int
+	for _, v := range strings.Split(idStr, ",") {
+		if id, err := strconv.Atoi(v); err == nil {
+			ids = append(ids, id)
+		}
 	}
-	this.ServeJSON()
+
+	out := make(map[string]interface{})
+	if _, err := models.DeleteHosts(ids); err == nil {
+		out["success"] = true
+		out["message"] = "删除成功!"
+		this.jsonResult(out)
+	} else {
+		out["success"] = false
+		out["errInfo"] = err.Error()
+		this.jsonResult(out)
+	}
+}
+
+// 分配主机
+func (this *HostController) QuickDistribute() {
+	// HostID:29,30
+	// ApplicationID:4043
+	// ToApplicationID:4041
+	out := make(map[string]interface{})
+	idStr := this.GetString("HostID")
+	var ids []int
+	for _, v := range strings.Split(idStr, ",") {
+		if id, err := strconv.Atoi(v); err == nil {
+			ids = append(ids, id)
+		}
+	}
+	
+	if toApplicationID, err := this.GetInt("ToApplicationID"); err != nil {
+		out["success"] = false
+		out["errInfo"] = err.Error()
+		this.jsonResult(out)
+	} else {
+		if _, err := models.UpdateHostToApp(ids, toApplicationID); err != nil {
+			out["success"] = false
+			out["errInfo"] = err.Error()
+			this.jsonResult(out)
+		}
+	
+		out["success"] = true
+		out["message"] = "分配成功"
+		this.jsonResult(out)
+	}
+}
+
+// 上交主机
+func (this *HostController) ResHostModule() {
+	// ApplicationID:4048
+	// HostID:34
+	
+}
+
+// 主机管理
+func (this *HostController) HostQuery() {
+	out := make(map[string]interface{})
+	this.Data["data"], _ = models.GetEmptyById(this.defaultApp.Id)
+	fmt.Println("777777777777777777-------------->>>>>", out)
+	if this.defaultApp.Level == 3 {
+		this.TplName = "host/hostQuery_set.html"
+	} else {
+		this.TplName = "host/hostQuery_mod.html"
+	}
+}
+
+// 快速分配
+func (this *HostController) QuickImport() {
+	this.TplName = "host/quickImport.html"
+}
+
+func (this *HostController) GetHostById() {
+	out := make(map[string]interface{})
+//	var data []interface{}
+	var fields []string
+	var sortby []string
+	var order []string
+	var query = make(map[string]interface{})
+	var limit int64 = 0
+	var offset int64 = 0
+	
+	appId := this.GetString("ApplicationID")
+	modId := this.GetString("ModuleID")
+	query["application_id"] = appId
+	query["module_id"] = modId
+	
+	data, _ := models.GetAllHost(query, fields, sortby, order, offset, limit)
+	out["data"] = data
+	out["total"] = len(data)
+	this.jsonResult(out)
 }
