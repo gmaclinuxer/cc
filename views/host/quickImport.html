@@ -68,9 +68,18 @@
 <script src="/static/assets/intro/intro.js?version={{.today}}"></script>
 <script src="/static/js/quickImport.js?version={{.today}}"></script>
 <script>
-    var isNewUser = false;
+    var isNewUser = true;
 
     $(function(){
+
+        if(cookie.get('play_user_guide_quickimport')==''){
+            cookie.set('play_user_guide_quickimport', 1);
+        }
+        if(cookie.get('play_user_guide_quickimport')==1){
+            var step = cookie.get('quickimport_user_guide_step')-0;
+            eval('step'+step+'()');
+        }
+
     });
 </script>
     <div class="none video-content">
