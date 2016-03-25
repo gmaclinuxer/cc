@@ -1,0 +1,243 @@
+<div id="panelContain_9899" class="sidebar-panel " style="transform: translate3d(0px, 0px, 0px); height: 100%; width: 860px;">
+        <div class="sidebar-panel-container  sidebar-panel-container-new" data-child="innerContainer">
+            <h4 class="lh24 col-md-12 pl0">主机详情页<a class="btn-close btn pull-right" href="javascript:void(0)" id="closePanleBtn">关闭</a></h4>            
+
+            <p class="host-detail-title">公有云属性
+                <div class="icon-detail-gear public-cloud-attribute" data-content=".basis,.network,.handwarea,.os"></div>
+            </p>
+            <div class="col-md-12">                
+                <div class="col-md-6 detail-box basis">
+                    <p class="host-detail-title">基础</p>                     
+                    <div class="detail-row-add">
+                        <span class="detail-icon icon-detail-plus"></span>
+                        <input type="hidden" class="select2-eln" data-type="basis">
+                    </div>
+                </div>
+                <div class="col-md-6 detail-box network">
+                    <p class="host-detail-title">网络</p>
+                     
+                    <div class="detail-row-add">
+                        <span class="detail-icon icon-detail-plus"></span>
+                        <input type="hidden" class="select2-eln" data-type="network">
+                    </div>                  
+                </div>
+            </div>
+
+            <div class="col-md-12">                 
+                <div class="col-md-6 detail-box handwarea">
+                    <p class="host-detail-title">硬件</p>                     
+                    <div class="detail-row-add">
+                        <span class="detail-icon icon-detail-plus"></span>
+                        <input type="hidden" class="select2-eln" data-type="handwarea">
+                    </div>
+                </div>
+                <div class="col-md-6 detail-box os">
+                    <p class="host-detail-title">OS</p>
+                    
+                    <div class="detail-row-add">
+                        <span class="detail-icon icon-detail-plus"></span>
+                        <input type="hidden" class="select2-eln" data-type="os">
+                    </div>                  
+                </div>
+            </div>
+
+            <p class="host-detail-title">配置平台属性  
+                <div class="icon-detail-gear public-cloud-attribute" data-content=".ccattribute"></div>
+            </p>            
+
+            <div class="col-md-12">                 
+                <div class="col-md-6 detail-box ccattribute">                             
+                    <div class="detail-row-add">
+                        <span class="detail-icon icon-detail-plus"></span>
+                        <input type="hidden" class="select2-eln" data-type="ccattribute">
+                    </div>
+                </div>                
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$('document').ready(function(){
+    function HostDetail(attritubeData){
+        this.attritubeData= attritubeData;
+        this.select2Data = [];
+    }
+    HostDetail.prototype={
+        constructor : HostDetail,
+        init:function(){
+            this.initData();
+            this.initAddNewSelect2();
+            this.initEvent();
+        },
+        
+        initData:function(){
+            var data = this.attritubeData;
+            var keys = Object.keys(data);
+            var topThis = this;
+            var temp ={};
+            for(var i =0;i<keys.length;i++){
+                temp[keys[i]]=[];              
+                data[keys[i]].map(function(v,j){
+                    if(v.selected && v.selected == true){
+                        v.disabled = true;
+                        topThis.addNewAttritube(v,keys[i],'init');
+                    }else{
+                        v.disabled = false;
+                        temp[keys[i]].push(v);
+                    }
+                    return v;
+                });                
+            } 
+            this.select2Data = temp;           
+        },
+        formatAttritubeData:function(type,id,event){            
+            var topThis = this;
+            topThis.attritubeData[type].map(function(v,i){
+                if(v.id == id){
+                    if(event === "change"){
+                        topThis.select2Data[type].forEach(function(v1,i1){
+                            if(id == v1.id){                            
+                                topThis.select2Data[type].splice(i1,1);
+                                return v1;
+                            }
+                        });
+                    }else{
+                        topThis.select2Data[type].push(v);
+                    }
+                    v.disabled = !v.disabled;
+                    v.selected = !v.selected;
+                }
+            });
+        },     
+        initAddNewSelect2:function(){
+            var topThis = this;
+            $('.select2-eln').each(function(i,v){
+                var type = $(v).data('type');
+                var data = topThis.select2Data[type];
+                if(data != undefined){
+                    $(v).select2({
+                        data: data,
+                        width:"130px",
+                        placeholder:'请选择属性',
+                        formatNoMatches:"无"
+                    }).on('change',function(e){
+                        var selectData = $(this).select2('data');
+                        topThis.addNewAttritube(selectData,type);
+                        topThis.formatAttritubeData(type,selectData.id,'change');
+                        $(v).select2('val',"");
+                        $.ajax({
+                            url: "/host/setDefaultField",
+                            type: "POST",
+                            data: "key="+selectData.key + "&type=a",
+                            dataType: "json",
+                            // success: function (response) {
+                            //     if(response.success){
+                            //         setTimeout(function () {
+                            //             window.location.reload();
+                            //         }, 500);
+                            //     }
+
+                            //     return true;
+                            // }
+                        });
+                    });
+                }         
+            })         
+        },
+        addNewAttritube:function(data,type,mode){            
+            var temp = '<div class="detail-row" id="#type#_#id#">'+
+                            '<span class="detail-icon icon-detail-minus"></span> '+
+                            '<span class="detail-title">#title#</span> '+
+                            '<span class="detail-content" #popoverTemp# >#content#</span>'+
+                        '</div>';
+            
+            temp = temp.replace('#id#',data.id).replace('#title#',data.text).replace('#content#',data.content).replace('#type#',type);
+            if(data.tips == true){
+                var popoverTemp ='data-toggle="popover" data-placement="bottom" data-container="body" data-content="'+data.content+'"';
+                temp = temp.replace('#popoverTemp#',popoverTemp);
+            }
+            temp = $(temp); 
+
+            if(mode !== 'init'){
+                temp.css('left','0');
+                temp.find('.detail-icon').css('opacity','1');
+            }
+            $('.'+type).find('.detail-row-add').before(temp);
+
+            if(data.tips == true){
+                $('[data-toggle="popover"]').popover();
+            }
+        },
+        getSelectedAttr:function(){
+            var data = this.attritubeData;
+            var keys = Object.keys(data);            
+            var newData = {};
+            for(var i =0;i<keys.length;i++){
+                var items = data[keys[i]];
+                newData[keys[i]] =[];
+                for(j = 0; j<items.length;j++){
+                    var v = data[keys[i]][j];
+                    if(v.selected && v.selected == true){
+                        newData[keys[i]].push({
+                            id:v.id,text:v.text
+                        });
+                    }                
+                }
+            }            
+            return newData;
+        },
+        initEvent:function(){
+            var topThis = this;         
+            $('.sidebar-panel-container-new').on('click','.public-cloud-attribute',function(){
+                var $this = $(this);
+                var content = $($this.data('content'));
+                if($this.hasClass('collapse')){
+                    content.find(".detail-row").animate({left:'-20px'});
+                    content.find(".detail-icon").animate({opacity: "0.2"});
+                    content.find(".detail-row-add").animate({left:'-150px'});
+                    $this.removeClass('collapse');                    
+                }else{
+                    content.find(".detail-row").animate({left:'0px'});
+                    content.find(".detail-icon").animate({opacity: "1"});
+                    content.find(".detail-row-add").animate({left:'0px'});
+                    $this.addClass('collapse');
+                }
+            }).on('click','.icon-detail-minus',function(){
+                var data = $(this).parent().prop('id').split('_');
+                $(this).parent().remove();
+                topThis.formatAttritubeData(data[0],data[1],'delete');
+                $.ajax({
+                            url: "/host/setDefaultField",
+                            type: "POST",
+                            data: "key="+data[2] + "&type=d",
+                            dataType: "json",
+                            // success: function (response) {
+                            //     if(response.success){
+                            //         setTimeout(function () {
+                            //             window.location.reload();
+                            //         }, 500);
+                            //     }
+
+                            //     return true;
+                            // }
+                        });
+            }).on('click',function(){
+                $('[data-toggle="popover"]').popover('hide');
+            }).on('click','.detail-content',function(e){
+                e.preventDefault();
+                e.stopPropagation();
+            });
+            $(document).on('scroll',function(e){
+               $('[data-toggle="popover"]').popover('hide');
+            });
+        }
+    }
+
+
+    var data = {"handwarea":[{"id":0,"text":"\u56fa\u8d44\u7f16\u53f7","selected":true,"tips":true,"content":"pc-839444f36a9c999081dd09a9b12aa595","key":"AssetID"},{"id":1,"text":"\u8bbe\u5907\u7c7b\u578b","selected":true,"content":"","key":"DeviceClass"},{"id":2,"text":"\u786c\u4ef6\u8bf4\u660e","selected":true,"tips":true,"content":"","key":"HardMemo"},{"id":3,"text":"\u8bbe\u5907SN","selected":true,"content":"4","key":"SN"}],"basis":[{"id":0,"text":"\u81ea\u52a8\u7eed\u8d39","selected":true,"content":"\u672a\u5f00\u901a","key":"AutoRenew"},{"id":1,"text":"\u521b\u5efa\u65f6\u95f4","selected":true,"content":"1970-01-01 00:00:00","key":"CreateTime"},{"id":2,"text":"\u5230\u671f\u65f6\u95f4","selected":true,"content":"1970-01-01 00:00:00","key":"DeadLineTime"},{"id":3,"text":"\u4e91\u533a\u57df","selected":true,"content":"\u79c1\u6709\u4e91_\u4e13\u533a1","key":"Source"}],"ccattribute":[{"id":0,"text":"\u5907\u4efd\u7ef4\u62a4\u4eba","selected":true,"content":"","key":"BakOperator"},{"id":1,"text":"\u5907\u6ce8","selected":true,"tips":true,"content":"","key":"Description"},{"id":2,"text":"\u4e3b\u673a\u540d\u79f0","selected":true,"content":"host2","key":"HostName"},{"id":3,"text":"\u7ef4\u62a4\u4eba","selected":true,"content":"","key":"Operator"},{"id":4,"text":"\u6a21\u5757\u540d\u79f0","selected":true,"content":"\u7a7a\u95f2\u673a","key":"ModuleName"}],"network":[{"id":0,"text":"\u5e26\u5bbd","selected":true,"content":"0","key":"BandWidth"},{"id":1,"text":"\u5185\u7f51IP","selected":true,"content":"192.168.66.128","key":"InnerIP"},{"id":2,"text":"\u5185\u7f51\u4ea4\u6362\u673a\u7aef\u53e3","selected":true,"tips":true,"content":"","key":"InnerSwitchPort"},{"id":3,"text":"\u5916\u7f51IP","selected":true,"content":"","key":"OuterIP"},{"id":4,"text":"\u5916\u7f51\u4ea4\u6362\u673a\u7aef\u53e3","selected":true,"tips":true,"content":"","key":"OuterSwitchPort"}],"os":[{"id":0,"text":"\u64cd\u4f5c\u7cfb\u7edf","selected":true,"tips":true,"content":"CentOS 6.4","key":"OSName"},{"id":1,"text":"\u8fd0\u884c\u72b6\u6001","selected":true,"content":"","key":"Status"}]};
+    var hh = new HostDetail(data);
+    hh.init();  //初始化表格
+    hh.getSelectedAttr() //获取编辑后的属性列表
+});
+</script>
