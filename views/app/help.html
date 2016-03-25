@@ -60,6 +60,37 @@
 <script type='text/javascript'>
     $(document).ready(function(){
         
+        // 新手指引 start
+        function noHostMsg(){
+
+            // var firstModuleBtn=$("#confTreeContainer .creat-module-btn").eq(0);
+            // firstModuleBtn.attr('id','first_creat_module');
+            function homeIntro(){
+                var intro = introJs();
+                intro.setOptions({
+                    exitOnOverlayClick:false,
+                    skipLabel:'我知道了',
+                    doneLabel:'我知道了',
+                    showBullets:false,
+                    showButtons:true,
+                    showStepNumbers:false,
+                    tooltipClass:"home-creat-msg",
+                    steps: [
+                        {
+                            element: document.querySelector('#home_creat_one'),
+                            intro: "您当前没有业务，请点此创建业务"
+                        }
+                    ]
+                });
+
+                intro.start();
+            }
+            homeIntro();
+
+        }
+        noHostMsg();
+        // 新手指引 end
+        
         $('.import-qcloup').find('.modal-body').mCustomScrollbar({
             setHeight:300,
             theme: "dark-thin" //设置风格
