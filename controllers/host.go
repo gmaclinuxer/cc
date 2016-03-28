@@ -293,7 +293,7 @@ func (this *HostController) QuickDistribute() {
 	} else {
 		if _, err := models.UpdateHostToApp(ids, toApplicationID); err != nil {
 			out["success"] = false
-			out["errInfo"] = err.Error()
+			out["errInfo"] = err
 			this.jsonResult(out)
 		}
 	
@@ -307,7 +307,32 @@ func (this *HostController) QuickDistribute() {
 func (this *HostController) ResHostModule() {
 	// ApplicationID:4048
 	// HostID:34
+	out := make(map[string]interface{})
+	idStr := this.GetString("HostID")
+	var ids []int
+	for _, v := range strings.Split(idStr, ",") {
+		if id, err := strconv.Atoi(v); err == nil {
+			ids = append(ids, id)
+		}
+	}
 	
+	if appID, err := this.GetInt("ApplicationID"); err != nil {
+		out["success"] = false
+		out["errInfo"] = err.Error()
+		out["message"] = err.Error()
+		this.jsonResult(out)
+	}else {
+		if _, err := models.ResHostModule(ids, appID); err != nil {
+			out["success"] = false
+			out["errInfo"] = err
+			out["message"] = err
+			this.jsonResult(out)
+		}
+		
+		out["success"] = true
+		out["message"] = "上交成功"
+		this.jsonResult(out)
+	}
 }
 
 // 主机管理

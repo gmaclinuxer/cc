@@ -224,6 +224,30 @@ func UpdateHostToApp(ids []int, appID int) (num int64, err error) {
 	return
 }
 
+// 上交主机
+func ResHostModule(ids []int, appID int) (num int64, err error) {
+	var set Set
+	var mod Module
+	o := orm.NewOrm()
+	if err = o.QueryTable("set").Filter("ApplicationID", appID).Filter("SetName", "空闲机池").One(&set); err != nil {
+		return
+	}
+
+	if err = o.QueryTable("module").Filter("ApplicationId", appID).Filter("SetId", set.SetID).One(&mod); err != nil {
+		return
+	}
+
+	num, err = o.QueryTable("host").Filter("HostID__in", ids).Update(orm.Params{
+		"ApplicationID": appID,
+		//		"ApplicationName": app
+		"SetID": set.SetID,
+		//		"SetName": set.SetName,
+		"ModuleID":      mod.Id,
+		"IsDistributed": false,
+	})
+	return
+}
+
 // DeleteHost deletes Host by Id and returns error if
 // the record to be deleted doesn't exist
 func DeleteHost(id int) (err error) {
