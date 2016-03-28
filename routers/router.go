@@ -18,6 +18,7 @@ func init() {
 	beego.Router("/welcome/setDefaultApp", &controllers.AppController{}, "*:SetDefaultApp")
 	
 	beego.Router("/App/getMainterners", &controllers.AppController{}, "*:GetMainterners")
+	beego.Router("/app/getMainterners", &controllers.AppController{}, "*:GetMainterners")
 
 	beego.Router("/topology/index", &controllers.AppController{}, "*:TopologyIndex")
 	
@@ -41,4 +42,5 @@ func init() {
 	beego.Router("/host/details", &controllers.HostController{}, "post:Details")
 	beego.Router("/host/resHostModule/", &controllers.HostController{}, "post:ResHostModule")
 	beego.Router("/host/getTopoTree4view", &controllers.HostController{}, "post:GetTopoTree4view")
+	beego.Router("/host/modHostModule/", &controllers.HostController{}, "post:ModHostModule")
 }

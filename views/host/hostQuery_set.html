@@ -381,7 +381,10 @@
 <!-- 转移主机 -->
 <div id="modHostModuleKeeper" style="display:none;">
 <select multiple="multiple" style="width: 370px;" id="modHostModule" disabled="disabled">
-    </select>
+    {{range $k, $v := $.options}}
+    <option value="{{$k}}">{{$v}}</option>
+    {{end}}
+</select>
 </div>
 <!-- Modal -->
 <div class="modal fade" id="batEdit_window" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">

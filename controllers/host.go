@@ -344,7 +344,7 @@ func (this *HostController) ResHostModule() {
 // 主机管理
 func (this *HostController) HostQuery() {
 	out := make(map[string]interface{})
-	this.Data["data"], _ = models.GetEmptyById(this.defaultApp.Id)
+	this.Data["data"], this.Data["options"], _ = models.GetEmptyById(this.defaultApp.Id)
 	fmt.Println("777777777777777777-------------->>>>>", out)
 	if this.defaultApp.Level == 3 {
 		this.TplName = "host/hostQuery_set.html"
@@ -369,9 +369,15 @@ func (this *HostController) GetHostById() {
 	var offset int64 = 0
 	
 	appId := this.GetString("ApplicationID")
+	setId := this.GetString("SetID")
 	modId := this.GetString("ModuleID")
 	query["application_id"] = appId
-	query["module_id"] = modId
+	if setId != "" {
+		query["set_id"] = setId
+	}
+	if modId != "" {
+		query["module_id__in"] = strings.Split(modId, ",")
+	}
 	
 	data, _ := models.GetAllHost(query, fields, sortby, order, offset, limit)
 	out["data"] = data
@@ -386,7 +392,7 @@ func (this *HostController) GetTopoTree4view() {
 		out["message"] = "参数不合法！"
 		this.jsonResult(out)
 	} else {
-		if data, err := models.GetEmptyById(appID); err != nil {
+		if data, _, err := models.GetEmptyById(appID); err != nil {
 			out["success"] = false
 			out["message"] = err
 			this.jsonResult(out)
@@ -394,5 +400,52 @@ func (this *HostController) GetTopoTree4view() {
 			out = data
 			this.jsonResult(out)
 		}
+	}
+}
+
+// 转移主机
+func (this *HostController) ModHostModule() {
+	// ApplicationID:4050
+	// ModuleID:40
+	// HostID:41,42,43,44,45,46,47,48,49
+	var appID int
+	var moduleID int
+	var hostIds []int
+	var id int
+	var err error
+	
+	out := make(map[string]interface{})
+	
+	if appID, err = this.GetInt("ApplicationID"); err != nil {
+		out["success"] = false
+		out["message"] = "参数ApplicationID格式不正确"
+		this.jsonResult(out)
+	}
+	
+	if moduleID, err = this.GetInt("ModuleID"); err != nil {
+		out["success"] = false
+		out["message"] = "参数ModuleID格式不正确"
+		this.jsonResult(out)
+	}
+	
+	idStr := this.GetString("HostID")
+	for _, v := range strings.Split(idStr, ",") {
+		if id, err = strconv.Atoi(v); err != nil {
+			out["success"] = false
+			out["message"] = "参数HostID格式不正确"
+			this.jsonResult(out)
+		} else {
+			hostIds = append(hostIds, id)
+		}
+	}
+	
+	if _, err = models.ModHostModule(appID, moduleID, hostIds); err != nil {
+		out["success"] = false
+		out["message"] = err.Error()
+		this.jsonResult(out)
+	} else {
+		out["success"] = true
+		out["message"] = "转移成功"
+		this.jsonResult(out)
 	}
 }

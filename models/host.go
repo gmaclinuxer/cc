@@ -278,3 +278,39 @@ func GetHostCount(id int, field string) (cnt int64, err error) {
 	}
 	return
 }
+
+// 转移主机
+func ModHostModule(appID int, moduleID int, hostIds []int) (num int64, err error) {
+	o := orm.NewOrm()
+	
+	var app *App
+	var set *Set
+	var m *Module
+	
+	if m, err = GetModuleById(moduleID); err != nil {
+		return
+	}
+	
+	if appID != m.ApplicationId {
+		err = errors.New("不能跨业务进行主机转移")
+	}
+	
+	if app, err = GetAppById(appID); err != nil {
+		return
+	}
+	
+	if set, err = GetSetById(m.SetId); err != nil {
+		return
+	}
+	
+	num, err = o.QueryTable("host").Filter("HostID__in", hostIds).Update(orm.Params{
+		"ApplicationID": appID,
+		"ApplicationName": app.ApplicationName,
+		"SetID": set.SetID,
+		"SetName": set.SetName,
+		"ModuleID": moduleID,
+		"ModuleName": m.ModuleName,
+		"IsDistributed": true,
+	})
+	return
+}
