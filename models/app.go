@@ -77,7 +77,7 @@ func GetDefAppByUserId(userId int) (info map[string]interface{}, err error) {
 	info = make(map[string]interface{})
 	o := orm.NewOrm()
 
-	if err = o.QueryTable("app").Filter("OwnerId", userId).Filter("ApplicationName", "资源池").One(&app); err != nil {
+	if err = o.QueryTable("app").Filter("OwnerId", userId).Filter("Default", true).One(&app); err != nil {
 		return
 	}
 	
@@ -239,6 +239,10 @@ func GetEmptyById(id int) (info map[string]interface{}, err error) {
 				modItems = append(modItems, modItem)
 				if m.ModuleName == "空闲机" {
 					emptyItems = append(emptyItems, modItem)
+				} else {
+					if app.Level == 2 {
+						setItems = append(setItems, modItem)
+					}
 				}
 			}
 		}
