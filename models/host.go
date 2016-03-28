@@ -314,3 +314,33 @@ func ModHostModule(appID int, moduleID int, hostIds []int) (num int64, err error
 	})
 	return
 }
+
+// 移至空闲机
+func DelHostModule(appID int, hostIds []int) (num int64, err error) {
+	o := orm.NewOrm()
+	var app *App
+	var set Set
+	var m Module
+	
+	if app, err = GetAppById(appID); err != nil {
+		return
+	}
+	
+	if set, err = GetDesetidByAppId(appID); err != nil {
+		return
+	}
+	
+	if err = o.QueryTable("module").Filter("ApplicationId", appID).Filter("SetId", set.SetID).One(&m); err != nil {
+		return
+	}
+	
+	num, err = o.QueryTable("host").Filter("HostID__in", hostIds).Update(orm.Params{
+		"ApplicationID": appID,
+		"ApplicationName": app.ApplicationName,
+		"SetID": set.SetID,
+		"SetName": set.SetName,
+		"ModuleID": m.Id,
+		"ModuleName": m.ModuleName,
+	})
+	return
+}

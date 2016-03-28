@@ -449,3 +449,42 @@ func (this *HostController) ModHostModule() {
 		this.jsonResult(out)
 	}
 }
+
+// 移至空闲机
+func (this *HostController) DelHostModule() {
+	out := make(map[string]interface{})
+	
+	// ApplicationID:4050
+	// HostID:41,42,45,46,47,48,49
+	var appId int
+	var hostIds []int
+	var hostId int
+	var err error
+	
+	if appId, err = this.GetInt("ApplicationID"); err != nil {
+		out["success"] = false
+		out["message"] = "参数ApplicationID格式不正确"
+		this.jsonResult(out)
+	}
+	
+	for _, v := range strings.Split(this.GetString("HostID"), ",") {
+		if hostId, err = strconv.Atoi(v); err != nil {
+			out["success"] = false
+			out["message"] = "参数HostID格式不正确"
+			this.jsonResult(out)
+		} else {
+			hostIds = append(hostIds, hostId)
+		}
+	}
+	
+	if _, err = models.DelHostModule(appId, hostIds); err != nil {
+		out["success"] = false
+		out["message"] = err.Error()
+		this.jsonResult(out)
+	} else {
+		out["success"] = true
+		out["message"] = "转移成功"
+		this.jsonResult(out)
+	}
+	
+}

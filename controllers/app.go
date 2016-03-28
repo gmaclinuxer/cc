@@ -139,7 +139,7 @@ func (this *AppController) TopologyIndex() {
 		this.Data["desetid"] = 0
 		this.TplName = "topology/set.html"
 	} else {
-		s := models.GetDesetidByAppId(this.defaultApp.Id)
+		s, _ := models.GetDesetidByAppId(this.defaultApp.Id)
 		this.Data["desetid"] = s.SetID
 		this.TplName = "topology/index.html"
 	}

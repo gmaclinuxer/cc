@@ -166,11 +166,8 @@ func DeleteSetByAppId(id int) (num int64, err error) {
 }
 
 // 根据业务ID查询默认setId
-func GetDesetidByAppId(id int) (s Set) {
+func GetDesetidByAppId(id int) (s Set, err error) {
 	o := orm.NewOrm()
-	err := o.QueryTable("set").Filter("SetName", "空闲机池").Filter("ApplicationID", id).One(&s)
-	if err != nil {
-		return
-	}
+	err = o.QueryTable("set").Filter("SetName", "空闲机池").Filter("ApplicationID", id).One(&s)
 	return
 }
