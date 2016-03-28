@@ -181,8 +181,9 @@ func GetAppTopoById(id int) (ml []interface{}, err error) {
 	return
 }
 
-func GetEmptyById(id int) (info map[string]interface{}, err error) {
+func GetEmptyById(id int) (info map[string]interface{}, options map[int]string, err error) {
 	info = make(map[string]interface{})
+	options = make(map[int]string)
 	var topo []interface{}
 	var setItems []interface{}
 	var emptyItems []interface{}
@@ -242,6 +243,9 @@ func GetEmptyById(id int) (info map[string]interface{}, err error) {
 				} else {
 					if app.Level == 2 {
 						setItems = append(setItems, modItem)
+						options[m.Id] = m.ModuleName
+					} else {
+						options[m.Id] = fmt.Sprintf("%s-%s", s.SetName, m.ModuleName)
 					}
 				}
 			}
