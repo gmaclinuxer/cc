@@ -40,4 +40,5 @@ func init() {
 	beego.Router("/host/quickDistribute", &controllers.HostController{}, "post:QuickDistribute")
 	beego.Router("/host/details", &controllers.HostController{}, "post:Details")
 	beego.Router("/host/resHostModule/", &controllers.HostController{}, "post:ResHostModule")
+	beego.Router("/host/getTopoTree4view", &controllers.HostController{}, "post:GetTopoTree4view")
 }
