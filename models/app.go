@@ -77,28 +77,26 @@ func GetDefAppByUserId(userId int) (info map[string]interface{}, err error) {
 	info = make(map[string]interface{})
 	o := orm.NewOrm()
 
-	if err = o.QueryTable("app").Filter("OwnerId", userId).Filter("ApplicationName", "资源池").One(&app); err == nil {
-		fmt.Println("app=", app)
-		if err1 := o.QueryTable("set").Filter("ApplicationID", app.Id).One(&set); err1 == nil {
-			if err2 := o.QueryTable("module").Filter("ApplicationId", app.Id).Filter("SetId", set.SetID).One(&mod); err2 == nil {
-				fmt.Println("iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii app=", app, "set=", set, "mod=", mod)
-				fmt.Println("app.id", app.Id)
-				info["AppId"] = app.Id
-				info["AppName"] = app.ApplicationName
-				info["SetId"] = set.SetID
-				info["SetName"] = set.SetName
-				info["ModuleId"] = mod.Id
-				info["ModuleName"] = mod.ModuleName
-				return info, err
-			} else {
-				fmt.Println("err2", err2)
-			}
-		} else {
-			fmt.Println("err1=", err1)
-		}
-	} else {
-		fmt.Println("err=", err)
+	if err = o.QueryTable("app").Filter("OwnerId", userId).Filter("ApplicationName", "资源池").One(&app); err != nil {
+		return
 	}
+	
+	if err = o.QueryTable("set").Filter("ApplicationID", app.Id).One(&set); err != nil {
+		return
+	}
+	
+	if err = o.QueryTable("module").Filter("ApplicationId", app.Id).Filter("SetId", set.SetID).One(&mod); err != nil {
+		return
+	}
+	
+	fmt.Println("iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii app=", app, "set=", set, "mod=", mod)
+	fmt.Println("app.id", app.Id)
+	info["AppId"] = app.Id
+	info["AppName"] = app.ApplicationName
+	info["SetId"] = set.SetID
+	info["SetName"] = set.SetName
+	info["ModuleId"] = mod.Id
+	info["ModuleName"] = mod.ModuleName
 	return
 }
 
