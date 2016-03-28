@@ -514,7 +514,7 @@
             //setHeight: 400, //设置高度
             theme: "minimal-dark" //设置风格
         }).css('maxHeight', 400);
-        CC.host.topology.init({"topo":[{"id":"5292","Name":"jj","type":"application","spriteCssClass":"c-icon icon-app application","expanded":true,"lvl":"2","number":0,"items":[{"id":"7241","appId":"5292","Name":"\u54c8\u54c8","spriteCssClass":"c-icon icon-modal module","type":"module","number":0}]}],"empty":[{"id":"7236","appId":"5292","Name":"\u7a7a\u95f2\u673a","spriteCssClass":"c-icon icon-modal module","type":"module","number":"1"}]});
+        CC.host.topology.init({{.data}});
         CC.host.hostlist.defaultColumns=["InnerIP","OuterIP","SetName","ModuleName","HostName","SN","ApplicationName"];
         if($('#InnerIP').val().length>0 || $('#OuterIP').val().length>0 || $('#AssetID').val().length>0){
             $('#collapseOneBtn').trigger('click');
