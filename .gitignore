@@ -2,6 +2,7 @@
 *.o
 *.a
 *.so
+*.xlsx
 
 # Folders
 _obj
@@ -22,4 +23,3 @@ _testmain.go
 *.exe
 *.test
 *.prof
-*.xlsx
