@@ -18,7 +18,7 @@ type HostController struct {
 	BaseController
 }
 
-
+// 导入主机
 func (this *HostController) ImportPrivateHostByExcel() {
 	out := make(map[string]interface{})
 	fmt.Println("jing...............................")
@@ -316,22 +316,28 @@ func (this *HostController) ResHostModule() {
 		}
 	}
 	
-	if appID, err := this.GetInt("ApplicationID"); err != nil {
+	if defApp, err := models.GetDefAppByUserId(this.userId); err != nil {
 		out["success"] = false
-		out["errInfo"] = err.Error()
-		out["message"] = err.Error()
 		this.jsonResult(out)
-	}else {
-		if _, err := models.ResHostModule(ids, appID); err != nil {
+	} else {
+		if _, err := this.GetInt("ApplicationID"); err != nil {
 			out["success"] = false
-			out["errInfo"] = err
-			out["message"] = err
+			out["errInfo"] = err.Error()
+			out["message"] = err.Error()
+			this.jsonResult(out)
+		}else {
+			//TODO 判断指定的业务是否存在
+			if _, err := models.ResHostModule(ids, defApp["AppId"].(int)); err != nil {
+				out["success"] = false
+				out["errInfo"] = err
+				out["message"] = err
+				this.jsonResult(out)
+			}
+			
+			out["success"] = true
+			out["message"] = "上交成功"
 			this.jsonResult(out)
 		}
-		
-		out["success"] = true
-		out["message"] = "上交成功"
-		this.jsonResult(out)
 	}
 }
 
@@ -371,4 +377,22 @@ func (this *HostController) GetHostById() {
 	out["data"] = data
 	out["total"] = len(data)
 	this.jsonResult(out)
+}
+
+func (this *HostController) GetTopoTree4view() {
+	out := make(map[string]interface{})
+	if appID, err := this.GetInt("ApplicationID"); err != nil {
+		out["success"] = false
+		out["message"] = "参数不合法！"
+		this.jsonResult(out)
+	} else {
+		if data, err := models.GetEmptyById(appID); err != nil {
+			out["success"] = false
+			out["message"] = err
+			this.jsonResult(out)
+		} else {
+			out = data
+			this.jsonResult(out)
+		}
+	}
 }
