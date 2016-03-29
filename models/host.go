@@ -202,9 +202,14 @@ func UpdateHostById(m *Host) (err error) {
 
 // 分配主机
 func UpdateHostToApp(ids []int, appID int) (num int64, err error) {
+	var app *App
 	var set Set
 	var mod Module
 	o := orm.NewOrm()
+	if app, err = GetAppById(appID); err != nil {
+		return
+	}
+	
 	if err = o.QueryTable("set").Filter("ApplicationID", appID).Filter("SetName", "空闲机池").One(&set); err != nil {
 		return
 	}
@@ -215,7 +220,7 @@ func UpdateHostToApp(ids []int, appID int) (num int64, err error) {
 
 	num, err = o.QueryTable("host").Filter("HostID__in", ids).Update(orm.Params{
 		"ApplicationID": appID,
-		//		"ApplicationName": app
+		"ApplicationName": app.ApplicationName,
 		"SetID": set.SetID,
 		//		"SetName": set.SetName,
 		"ModuleID":      mod.Id,
