@@ -343,9 +343,9 @@ func (this *HostController) ResHostModule() {
 
 // 主机管理
 func (this *HostController) HostQuery() {
-	out := make(map[string]interface{})
-	this.Data["data"], this.Data["options"], _ = models.GetEmptyById(this.defaultApp.Id)
-	fmt.Println("777777777777777777-------------->>>>>", out)
+	info, options, _ := models.GetEmptyById(this.defaultApp.Id)
+	this.Data["data"] = info
+	this.Data["options"] = options
 	if this.defaultApp.Level == 3 {
 		this.TplName = "host/hostQuery_set.html"
 	} else {
