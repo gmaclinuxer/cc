@@ -154,6 +154,41 @@
             videojs.options.flash.swf = "/static/assets/video/video-js.swf";
 
             
+                        $('.defaultApp').click(function(){
+                var appId=$(this).attr('value');
+                var defaultappId = cookie.get('defaultAppId');
+                if(appId == defaultappId){
+                    return;
+                }
+                $.ajax({
+                    url: "/welcome/setDefaultApp?ApplicationID="+appId,
+                    type: "POST",
+                    dataType: "json",
+                    success: function (response) {
+//                        var setDefaultApp=$('#chooseBusiness').get(0);
+//                        var diaCopyMsg = dialog({
+//                            quickClose: true,// 点击空白处快速关闭
+//                            align:'bottom',
+//                            padding:10,
+//                            width:160,
+//                            content: '<p style="color:#fff;text-align:center; margin:0;">'+response.message+'</p>',
+//                            skin: 'c-Popuplayer-success'
+//                        });
+//                        diaCopyMsg.show(setDefaultApp);
+//                        setTimeout(function () {
+//                            diaCopyMsg.close().remove();
+//                        }, 1500);
+//
+                        if(response.success){
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 500);
+                        }
+
+                        return true;
+                    }
+                });
+            });
                     });
     </script>
 {{end}}
