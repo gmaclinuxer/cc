@@ -191,6 +191,7 @@ func GetEmptyById(id int) (info map[string]interface{}, options map[int]string, 
 	var sets []interface{}
 	var mods []interface{}
 
+	setItems = append(setItems,1)[:0]
 	// 1. 获取业务信息
 	if app, err = GetAppById(id); err != nil {
 		return
@@ -209,7 +210,6 @@ func GetEmptyById(id int) (info map[string]interface{}, options map[int]string, 
 	if sets, err = GetAllSet(query, fields, sortby, order, offset, limit); err != nil {
 		return
 	}
-
 	query["application_id"] = strconv.Itoa(id)
 
 	if mods, err = GetAllModule(query, fields, sortby, order, offset, limit); err != nil {
