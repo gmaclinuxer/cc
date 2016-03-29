@@ -293,7 +293,7 @@ func (this *HostController) QuickDistribute() {
 	} else {
 		if _, err := models.UpdateHostToApp(ids, toApplicationID); err != nil {
 			out["success"] = false
-			out["errInfo"] = err
+			out["errInfo"] = err.Error()
 			this.jsonResult(out)
 		}
 	
@@ -428,6 +428,7 @@ func (this *HostController) ModHostModule() {
 		this.jsonResult(out)
 	}
 	
+	
 	idStr := this.GetString("HostID")
 	for _, v := range strings.Split(idStr, ",") {
 		if id, err = strconv.Atoi(v); err != nil {
@@ -450,7 +451,7 @@ func (this *HostController) ModHostModule() {
 	}
 }
 
-// 移至空闲机
+// 移至空闲机/故障机
 func (this *HostController) DelHostModule() {
 	out := make(map[string]interface{})
 	
@@ -459,12 +460,20 @@ func (this *HostController) DelHostModule() {
 	var appId int
 	var hostIds []int
 	var hostId int
+	var moduleName string
 	var err error
 	
 	if appId, err = this.GetInt("ApplicationID"); err != nil {
 		out["success"] = false
 		out["message"] = "参数ApplicationID格式不正确"
 		this.jsonResult(out)
+	}
+	
+	status := this.GetString("Status")
+	if status == "1" {
+		moduleName = "故障机"
+	} else {
+		moduleName = "空闲机"
 	}
 	
 	for _, v := range strings.Split(this.GetString("HostID"), ",") {
@@ -477,7 +486,7 @@ func (this *HostController) DelHostModule() {
 		}
 	}
 	
-	if _, err = models.DelHostModule(appId, hostIds); err != nil {
+	if _, err = models.DelHostModule(appId, moduleName, hostIds); err != nil {
 		out["success"] = false
 		out["message"] = err.Error()
 		this.jsonResult(out)

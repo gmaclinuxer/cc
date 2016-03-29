@@ -238,7 +238,7 @@ func GetEmptyById(id int) (info map[string]interface{}, options map[int]string, 
 				modItem["type"] = "module"
 				modItem["number"], _ = GetHostCount(m.Id, "ModuleID")
 				modItems = append(modItems, modItem)
-				if m.ModuleName == "空闲机" {
+				if m.ModuleName == "空闲机" || m.ModuleName == "故障机" {
 					emptyItems = append(emptyItems, modItem)
 				} else {
 					if app.Level == 2 {

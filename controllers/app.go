@@ -65,6 +65,13 @@ func (this *AppController) AddApp() {
 				m.ModuleName = "空闲机"
 				m.Owner = this.userId
 				models.AddModule(m)
+				
+				m2 := new(models.Module)
+				m2.ApplicationId = int(Id)
+				m2.SetId = int(setId)
+				m2.ModuleName = "故障机"
+				m2.Owner = this.userId
+				models.AddModule(m2)
 			}
 			
 			models.AddDefApp(this.userId)

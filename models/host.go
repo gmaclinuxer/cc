@@ -214,7 +214,7 @@ func UpdateHostToApp(ids []int, appID int) (num int64, err error) {
 		return
 	}
 
-	if err = o.QueryTable("module").Filter("ApplicationId", appID).Filter("SetId", set.SetID).One(&mod); err != nil {
+	if err = o.QueryTable("module").Filter("ApplicationId", appID).Filter("SetId", set.SetID).Filter("ModuleName", "空闲机").One(&mod); err != nil {
 		return
 	}
 
@@ -320,8 +320,8 @@ func ModHostModule(appID int, moduleID int, hostIds []int) (num int64, err error
 	return
 }
 
-// 移至空闲机
-func DelHostModule(appID int, hostIds []int) (num int64, err error) {
+// 移至空闲机/故障机
+func DelHostModule(appID int, moduleName string, hostIds []int) (num int64, err error) {
 	o := orm.NewOrm()
 	var app *App
 	var set Set
@@ -335,7 +335,7 @@ func DelHostModule(appID int, hostIds []int) (num int64, err error) {
 		return
 	}
 	
-	if err = o.QueryTable("module").Filter("ApplicationId", appID).Filter("SetId", set.SetID).One(&m); err != nil {
+	if err = o.QueryTable("module").Filter("ApplicationId", appID).Filter("SetId", set.SetID).Filter("ModuleName", moduleName).One(&m); err != nil {
 		return
 	}
 	

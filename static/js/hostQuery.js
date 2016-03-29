@@ -144,7 +144,13 @@ window.CC = window.CC || {};
             gridObj.dataSource.transport.read.url = '/host/getHostById';
             CC.host.hostlist.init();
             $('#batRes').show();
-            $('#batDel').hide();
+            if(node.Name == "空闲机"){
+                $('#batDel').hide();
+                $('#batFal').show();
+            } else {
+                $('#batDel').show();
+                $('#batFal').hide();
+            }
 
             window.intval = setInterval(function(){
                 $('.k-state-focused', '#treeContainer').removeClass('k-state-focused');
@@ -481,10 +487,10 @@ window.CC = window.CC || {};
 
 
                 if(hostlist.checkedNum>0){
-                    $('#moveIp,#batDel,#batEdit,#batRes').attr('disabled', false);
+                    $('#moveIp,#batDel,#batFal,#batEdit,#batRes').attr('disabled', false);
                     hostlist.element.find('.k-grid-copyIP').attr('disabled', false);
                 }else{
-                    $('#moveIp,#batDel,#batEdit,#batRes').attr('disabled', true);
+                    $('#moveIp,#batDel,#batFal,#batEdit,#batRes').attr('disabled', true);
                     hostlist.element.find('.k-grid-copyIP').attr('disabled', true);
                 }
 
@@ -630,11 +636,86 @@ window.CC = window.CC || {};
                 var param = {};
                 param['ApplicationID'] = cookie.get('defaultAppId');
                 param['HostID'] = hostId.join(',');
+                param["Status"] = "0";
 
                 var gridBatDel = dialog({
                     title:'确认',
                     width:300,
                     content: '确认是否将已勾选的<i class="redFont">'+hostId.length+'</i>台主机移动至空闲机?',
+                    okValue:"确定",
+                    cancelValue:"取消",
+                    ok:function (){
+                        var d = dialog({
+                            content: '<div class="c-dialogdiv2"><img class="c-dialogimg-loading" src="/static/img/loading_2_24x24.gif"></img>转移中...</div>'
+                        });
+                        d.showModal();
+                        $.ajax({
+                            url:'/host/delHostModule/',
+                            dialog:d,
+                            data:param,
+                            method:'post',
+                            dataType:'json',
+                            //async:false,
+                            success:function(response){
+                                this.dialog.close().remove();
+                                var content = '<i class="c-dialogimg-'+ (response.success==true ? 'success' : 'prompt') +'"></i>'+ response.message +'</div>';
+                                var d = dialog({
+                                    content: '<div class="c-dialogdiv2">'+content+'</div>'
+                                });
+                                d.show();
+                                setTimeout(function() {
+                                    d.close().remove();
+                                }, 2500);
+                                CC.host.hostlist.init();
+                                CC.host.topology.refresh();
+                                return true;
+                            }
+                        });
+                    },
+                    cancel: function () {
+                    }
+                });
+                
+                gridBatDel.showModal();
+            });
+            
+            /* 点击移至故障机按钮 */ 
+            hostlist.element.on('click.kendoGrid', '#batFal', function(e){
+                if($(e.target).attr('disabled')=='disabled'){
+                    return false;
+                }
+                var data = CC.host.hostlist.view.dataSource.data();
+                if(typeof JSON=='undefined'){
+                    $('head').append('<script type="text/javascript" src="/static/js/json2.js"></script>');
+                }
+                var newData = JSON.parse(JSON.stringify(data));
+                var hostId = [];
+                for(var i=0,len=newData.length; i<len; i++){
+                    if(newData[i].Checked=='checked'){
+                        hostId.push(newData[i].HostID);
+                    }
+                }
+
+                if(hostId.length==0){
+                    var noHostSelectDialog = dialog({
+                            content: '<div class="c-dialogdiv2"><i class="c-dialogimg-prompt"></i>请选择主机</div>'
+                        });
+                    noHostSelectDialog.show();
+                    setTimeout(function () {
+                        noHostSelectDialog.close().remove();
+                    }, 2000);
+                    return false;
+                }
+
+                var param = {};
+                param['ApplicationID'] = cookie.get('defaultAppId');
+                param['HostID'] = hostId.join(',');
+                param["Status"] = "1";
+
+                var gridBatDel = dialog({
+                    title:'确认',
+                    width:300,
+                    content: '确认是否将已勾选的<i class="redFont">'+hostId.length+'</i>台主机移动至故障机?',
                     okValue:"确定",
                     cancelValue:"取消",
                     ok:function (){
@@ -1292,6 +1373,7 @@ window.CC = window.CC || {};
                 {text:'',name:'moveIp',attr:{"id":"moveIp","href":"javascript:void(0);","disabled":"true"}},
                 {text:'导出Excel',name:'saveAsExcel',attr:{"href":"javascript:void(0);"}},
                 {text:'上交',name:'batRes',attr:{"id":"batRes","href":"javascript:void(0);","style":"display:none;float:right","disabled":"true"}},
+                {text:'移至故障机',name:'batDel',attr:{"id":"batFal","href":"javascript:void(0);","disabled":"true"}},
                 {text:'移至空闲机',name:'batDel',attr:{"id":"batDel","href":"javascript:void(0);","disabled":"true"}}
             ],
             selectable:'multiple cell',
