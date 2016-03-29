@@ -239,7 +239,7 @@ func ResHostModule(ids []int, appID int) (num int64, err error) {
 
 	num, err = o.QueryTable("host").Filter("HostID__in", ids).Update(orm.Params{
 		"ApplicationID": appID,
-		//		"ApplicationName": app
+		"ApplicationName": "资源池",
 		"SetID": set.SetID,
 		//		"SetName": set.SetName,
 		"ModuleID":      mod.Id,
