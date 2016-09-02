@@ -21,9 +21,7 @@ type HostController struct {
 // 导入主机
 func (this *HostController) ImportPrivateHostByExcel() {
 	out := make(map[string]interface{})
-	fmt.Println("jing...............................")
 	f, h, err := this.GetFile("importPrivateHost")
-	fmt.Println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxjjjjjjjjjjjjjjjjjjjjjj f", f)
 	if f == nil {
 		out["success"] = false
 		out["message"] = "请先提供后缀名为xlsx的Excel文件再进行上传操作！"
@@ -31,9 +29,7 @@ func (this *HostController) ImportPrivateHostByExcel() {
 		goto render
 	}
 	defer f.Close()
-	fmt.Println("uuuuuuuuuuuuuuuuuuuuuulllllllllllllllllllll")
 	if err != nil {
-		fmt.Println("111111111111111111111111111")
 		out["success"] = false
 		out["message"] = "主机导入失败！上传文件不合法！"
 		out["name"] = "importToCC"
@@ -49,19 +45,15 @@ func (this *HostController) ImportPrivateHostByExcel() {
 		this.SaveToFile("importPrivateHost", excelFileName)
 		
 		if xlFile, err := xlsx.OpenFile(excelFileName); err == nil {
-			fmt.Println("222222222222222222222222222")
 			var hosts []*models.Host
 			var ips string
 			var sns string
 			
 			defApp, w := models.GetDefAppByUserId(this.userId)
-			fmt.Println("defApp=", defApp, "w=", w)
 			
 			for _, sheet := range xlFile.Sheets {
 				for index, row := range sheet.Rows {
-					fmt.Println("len(row.cells", len(row.Cells))
 					if index > 0 && len(row.Cells) >= 6 {
-						fmt.Println("3333333333333333333333333")
 						Sn, err1 := row.Cells[0].Int64()
 						Hostname, err2 := row.Cells[1].String()
 						InnerIp, err3 := row.Cells[2].String()
@@ -69,20 +61,15 @@ func (this *HostController) ImportPrivateHostByExcel() {
 						Operator, err5 := row.Cells[4].String()
 						OsName, err6 := row.Cells[5].String()
 						if err1 != nil || err2 != nil || err3 != nil || err4 != nil || err5 != nil || err6 != nil {
-							fmt.Println("444444444444444444444")
 							out["success"] = false
 							out["message"] = "主机导入失败！上传文件内容格式不正确！"
 							out["name"] = "importToCC"
 							goto render
 						} else {
-							fmt.Println("5555555555555555555555555")
 							if models.GetHostByInnerIp(InnerIp) {
-								fmt.Println("err=", err)
-								fmt.Println("6666666666666666666666")
 								ips = ips + "<li>" + InnerIp + "</li>"
 							}
 							if models.GetHostBySn(Sn) {
-								fmt.Println("7777777777777777777777777777777777")
 								sns = sns + fmt.Sprintf("`SN`%d已存在</br>", Sn)
 							}
 							host := new(models.Host)
@@ -106,7 +93,6 @@ func (this *HostController) ImportPrivateHostByExcel() {
 			}
 			
 			if ips != "" {
-				fmt.Println("888888888888888888888888")
 				out["success"] = false
 				out["message"] = `有内网IP在私有云中已经存在,请先修改这些IP的平台再做导入,具体如下：<ul class="">` + ips + "</ul>"
 				out["name"] = "importToCC"
@@ -114,26 +100,21 @@ func (this *HostController) ImportPrivateHostByExcel() {
 			}
 			
 			if sns != "" {
-				fmt.Println("999999999999999999999999999999999999")
 				out["success"] = false
 				out["message"] = sns
 				out["name"] = "importToCC"
 				goto render
 			}
-			
 			if err := models.AddHost(hosts); err == nil {
-				fmt.Println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa err=", err)
 				out["success"] = true
 				out["message"] = "导入成功！"
 				out["name"] = "importToCC"
 			} else {
-				fmt.Println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbberr=", err)
 				out["success"] = false
 				out["message"] = "主机导入数据库出现问题，请联系管理员！"
 				out["name"] = "importToCC"
 			}
 		} else {
-			fmt.Println("cccccccccccccccccccccccccccccccccccccccccccccccccccccc")
 			out["success"] = false
 			out["message"] = "主机导入失败！上传文件格式不正确！"
 			out["name"] = "importToCC"
@@ -141,7 +122,6 @@ func (this *HostController) ImportPrivateHostByExcel() {
     }
 	
 	render:
-	fmt.Println("ddddddddddddddddddddddddddddddddddddddddd")
 	this.Data["result"] = out
 	this.TplName = "host/upload.html"
 }
@@ -184,8 +164,6 @@ func (this *HostController) GetHost4QuickImport() {
 		query["application_id"] = applicationId
 	}
 	
-	fmt.Println("query=", query)
-
 	// fields: col1,col2,entity.col3
 	if v := this.GetString("fields"); v != "" {
 		fields = strings.Split(v, ",")
@@ -496,4 +474,38 @@ func (this *HostController) DelHostModule() {
 		this.jsonResult(out)
 	}
 	
+}
+
+
+// 查询主机
+func (this *HostController) GetHostByCondition() {
+    out := make(map[string]interface{})
+//  var data []interface{}
+    var fields []string
+    var sortby []string
+    var order []string
+    var query = make(map[string]interface{})
+    var limit int64 = 0
+    var offset int64 = 0
+
+    appId := this.GetString("ApplicationID")
+    hostName := this.GetString("HostName")
+    InnerIP := this.GetString("InnerIP")
+    OuterIP := this.GetString("OuterIP")
+    query["application_id"] = appId
+    if hostName != "" {
+        query["host_name__icontains"] = hostName
+    }
+
+    if InnerIP != "" {
+        query["inner_ip__contains"] = InnerIP
+    }
+    if OuterIP != "" {
+        query["outer_ip__contains"] = OuterIP
+    }
+
+    data, _ := models.GetAllHost(query, fields, sortby, order, offset, limit)
+    out["data"] = data
+    out["total"] = len(data)
+    this.jsonResult(out)
 }
