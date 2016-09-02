@@ -35,6 +35,7 @@ func init() {
 	beego.Router("host/hostQuery", &controllers.HostController{}, "*:HostQuery")
 	
 	beego.Router("/host/getHostById", &controllers.HostController{}, "post:GetHostById")
+	beego.Router("/host/getHostByCondition", &controllers.HostController{}, "post:GetHostByCondition")
 	beego.Router("/host/importPrivateHostByExcel", &controllers.HostController{}, "post:ImportPrivateHostByExcel")
 	beego.Router("/host/getHost4QuickImport", &controllers.HostController{}, "post:GetHost4QuickImport")
 	beego.Router("/host/delPrivateDefaultApplicationHost", &controllers.HostController{}, "post:DelPrivateDefaultApplicationHost")
@@ -44,4 +45,9 @@ func init() {
 	beego.Router("/host/getTopoTree4view", &controllers.HostController{}, "post:GetTopoTree4view")
 	beego.Router("/host/modHostModule/", &controllers.HostController{}, "post:ModHostModule")
 	beego.Router("/host/delHostModule/", &controllers.HostController{}, "post:DelHostModule")
+
+    // 暴露的API接口
+	beego.Router("/app/getCCModuleTree/", &controllers.ApiController{}, "post:GetCCModuleTree")
+	beego.Router("/app/getCCHosts/", &controllers.ApiController{}, "post:GetCCHosts")
+	beego.Router("/app/getHostsByIPs/", &controllers.ApiController{}, "post:GetHostsByIPs")
 }
