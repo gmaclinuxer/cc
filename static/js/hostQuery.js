@@ -864,6 +864,8 @@ window.CC = window.CC || {};
 
                 if(hostId.length==1){
                     $('#moduleHost_HostName').val(hostInfo['HostName']);
+                    $('#moduleHost_InnerIP').val(hostInfo['InnerIP']);
+                    $('#moduleHost_OuterIP').val(hostInfo['OuterIP']);
                     $('#moduleHost_Description').val(hostInfo['Description']);
                     $('#moduleHost_Source').val(hostInfo['Source']);
 
@@ -1458,6 +1460,31 @@ window.CC = window.CC || {};
             }
         }
 
+        if(!$('#moduleHost_InnerIP').prop('disabled')){
+            stdProperty['InnerIP'] = $('#moduleHost_InnerIP').val();
+            if(stdProperty['InnerIP']==null || stdProperty['InnerIP']==''){
+                var d = dialog({
+                        content: '<div class="c-dialogdiv2"><i class="c-dialogimg-prompt"></i>内网IP不能为空</div>',
+                        zIndex:1051
+                    });
+                d.show();
+                setTimeout(function () {
+                    d.close().remove();
+                    $('#moduleHost_InnerIP').focus();
+                }, 1500);
+                $('#moduleHost_InnerIP').focus();
+                return false;
+            }
+        }
+
+        if(!$('#moduleHost_OuterIP').prop('disabled')){
+            stdProperty['OuterIP'] = $('#moduleHost_OuterIP').val();
+            if(stdProperty['OuterIP']==null || stdProperty['OuterIP']==''){
+                $('#moduleHost_OuterIP').focus();
+                return false;
+            }
+        }
+
         var empty_field = [];
         var empty_field_disable = [];
         if(!$('#moduleHost_Operator').prop('disabled')){
@@ -1554,7 +1581,13 @@ window.CC = window.CC || {};
         if(!$.isEmptyObject(hostInfo['stdProperty']) && hostInfo['ApplicationID']!='' && hostInfo['HostID']!=''){
             $.ajax({
                 url:'/host/updateHostInfo/',
-                data:hostInfo,
+                data: {
+                    "HostID": hostInfo['HostID'], 
+                    "ApplicationID": hostInfo['ApplicationID'], 
+                    "HostName": hostInfo['stdProperty']['HostName'],
+                    "InnerIP": hostInfo['stdProperty']['InnerIP'],
+                    "OuterIP": hostInfo['stdProperty']['OuterIP']
+                },
                 dataType:'json',
                 method:'post',
                 success:function(response){
@@ -1568,7 +1601,11 @@ window.CC = window.CC || {};
                     }, 2500);
                     CC.host.hostlist.init();
                     return true;
-                }
+                },
+                error:function(XmlHttpRequest,textStatus, errorThrown)
+  {
+  alert("保存失败;"+XmlHttpRequest.responseText);
+  }
             });
         }
 

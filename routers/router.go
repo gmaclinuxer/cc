@@ -45,6 +45,7 @@ func init() {
 	beego.Router("/host/getTopoTree4view", &controllers.HostController{}, "post:GetTopoTree4view")
 	beego.Router("/host/modHostModule/", &controllers.HostController{}, "post:ModHostModule")
 	beego.Router("/host/delHostModule/", &controllers.HostController{}, "post:DelHostModule")
+	beego.Router("/host/updateHostInfo/", &controllers.HostController{}, "post:UpdateHostInfo")
 
     // 暴露的API接口
 	beego.Router("/app/getCCModuleTree/", &controllers.ApiController{}, "post:GetCCModuleTree")

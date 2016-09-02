@@ -49,7 +49,7 @@ func (this *HostController) ImportPrivateHostByExcel() {
 			var ips string
 			var sns string
 			
-			defApp, w := models.GetDefAppByUserId(this.userId)
+			defApp, _ := models.GetDefAppByUserId(this.userId)
 			
 			for _, sheet := range xlFile.Sheets {
 				for index, row := range sheet.Rows {
@@ -508,4 +508,49 @@ func (this *HostController) GetHostByCondition() {
     out["data"] = data
     out["total"] = len(data)
     this.jsonResult(out)
+}
+
+// 更新主机信息
+func (this *HostController) UpdateHostInfo() {
+    out := make(map[string]interface{})
+    HostID, _ := this.GetInt("HostID")
+    ApplicationID, _ := this.GetInt("ApplicationID")
+    HostName := this.GetString("HostName")
+    InnerIP := this.GetString("InnerIP")
+    OuterIP := this.GetString("OuterIP")
+    h, err := models.GetHostById(HostID)
+    if err != nil {
+        out["success"] = false
+        out["message"] = "主机不存在"
+        this.jsonResult(out)
+    }
+
+    if ApplicationID != h.ApplicationID {
+        out["success"] = false
+        out["message"] = "没有操作权限"
+        this.jsonResult(out)
+    }
+
+    if HostName != "" {
+        h.HostName = HostName
+    }
+
+    if InnerIP != "" {
+        h.InnerIP = InnerIP
+    }
+
+    if OuterIP != "" {
+        h.OuterIP = OuterIP
+    }
+
+    err = models.UpdateHostById(h)
+    if err != nil {
+        out["success"] = false
+        out["message"] = "更新失败"
+        this.jsonResult(out)
+    } else {
+        out["success"] = true
+        out["message"] = "更新成功"
+        this.jsonResult(out)
+    }
 }
