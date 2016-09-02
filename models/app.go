@@ -378,3 +378,62 @@ func DeleteApp(id int) (err error) {
 	}
 	return
 }
+
+// 暴露的API接口要获取的数据
+func GetCCModuleTree(id int) (ml []interface{}, err error) {
+	//	[{"id":"5524","text":"aaa","spriteCssClass":"c-icon icon-group","type":"set","expanded":false,"number":32,"items":[{"id":"7025","spriteCssClass":"c-icon icon-modal","text":"1","operator":"1842605324","bakoperator":"1842605324","type":"module","number":32}]}]
+	var fields []string
+	var sortby []string
+	var order []string
+	var query map[string]string = make(map[string]string)
+	var limit int64 = 0
+	var offset int64 = 0
+
+	query["application_id"] = strconv.Itoa(id)
+	app, _ := GetAppById(id)
+	if app.Level == 3 {
+		query["default"] = "0"
+	} else {
+		query["default"] = "1"
+	}
+
+	if sets, err := GetAllSet(query, fields, sortby, order, offset, limit); err == nil {
+		for _, set := range sets {
+			s := make(map[string]interface{})
+			s["setId"] = set.(Set).SetID
+			s["text"] = set.(Set).SetName
+			if app.Level == 3 {
+				s["expanded"] = false
+			} else {
+				s["expanded"] = true
+			}
+
+			s["hostNum"], _ = GetHostCount(set.(Set).SetID, "SetID")
+			var items []interface{}
+			var fields []string
+			var sortby []string
+			var order []string
+			var query map[string]string = make(map[string]string)
+			var limit int64 = 0
+			var offset int64 = 0
+
+			query["application_id"] = strconv.Itoa(id)
+			query["set_id"] = strconv.Itoa(set.(Set).SetID)
+			if mods, err := GetAllModule(query, fields, sortby, order, offset, limit); err == nil {
+				for _, mod := range mods {
+					if mod.(Module).ModuleName != "空闲机" {
+						m := make(map[string]interface{})
+						m["moduleId"] = mod.(Module).Id
+						m["text"] = mod.(Module).ModuleName
+						m["hostNum"], _ = GetHostCount(mod.(Module).Id, "ModuleID")
+						items = append(items, m)
+					}
+				}
+				s["items"] = items
+			}
+			ml = append(ml, s)
+		}
+	}
+
+	return
+}
