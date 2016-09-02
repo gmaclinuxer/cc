@@ -53,21 +53,25 @@
                     </div>
                     <div id="collapseOne" class="panel-collapse collapse">
                         <div class="search-content">
+                            <div class="col-lg-4" id="HostNameLabel">
+                                <div class="input-group pb10 input-group-height">
+                                    <label class="input-group-addon">主机名称</label>
+                                    <textarea placeholder="请输入主机名称" value="" id="HostName" name="HostName" class="form-control"></textarea>
+                                </div>
+                            </div>
                             <div class="col-lg-4">
                                 <div class="input-group pb10 input-group-height">
                                     <label for="InnerIP" class="input-group-addon">内网IP：</label>
                                     <textarea placeholder="请输入内网IP" value="" id="InnerIP" name="InnerIP" class="form-control"></textarea>
-                                    <label for="InnerIP" class="input-group-addon"><input type="checkbox" name="IfInnerIPexact">精确</label>
                                 </div>
                             </div>
                             <div class="col-lg-4">
                                 <div class="input-group pb10 input-group-height">
                                     <label for="OuterIP" class="input-group-addon">外网IP：</label>
                                     <textarea placeholder="请输入外网IP" value="" id="OuterIP" name="OuterIP" class="form-control"></textarea>
-                                    <label for="OuterIP" class="input-group-addon"><input type="checkbox" name="IfOuterexact">精确</label>
                                 </div>
                             </div>
-                            <div class="col-lg-4">
+                            <!--<div class="col-lg-4">
                                 <div class="input-group pb10 input-group-height">
                                     <label for="AssetID" class="input-group-addon">固资编号：</label>
                                     <textarea placeholder="请输入固资编号" value="" id="AssetID" name="AssetID" class="form-control"></textarea>
@@ -82,7 +86,7 @@
                                 <div class="input-group-addon">模块名称</div>
                                 <select placeholder="(不选为全部)" class="select2_src form-control" multiple="" name="ModuleID" id="module_select" style="display: none;">
                                     <option value="7240">空闲机池-空闲机</option>                                </select>
-                            </div>
+                            </div>-->
                             <div class="col-lg-6" id="HostNameLabel" style="display:none;" >
                                         <div class="input-group pb10 input-group-height">
                                             <label class="input-group-addon">主机名称</label>
@@ -194,7 +198,7 @@
                                     <div class="clearfix"></div>
                                     <div class="col-xs-12 text-center" style="float:none;">
                                         <div class="topology-conditionMore">
-                                            <button class="btn btn-default mr10 conditionMore-button">更多条件<span class="glyphicon glyphicon-triangle-bottom"></span></button>
+                                            <!--<button class="btn btn-default mr10 conditionMore-button">更多条件<span class="glyphicon glyphicon-triangle-bottom"></span></button>
                                             <div class="conditionMore-div tl">
 
                                                 <div class="close-div"><span class="button-cancel">×</span></div>
@@ -216,9 +220,9 @@
                                                     <div class="row pb10">
                                                         <div class="col-4"><label class="iCheckbox"><input type="checkbox"  data-rel="#HostNameLabel" /><span>主机名称</span></label></div>
                                                         <div class="col-4"><label class="iCheckbox"><input type="checkbox"  data-rel="#SNLabel" /><span>SN</span></label></div>
-                                                        <div class="col-4"><label class="iCheckbox"><input type="checkbox"  data-rel="#SourceLabel" /><span>云区域</span></label></div>
+                                                        <div class="col-4"><label class="iCheckbox"><input type="checkbox"  data-rel="#SourceLabel" /><span>云区域</span></label></div>-->
                                                         <!-- <div class="col-4"><label class="iCheckbox"><input type="checkbox" data-rel="#c" /><span>自动续费</span></label></div> -->
-                                                    </div>
+                                                    <!--</div>
                                                     <div class="row pb10">
                                                         <div class="col-4"><label class="iCheckbox"><input type="checkbox"  data-rel="#OperatorLabel" /><span>维护人</span></label></div>
                                                         <div class="col-4"><label class="iCheckbox"><input type="checkbox"  data-rel="#BakOperatorLabel" /><span>备份维护人</span></label></div>
@@ -237,7 +241,7 @@
                                                 </div>
 
                                             </div>
-                                        </div>
+                                        </div>-->
                                         <button class="btn btn-default" id="host_query_reset">重置</button>
                                         <button class="btn btn-primary" id="host_query_submit">查询</button>                       
                                     </div>
