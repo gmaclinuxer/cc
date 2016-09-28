@@ -489,6 +489,7 @@ func (this *HostController) GetHostByCondition() {
     var offset int64 = 0
 
     appId := this.GetString("ApplicationID")
+    modId := this.GetString("ModuleID")
     hostName := this.GetString("HostName")
     InnerIP := this.GetString("InnerIP")
     OuterIP := this.GetString("OuterIP")
@@ -502,6 +503,10 @@ func (this *HostController) GetHostByCondition() {
     }
     if OuterIP != "" {
         query["outer_ip__contains"] = OuterIP
+    }
+
+    if modId != "" {
+        query["module_id__in"] = strings.Split(modId, ",")
     }
 
     data, _ := models.GetAllHost(query, fields, sortby, order, offset, limit)
