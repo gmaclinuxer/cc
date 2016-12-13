@@ -50,13 +50,22 @@ func (this *HostController) ImportPrivateHostByExcel() {
 			defApp, _ := models.GetDefAppByUserId(this.userId)
 			for _, sheet := range xlFile.Sheets {
 				for index, row := range sheet.Rows {
-					if index > 0 && len(row.Cells) >= 5 {
-						Hostname, err2 := row.Cells[0].String()
-						InnerIp, err3 := row.Cells[1].String()
-						BgpIp, err4 := row.Cells[2].String()
-						OuterIp, err5 := row.Cells[3].String()
-						IloIp, err6 := row.Cells[4].String()
-						if err2 != nil || err3 != nil || err4 != nil || err5 != nil || err6 != nil {
+					if index > 0 && len(row.Cells) >= 14 {
+						Model, err1 := row.Cells[0].String()
+						Cpu, err2 := row.Cells[1].Int()
+						Memory, err3 := row.Cells[2].Int()
+						Hostname, err4 := row.Cells[3].String()
+						InnerIp, err5 := row.Cells[4].String()
+						InnerGate, err6 := row.Cells[5].String()
+						InnerInterface, err7 := row.Cells[6].String()
+						BgpIp, err8 := row.Cells[7].String()
+						BgpGate, err9 := row.Cells[8].String()
+						BgpInterface, err10 := row.Cells[9].String()
+						OuterIp, err11 := row.Cells[10].String()
+						OuterGate, err12 := row.Cells[11].String()
+						OuterInterface, err13 := row.Cells[12].String()
+						IloIp, err14 := row.Cells[13].String()
+						if err1 != nil || err2 != nil || err3 != nil || err4 != nil || err5 != nil || err6 != nil || err7 != nil || err8 != nil || err9 != nil || err10 != nil || err11 != nil || err12 != nil || err13 != nil || err14 != nil {
 							out["success"] = false
 							out["message"] = "主机导入失败！上传文件内容格式不正确！"
 							out["name"] = "importToCC"
@@ -66,10 +75,19 @@ func (this *HostController) ImportPrivateHostByExcel() {
 								ips = ips + "<li>" + InnerIp + "</li>"
 							}
 							host := new(models.Host)
+							host.Model = Model
+							host.Cpu = Cpu
+							host.Memory = Memory
 							host.HostName = Hostname
 							host.InnerIP = InnerIp
+							host.InnerGate = InnerGate
+							host.InnerInterface = InnerInterface
 							host.BgpIP = BgpIp
+							host.BgpGate = BgpGate
+							host.BgpInterface = BgpInterface
 							host.OuterIP = OuterIp
+							host.OuterGate = OuterGate
+							host.OuterInterface = OuterInterface
 							host.IloIP = IloIp
 							host.Source = 3
 							host.ApplicationID = defApp["AppId"].(int)

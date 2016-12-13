@@ -544,7 +544,7 @@
             theme: "minimal-dark" //设置风格
         }).css('maxHeight', 400);
         CC.host.topology.init({{.data}});
-        CC.host.hostlist.defaultColumns=['HostName', 'InnerIP','OuterIP', 'BgpIP', 'IloIP', 'SetName','ModuleName','ApplicationName'];
+        CC.host.hostlist.defaultColumns=['HostName', 'InnerIP', 'InnerGate', 'InnerInterface', 'BgpIP', 'BgpGate', 'BgpInterface', 'OuterIP', 'OuterGate', 'OuterInterface', 'IloIP', 'SetName','ModuleName','ApplicationName'];
         if($('#InnerIP').val().length>0 || $('#OuterIP').val().length>0 || $('#AssetID').val().length>0){
             $('#collapseOneBtn').trigger('click');
             $('#host_query_submit').trigger('click');

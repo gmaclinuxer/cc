@@ -13,10 +13,19 @@ import (
 type Host struct {
 	HostID          int       `orm:"column(id);auto"`
 	CreateTime      time.Time `orm:"column(create_time);type(timestamp)"`
+	Model           string    `orm:"column(model);size(255);null"`
+	Cpu             int       `orm:"column(cpu)"`
+	Memory          int       `orm:"column(memory)"`
 	HostName        string    `orm:"column(host_name);size(255);null"`
 	InnerIP         string    `orm:"column(inner_ip);size(32)"`
+	InnerGate       string    `orm:"column(inner_gate);size(32)"`
+	InnerInterface  string    `orm:"column(inner_interface);size(32)"`
 	BgpIP           string    `orm:"column(bgp_ip);size(255);null"`
+	BgpGate         string    `orm:"column(bgp_gate);size(32)"`
+	BgpInterface    string    `orm:"column(bgp_interface);size(32)"`
 	OuterIP         string    `orm:"column(outer_ip);size(32);null"`
+	OuterGate       string    `orm:"column(outer_gate);size(32)"`
+	OuterInterface  string    `orm:"column(outer_interface);size(32)"`
 	IloIP           string    `orm:"column(ilo_ip);size(255);null"`
 	Source          int8      `orm:"column(source)"`
 	ModuleID        int       `orm:"column(module_id);null"`
