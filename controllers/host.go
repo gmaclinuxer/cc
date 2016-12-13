@@ -1,15 +1,14 @@
 package controllers
 
 import (
-	"path"
-	"fmt"
 	"encoding/json"
 	"errors"
+	"path"
 	"strconv"
 	"strings"
 
 	"github.com/tealeg/xlsx"
-	
+
 	"github.com/shwinpiocess/cc/models"
 )
 
@@ -43,24 +42,21 @@ func (this *HostController) ImportPrivateHostByExcel() {
 		}
 		excelFileName := "static/upload/" + h.Filename
 		this.SaveToFile("importPrivateHost", excelFileName)
-		
+
 		if xlFile, err := xlsx.OpenFile(excelFileName); err == nil {
 			var hosts []*models.Host
 			var ips string
-			var sns string
-			
+
 			defApp, _ := models.GetDefAppByUserId(this.userId)
-			
 			for _, sheet := range xlFile.Sheets {
 				for index, row := range sheet.Rows {
-					if index > 0 && len(row.Cells) >= 6 {
-						Sn, err1 := row.Cells[0].Int64()
-						Hostname, err2 := row.Cells[1].String()
-						InnerIp, err3 := row.Cells[2].String()
-						OuterIp, err4 := row.Cells[3].String()
-						Operator, err5 := row.Cells[4].String()
-						OsName, err6 := row.Cells[5].String()
-						if err1 != nil || err2 != nil || err3 != nil || err4 != nil || err5 != nil || err6 != nil {
+					if index > 0 && len(row.Cells) >= 5 {
+						Hostname, err2 := row.Cells[0].String()
+						InnerIp, err3 := row.Cells[1].String()
+						BgpIp, err4 := row.Cells[2].String()
+						OuterIp, err5 := row.Cells[3].String()
+						IloIp, err6 := row.Cells[4].String()
+						if err2 != nil || err3 != nil || err4 != nil || err5 != nil || err6 != nil {
 							out["success"] = false
 							out["message"] = "主机导入失败！上传文件内容格式不正确！"
 							out["name"] = "importToCC"
@@ -69,16 +65,12 @@ func (this *HostController) ImportPrivateHostByExcel() {
 							if models.GetHostByInnerIp(InnerIp) {
 								ips = ips + "<li>" + InnerIp + "</li>"
 							}
-							if models.GetHostBySn(Sn) {
-								sns = sns + fmt.Sprintf("`SN`%d已存在</br>", Sn)
-							}
 							host := new(models.Host)
-							host.SN = Sn
 							host.HostName = Hostname
 							host.InnerIP = InnerIp
+							host.BgpIP = BgpIp
 							host.OuterIP = OuterIp
-							host.Operator = Operator
-							host.OSName = OsName
+							host.IloIP = IloIp
 							host.Source = 3
 							host.ApplicationID = defApp["AppId"].(int)
 							host.ApplicationName = defApp["AppName"].(string)
@@ -91,20 +83,14 @@ func (this *HostController) ImportPrivateHostByExcel() {
 					}
 				}
 			}
-			
+
 			if ips != "" {
 				out["success"] = false
 				out["message"] = `有内网IP在私有云中已经存在,请先修改这些IP的平台再做导入,具体如下：<ul class="">` + ips + "</ul>"
 				out["name"] = "importToCC"
 				goto render
 			}
-			
-			if sns != "" {
-				out["success"] = false
-				out["message"] = sns
-				out["name"] = "importToCC"
-				goto render
-			}
+
 			if err := models.AddHost(hosts); err == nil {
 				out["success"] = true
 				out["message"] = "导入成功！"
@@ -119,9 +105,9 @@ func (this *HostController) ImportPrivateHostByExcel() {
 			out["message"] = "主机导入失败！上传文件格式不正确！"
 			out["name"] = "importToCC"
 		}
-    }
-	
-	render:
+	}
+
+render:
 	this.Data["result"] = out
 	this.TplName = "host/upload.html"
 }
@@ -144,26 +130,25 @@ func (this *HostController) Details() {
 	}
 }
 
-
 func (this *HostController) GetHost4QuickImport() {
 	isDistributed, _ := this.GetBool("IsDistributed")
 	source := this.GetString("Source")
 	applicationId := this.GetString("ApplicationID")
-	
+
 	var fields []string
 	var sortby []string
 	var order []string
 	var query = make(map[string]interface{})
 	var limit int64 = 0
 	var offset int64 = 0
-	
+
 	query["is_distributed"] = isDistributed
 	query["source"] = source
-	
+
 	if isDistributed {
 		query["application_id"] = applicationId
 	}
-	
+
 	// fields: col1,col2,entity.col3
 	if v := this.GetString("fields"); v != "" {
 		fields = strings.Split(v, ",")
@@ -199,7 +184,7 @@ func (this *HostController) GetHost4QuickImport() {
 	}
 
 	l, err := models.GetAllHost(query, fields, sortby, order, offset, limit)
-	
+
 	out := make(map[string]interface{})
 	if err != nil {
 		out["success"] = false
@@ -263,7 +248,7 @@ func (this *HostController) QuickDistribute() {
 			ids = append(ids, id)
 		}
 	}
-	
+
 	if toApplicationID, err := this.GetInt("ToApplicationID"); err != nil {
 		out["success"] = false
 		out["errInfo"] = err.Error()
@@ -274,7 +259,7 @@ func (this *HostController) QuickDistribute() {
 			out["errInfo"] = err.Error()
 			this.jsonResult(out)
 		}
-	
+
 		out["success"] = true
 		out["message"] = "分配成功"
 		this.jsonResult(out)
@@ -293,7 +278,7 @@ func (this *HostController) ResHostModule() {
 			ids = append(ids, id)
 		}
 	}
-	
+
 	if defApp, err := models.GetDefAppByUserId(this.userId); err != nil {
 		out["success"] = false
 		this.jsonResult(out)
@@ -303,7 +288,7 @@ func (this *HostController) ResHostModule() {
 			out["errInfo"] = err.Error()
 			out["message"] = err.Error()
 			this.jsonResult(out)
-		}else {
+		} else {
 			//TODO 判断指定的业务是否存在
 			if _, err := models.ResHostModule(ids, defApp["AppId"].(int)); err != nil {
 				out["success"] = false
@@ -311,7 +296,7 @@ func (this *HostController) ResHostModule() {
 				out["message"] = err
 				this.jsonResult(out)
 			}
-			
+
 			out["success"] = true
 			out["message"] = "上交成功"
 			this.jsonResult(out)
@@ -338,14 +323,14 @@ func (this *HostController) QuickImport() {
 
 func (this *HostController) GetHostById() {
 	out := make(map[string]interface{})
-//	var data []interface{}
+	//	var data []interface{}
 	var fields []string
 	var sortby []string
 	var order []string
 	var query = make(map[string]interface{})
 	var limit int64 = 0
 	var offset int64 = 0
-	
+
 	appId := this.GetString("ApplicationID")
 	setId := this.GetString("SetID")
 	modId := this.GetString("ModuleID")
@@ -356,7 +341,7 @@ func (this *HostController) GetHostById() {
 	if modId != "" {
 		query["module_id__in"] = strings.Split(modId, ",")
 	}
-	
+
 	data, _ := models.GetAllHost(query, fields, sortby, order, offset, limit)
 	out["data"] = data
 	out["total"] = len(data)
@@ -391,22 +376,21 @@ func (this *HostController) ModHostModule() {
 	var hostIds []int
 	var id int
 	var err error
-	
+
 	out := make(map[string]interface{})
-	
+
 	if appID, err = this.GetInt("ApplicationID"); err != nil {
 		out["success"] = false
 		out["message"] = "参数ApplicationID格式不正确"
 		this.jsonResult(out)
 	}
-	
+
 	if moduleID, err = this.GetInt("ModuleID"); err != nil {
 		out["success"] = false
 		out["message"] = "参数ModuleID格式不正确"
 		this.jsonResult(out)
 	}
-	
-	
+
 	idStr := this.GetString("HostID")
 	for _, v := range strings.Split(idStr, ",") {
 		if id, err = strconv.Atoi(v); err != nil {
@@ -417,7 +401,7 @@ func (this *HostController) ModHostModule() {
 			hostIds = append(hostIds, id)
 		}
 	}
-	
+
 	if _, err = models.ModHostModule(appID, moduleID, hostIds); err != nil {
 		out["success"] = false
 		out["message"] = err.Error()
@@ -432,7 +416,7 @@ func (this *HostController) ModHostModule() {
 // 移至空闲机/故障机
 func (this *HostController) DelHostModule() {
 	out := make(map[string]interface{})
-	
+
 	// ApplicationID:4050
 	// HostID:41,42,45,46,47,48,49
 	var appId int
@@ -440,20 +424,20 @@ func (this *HostController) DelHostModule() {
 	var hostId int
 	var moduleName string
 	var err error
-	
+
 	if appId, err = this.GetInt("ApplicationID"); err != nil {
 		out["success"] = false
 		out["message"] = "参数ApplicationID格式不正确"
 		this.jsonResult(out)
 	}
-	
+
 	status := this.GetString("Status")
 	if status == "1" {
 		moduleName = "故障机"
 	} else {
 		moduleName = "空闲机"
 	}
-	
+
 	for _, v := range strings.Split(this.GetString("HostID"), ",") {
 		if hostId, err = strconv.Atoi(v); err != nil {
 			out["success"] = false
@@ -463,7 +447,7 @@ func (this *HostController) DelHostModule() {
 			hostIds = append(hostIds, hostId)
 		}
 	}
-	
+
 	if _, err = models.DelHostModule(appId, moduleName, hostIds); err != nil {
 		out["success"] = false
 		out["message"] = err.Error()
@@ -473,89 +457,88 @@ func (this *HostController) DelHostModule() {
 		out["message"] = "转移成功"
 		this.jsonResult(out)
 	}
-	
-}
 
+}
 
 // 查询主机
 func (this *HostController) GetHostByCondition() {
-    out := make(map[string]interface{})
-//  var data []interface{}
-    var fields []string
-    var sortby []string
-    var order []string
-    var query = make(map[string]interface{})
-    var limit int64 = 0
-    var offset int64 = 0
+	out := make(map[string]interface{})
+	//  var data []interface{}
+	var fields []string
+	var sortby []string
+	var order []string
+	var query = make(map[string]interface{})
+	var limit int64 = 0
+	var offset int64 = 0
 
-    appId := this.GetString("ApplicationID")
-    modId := this.GetString("ModuleID")
-    hostName := this.GetString("HostName")
-    InnerIP := this.GetString("InnerIP")
-    OuterIP := this.GetString("OuterIP")
-    query["application_id"] = appId
-    if hostName != "" {
-        query["host_name__icontains"] = hostName
-    }
+	appId := this.GetString("ApplicationID")
+	modId := this.GetString("ModuleID")
+	hostName := this.GetString("HostName")
+	InnerIP := this.GetString("InnerIP")
+	OuterIP := this.GetString("OuterIP")
+	query["application_id"] = appId
+	if hostName != "" {
+		query["host_name__icontains"] = hostName
+	}
 
-    if InnerIP != "" {
-        query["inner_ip__contains"] = InnerIP
-    }
-    if OuterIP != "" {
-        query["outer_ip__contains"] = OuterIP
-    }
+	if InnerIP != "" {
+		query["inner_ip__contains"] = InnerIP
+	}
+	if OuterIP != "" {
+		query["outer_ip__contains"] = OuterIP
+	}
 
-    if modId != "" {
-        query["module_id__in"] = strings.Split(modId, ",")
-    }
+	if modId != "" {
+		query["module_id__in"] = strings.Split(modId, ",")
+	}
 
-    data, _ := models.GetAllHost(query, fields, sortby, order, offset, limit)
-    out["data"] = data
-    out["total"] = len(data)
-    this.jsonResult(out)
+	data, _ := models.GetAllHost(query, fields, sortby, order, offset, limit)
+	out["data"] = data
+	out["total"] = len(data)
+	this.jsonResult(out)
 }
 
 // 更新主机信息
 func (this *HostController) UpdateHostInfo() {
-    out := make(map[string]interface{})
-    HostID, _ := this.GetInt("HostID")
-    ApplicationID, _ := this.GetInt("ApplicationID")
-    HostName := this.GetString("HostName")
-    InnerIP := this.GetString("InnerIP")
-    OuterIP := this.GetString("OuterIP")
-    h, err := models.GetHostById(HostID)
-    if err != nil {
-        out["success"] = false
-        out["message"] = "主机不存在"
-        this.jsonResult(out)
-    }
+	out := make(map[string]interface{})
+	HostID, _ := this.GetInt("HostID")
+	ApplicationID, _ := this.GetInt("ApplicationID")
+	HostName := this.GetString("HostName")
+	InnerIP := this.GetString("InnerIP")
+	OuterIP := this.GetString("OuterIP")
+	h, err := models.GetHostById(HostID)
+	if err != nil {
+		out["success"] = false
+		out["message"] = "主机不存在"
+		this.jsonResult(out)
+	}
 
-    if ApplicationID != h.ApplicationID {
-        out["success"] = false
-        out["message"] = "没有操作权限"
-        this.jsonResult(out)
-    }
+	if ApplicationID != h.ApplicationID {
+		out["success"] = false
+		out["message"] = "没有操作权限"
+		this.jsonResult(out)
+	}
 
-    if HostName != "" {
-        h.HostName = HostName
-    }
+	if HostName != "" {
+		h.HostName = HostName
+	}
 
-    if InnerIP != "" {
-        h.InnerIP = InnerIP
-    }
+	if InnerIP != "" {
+		h.InnerIP = InnerIP
+	}
 
-    if OuterIP != "" {
-        h.OuterIP = OuterIP
-    }
+	if OuterIP != "" {
+		h.OuterIP = OuterIP
+	}
 
-    err = models.UpdateHostById(h)
-    if err != nil {
-        out["success"] = false
-        out["message"] = "更新失败"
-        this.jsonResult(out)
-    } else {
-        out["success"] = true
-        out["message"] = "更新成功"
-        this.jsonResult(out)
-    }
+	err = models.UpdateHostById(h)
+	if err != nil {
+		out["success"] = false
+		out["message"] = "更新失败"
+		this.jsonResult(out)
+	} else {
+		out["success"] = true
+		out["message"] = "更新成功"
+		this.jsonResult(out)
+	}
 }
