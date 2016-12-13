@@ -281,7 +281,6 @@
                                 <div class="select">
                                                                         <div class="row pb10">
                                         <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="HostName" checked="checked" /><span>主机名称</span></label></div>
-                                                                                <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="SN" checked="checked" /><span>设备SN</span></label></div>
                                     </div>
                                                                     <div class="row pb10">
                                         <div class="col-6"><label class="iCheckbox"><input type="checkbox" target-rel="ApplicationName" checked="checked" /><span>业务名称</span></label></div>
@@ -361,7 +360,6 @@
                                     <li name='SetName' class="ui-state-disabled"><i class="fa fa-ellipsis-v"></i><span>集群名称</span></li>
                                     <li name='ModuleName' class="ui-state-disabled"><i class="fa fa-ellipsis-v"></i><span>模块名称</span></li>
                                                                         <li name="HostName"><i class="fa fa-ellipsis-v"></i><span>主机名称</span><i class="fa fa-close list-close"></i></li>
-                                                                        <li name="SN"><i class="fa fa-ellipsis-v"></i><span>设备SN</span><i class="fa fa-close list-close"></i></li>
                                                                         <li name="ApplicationName"><i class="fa fa-ellipsis-v"></i><span>业务名称</span><i class="fa fa-close list-close"></i></li>
                                                                     </ul>
                             </div>
@@ -546,7 +544,7 @@
             theme: "minimal-dark" //设置风格
         }).css('maxHeight', 400);
         CC.host.topology.init({{.data}});
-        CC.host.hostlist.defaultColumns=["InnerIP","OuterIP","SetName","ModuleName","HostName","SN","ApplicationName"];
+        CC.host.hostlist.defaultColumns=['HostName', 'InnerIP','OuterIP', 'BgpIP', 'IloIP', 'SetName','ModuleName','ApplicationName'];
         if($('#InnerIP').val().length>0 || $('#OuterIP').val().length>0 || $('#AssetID').val().length>0){
             $('#collapseOneBtn').trigger('click');
             $('#host_query_submit').trigger('click');
