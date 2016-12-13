@@ -14,16 +14,14 @@ $(document).ready(function() {
     var qcloudKendoGridObj = {
         columns:[
             {field:'checkbox',title:'#',menu:false,width:30,template:'<input type="checkbox" #:data.Checked# value="#:data.HostID#" class="c-grid-checkbox"/>'},
+            {field:"HostName",title:'主机名称',filterable:true},
             {field:'InnerIP',title:"内网IP",filterable:true},
+            {field:'BgpIP',title:"BGP IP",filterable:true},
             {field:"OuterIP", title: "公网IP",filterable:true},
-            {field:"SN",title:'SN',filterable:true},
-            {field:"AssetID",title:'固资编号',filterable:true},
+            {field:"IloIP",title:'ILO IP',filterable:true},
             {field:"ApplicationName",title:'所属业务',filterable:true},
             {field:"SetName",title:'所属集群',filterable:true},
-            {field:"ModuleName",title:'所属模块',filterable:true},
-            {field:"HostName",title:'主机名称',filterable:true},
-            {field:"OSName",title:'操作系统',filterable:true},
-            {field:"DeadLineTime",title:'到期时间',filterable:true}
+            {field:"ModuleName",title:'所属模块',filterable:true}
         ],
         dataSource:{
             transport: {
@@ -103,16 +101,14 @@ $(document).ready(function() {
     var privateKendoGridObj = {
         columns:[
             {field:'checkbox',title:'#',menu:false,width:30,template:'<input type="checkbox" #:data.Checked# value="#:data.HostID#" class="c-grid-checkbox"/>'},
+            {field:"HostName",title:'主机名称',filterable:true},
             {field:'InnerIP',title:"内网IP",filterable:true},
+            {field:'BgpIP',title:"BGP IP",filterable:true},
             {field:"OuterIP", title: "公网IP",filterable:true},
-            {field:"SN",title:'SN',filterable:true},
-            {field:"AssetID",title:'固资编号',filterable:true},
+            {field:"IloIP",title:'ILO IP',filterable:true},
             {field:"ApplicationName",title:'所属业务',filterable:true},
             {field:"SetName",title:'所属集群',filterable:true},
-            {field:"ModuleName",title:'所属模块',filterable:true},
-            {field:"HostName",title:'主机名称',filterable:true},
-            {field:"OSName",title:'操作系统',filterable:true},
-            {field:"DeadLineTime",title:'到期时间',filterable:true,hidden:true}
+            {field:"ModuleName",title:'所属模块',filterable:true}
         ],
         dataSource:{
             transport: {
@@ -193,16 +189,14 @@ $(document).ready(function() {
     var tencentKendoGridObj = {
         columns:[
             {field:'checkbox',title:'#',menu:false,width:30,template:'<input type="checkbox" #:data.Checked# value="#:data.HostID#" class="c-grid-checkbox"/>'},
+            {field:"HostName",title:'主机名称',filterable:true},
             {field:'InnerIP',title:"内网IP",filterable:true},
+            {field:'BgpIP',title:"BGP IP",filterable:true},
             {field:"OuterIP", title: "公网IP",filterable:true},
-            {field:"SN",title:'SN',filterable:true},
-            {field:"AssetID",title:'固资编号',filterable:true},
+            {field:"IloIP",title:'ILO IP',filterable:true},
             {field:"ApplicationName",title:'所属业务',filterable:true},
             {field:"SetName",title:'所属集群',filterable:true},
-            {field:"ModuleName",title:'所属模块',filterable:true},
-            {field:"HostName",title:'主机名称',filterable:true},
-            {field:"OSName",title:'操作系统',filterable:true},
-            {field:"DeadLineTime",title:'到期时间',filterable:true,hidden:true}
+            {field:"ModuleName",title:'所属模块',filterable:true}
         ],
         dataSource:{
             transport: {

@@ -1044,7 +1044,8 @@ window.CC = window.CC || {};
             var me = this;
             
             if(!me.defaultColumns || me.defaultColumns.length===0){
-                me.defaultColumns = ['InnerIP','OuterIP','SetName','ModuleName','HostName','SN','ApplicationName'];
+                // me.defaultColumns = ['InnerIP','OuterIP','SetName','ModuleName','HostName','SN','ApplicationName'];
+                me.defaultColumns = ['HostName', 'InnerIP','OuterIP', 'BgpIP', 'IloIP', 'SetName','ModuleName','ApplicationName'];
             }
             for(var i=0,len=allColumns.length; i<len; i++){
                 allColumns[i].hidden = false;
@@ -1171,46 +1172,16 @@ window.CC = window.CC || {};
         hostlist,
         allColumns=[
             {field:'checkbox',title:'#',menu:false,width:30,template:'<input type="checkbox" #:data.Checked# value="#:data.HostID#" class="c-grid-checkbox"/>'},
-            {field:'InnerIP',title:"内网IP",width:140,template:'<a href="javascript:void(0)" class="a-innerip" title="#:data.InnerIP#">#:data.InnerIP#</a>'},
-            {field:"OuterIP", title: "外网IP",width:140},
-            {field:"SetName",title:'集群名称',width:140},
-            {field:"ModuleName",title:'模块名称',width:140},
-            {field:"HostName",title:'主机名称',width:120},
-            {field:"SN",title:'设备SN',width:120},
-            {field:"ApplicationName",title:'业务名称',width:120},
-            {field:"AssetID",title:'固资编号',width:200},
-            {field:"AutoRenew",title:'自动续费',width:80},
-            {field:"BakOperator",title:'备份维护人',width:120},
-            {field:"BandWidth",title:'带宽',width:120},
-            {field:"Cpu",title:'Cpu',width:120},
-            {field:"CreateTime",title:'创建时间',width:160},
-            {field:"DeadLineTime",title:'到期时间',width:160},
-            {field:"Description",title:'备注',width:120},
-            {field:"DeviceClass",title:'设备类型',width:80},
-            {field:"HostID",title:'主机ID',width:80},
-            {field:"HardMemo",title:'硬件说明',width:200},
-            {field:"IdcName",title:'机房管理单元',width:120},
-            {field:"InnerSwitchPort",title:'内网交换机端口',width:120},
-            {field:"ImageID",title:'镜像ID',width:120},
-            {field:"LastTime",title:'更新时间',width:160},
-            {field:"Mem",title:'内存',width:120},
-            {field:"Operator",title:'维护人',width:120},
-            {field:"OSName",title:'操作系统',width:120},
-            {field:"OuterSwitchPort",title:'外网交换机端口',width:120},
-            {field:"PosCode",title:'存放机位',width:120},
-            {field:"Price",title:'机器价格',width:120},
-            {field:"ProjectId",title:'项目Id',width:120},
-            {field:"Region",title:'机房城市',width:120},
-            {field:"ServerRack",title:'存放机架',width:120},
-            {field:"Source",title:'云区域',width:120},
-            {field:"Status",title:'运行状态',width:120},
-            {field:"StorageId",title:'StorageId',width:120},
-            {field:"StorageSize",title:'硬盘容量',width:120},
-            {field:"StorageType",title:'存储类型',width:120},
-            {field:"Uuid",title:'Uuid',width:120},
-            {field:"ZoneID",title:'可用区ID',width:120},
-            {field:"ZoneName",title:'可用区',width:120},
-            {field:"ModName",title:'Module名称',width:120}
+            // {field:'InnerIP',title:"内网IP",width:140,template:'<a href="javascript:void(0)" class="a-innerip" title="#:data.InnerIP#">#:data.InnerIP#</a>'},
+            {field:'InnerIP',title:"内网IP",width:140},
+            {field:"HostName",title:'主机名称'},
+            {field:'BgpIP',title:"BGP IP"},
+            {field:"OuterIP", title: "公网IP"},
+            {field:"IloIP",title:'ILO IP'},
+            {field:"ApplicationName",title:'所属业务'},
+            {field:"SetName",title:'所属集群'},
+            {field:"ModuleName",title:'所属模块'},
+            {field:"Source",title:'云区域',width:120}
         ],
     gridObj={
             change:function(e){
