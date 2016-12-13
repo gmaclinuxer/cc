@@ -1,0 +1,73 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "e9u5CletpzwhAOhU8rXoLopFTX8=",
+			"path": "github.com/astaxie/beego",
+			"revision": "90999717dda6193c6f970eec52e289b0a9e74998",
+			"revisionTime": "2016-12-05T15:14:26Z"
+		},
+		{
+			"checksumSHA1": "kjytFi3nPY+nCfokcTtxP8nCL48=",
+			"path": "github.com/astaxie/beego/config",
+			"revision": "90999717dda6193c6f970eec52e289b0a9e74998",
+			"revisionTime": "2016-12-05T15:14:26Z"
+		},
+		{
+			"checksumSHA1": "swT6CGf6GtG3dRFrosdKU0L0oj0=",
+			"path": "github.com/astaxie/beego/context",
+			"revision": "90999717dda6193c6f970eec52e289b0a9e74998",
+			"revisionTime": "2016-12-05T15:14:26Z"
+		},
+		{
+			"checksumSHA1": "HSyNHiauTk3hE0hMwnlEti60NKs=",
+			"path": "github.com/astaxie/beego/grace",
+			"revision": "90999717dda6193c6f970eec52e289b0a9e74998",
+			"revisionTime": "2016-12-05T15:14:26Z"
+		},
+		{
+			"checksumSHA1": "9zYV333UEh57giewYT/sw1pVcGo=",
+			"path": "github.com/astaxie/beego/logs",
+			"revision": "90999717dda6193c6f970eec52e289b0a9e74998",
+			"revisionTime": "2016-12-05T15:14:26Z"
+		},
+		{
+			"checksumSHA1": "rE3UrtjMu9SlWIe7mx2RwQGmNx4=",
+			"path": "github.com/astaxie/beego/orm",
+			"revision": "90999717dda6193c6f970eec52e289b0a9e74998",
+			"revisionTime": "2016-12-05T15:14:26Z"
+		},
+		{
+			"checksumSHA1": "bTnlmiZsSJz8WGXmOf+UhHb+5Iw=",
+			"path": "github.com/astaxie/beego/session",
+			"revision": "90999717dda6193c6f970eec52e289b0a9e74998",
+			"revisionTime": "2016-12-05T15:14:26Z"
+		},
+		{
+			"checksumSHA1": "s6ssmbMKnIbOCsboRkPNm+20xCI=",
+			"path": "github.com/astaxie/beego/toolbox",
+			"revision": "90999717dda6193c6f970eec52e289b0a9e74998",
+			"revisionTime": "2016-12-05T15:14:26Z"
+		},
+		{
+			"checksumSHA1": "Zc7cli1PFfbrd0hcUR7JtFW9A78=",
+			"path": "github.com/astaxie/beego/utils",
+			"revision": "90999717dda6193c6f970eec52e289b0a9e74998",
+			"revisionTime": "2016-12-05T15:14:26Z"
+		},
+		{
+			"checksumSHA1": "jWsLa22L0uWz1RQ36In+jsea7b4=",
+			"path": "github.com/go-sql-driver/mysql",
+			"revision": "a0583e0143b1624142adab07e0e97fe106d99561",
+			"revisionTime": "2016-12-01T11:50:36Z"
+		},
+		{
+			"checksumSHA1": "S068paVxZamCnu0xh0F6KQ0aMIk=",
+			"path": "github.com/tealeg/xlsx",
+			"revision": "a8490cf686defe538b45b05af838d9eeb7d8fe64",
+			"revisionTime": "2016-10-26T16:12:24Z"
+		}
+	],
+	"rootPath": "github.com/shwinpiocess/cc"
+}
