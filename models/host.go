@@ -12,45 +12,13 @@ import (
 
 type Host struct {
 	HostID          int       `orm:"column(id);auto"`
-	AssetID         string    `orm:"column(asset_id);size(255);null"`
-	AutoRenew       int8      `orm:"column(auto_renew);null"`
-	BakOperator     int       `orm:"column(bak_operator);null"`
-	BandWidth       int       `orm:"column(band_width);null"`
-	Cpu             uint      `orm:"column(cpu)"`
 	CreateTime      time.Time `orm:"column(create_time);type(timestamp)"`
-	Description     string    `orm:"column(description);size(255);null"`
-	DeadLineTime    time.Time `orm:"column(deadline_time);type(timestamp);null"`
-	DeviceClass     string    `orm:"column(device_class);size(255);null"`
-	HardMemo        string    `orm:"column(hard_memo);size(255);null"`
 	HostName        string    `orm:"column(host_name);size(255);null"`
-	IdcName         string    `orm:"column(idc_name);size(255);null"`
 	InnerIP         string    `orm:"column(inner_ip);size(32)"`
-	InnerSwitchPort int       `orm:"column(inner_switchport);null"`
-	ImageID         int       `orm:"column(image_id);null"`
-	LastTime        time.Time `orm:"column(last_time);type(timestamp);null"`
-	Mem             int       `orm:"column(mem);null"`
-	Operator        string    `orm:"column(operator);size(255);null"`
-	OSName          string    `orm:"column(os_name);size(255);null"`
+	BgpIP           string    `orm:"column(bgp_ip);size(255);null"`
 	OuterIP         string    `orm:"column(outer_ip);size(32);null"`
-	OuterSwitchPort string    `orm:"column(outer_switchport);size(255);null"`
-	PosCode         string    `orm:"column(poscode);size(255);null"`
-	Price           float64   `orm:"column(price);null;digits(10);decimals(0)"`
-	ProjectId       int       `orm:"column(project_id);null"`
-	Region          string    `orm:"column(region);size(255);null"`
-	ServerRack      string    `orm:"column(server_rack);size(255);null"`
-	ServerType      string    `orm:"column(server_type);size(255);null"`
-	SN              int64     `orm:"column(sn);null"`
+	IloIP           string    `orm:"column(ilo_ip);size(255);null"`
 	Source          int8      `orm:"column(source)"`
-	Status          string    `orm:"column(status);size(255);null"`
-	StorageId       int       `orm:"column(storage_id);null"`
-	StorageSize     float64   `orm:"column(storage_size);null"`
-	StorageType     string    `orm:"column(storage_type);size(255);null"`
-	Uuid            int       `orm:"column(uuid);null"`
-	ZoneID          int       `orm:"column(zone_id);null"`
-	ZoneName        string    `orm:"column(zone_name);size(255);null"`
-	GseProxy        string    `orm:"column(gse_proxy);size(255);null"`
-	VIP             string    `orm:"column(vip);size(255);null"`
-	ModName         string    `orm:"column(mod_name);size(255);null"`
 	ModuleID        int       `orm:"column(module_id);null"`
 	ModuleName      string    `orm:"column(module_name);size(255);null"`
 	SetID           int       `orm:"column(set_id);null"`
@@ -95,13 +63,6 @@ func GetHostById(id int) (v *Host, err error) {
 		return v, nil
 	}
 	return nil, err
-}
-
-// GetHostById retrieves Host by Id. Returns error if
-// Id doesn't exist
-func GetHostBySn(sn int64) bool {
-	o := orm.NewOrm()
-	return o.QueryTable("host").Filter("sn", sn).Exist()
 }
 
 // GetHostById retrieves Host by Id. Returns error if
@@ -209,7 +170,7 @@ func UpdateHostToApp(ids []int, appID int) (num int64, err error) {
 	if app, err = GetAppById(appID); err != nil {
 		return
 	}
-	
+
 	if err = o.QueryTable("set").Filter("ApplicationID", appID).Filter("SetName", "空闲机池").One(&set); err != nil {
 		return
 	}
@@ -219,9 +180,9 @@ func UpdateHostToApp(ids []int, appID int) (num int64, err error) {
 	}
 
 	num, err = o.QueryTable("host").Filter("HostID__in", ids).Update(orm.Params{
-		"ApplicationID": appID,
+		"ApplicationID":   appID,
 		"ApplicationName": app.ApplicationName,
-		"SetID": set.SetID,
+		"SetID":           set.SetID,
 		//		"SetName": set.SetName,
 		"ModuleID":      mod.Id,
 		"IsDistributed": true,
@@ -243,9 +204,9 @@ func ResHostModule(ids []int, appID int) (num int64, err error) {
 	}
 
 	num, err = o.QueryTable("host").Filter("HostID__in", ids).Update(orm.Params{
-		"ApplicationID": appID,
+		"ApplicationID":   appID,
 		"ApplicationName": "资源池",
-		"SetID": set.SetID,
+		"SetID":           set.SetID,
 		//		"SetName": set.SetName,
 		"ModuleID":      mod.Id,
 		"IsDistributed": false,
@@ -287,35 +248,35 @@ func GetHostCount(id int, field string) (cnt int64, err error) {
 // 转移主机
 func ModHostModule(appID int, moduleID int, hostIds []int) (num int64, err error) {
 	o := orm.NewOrm()
-	
+
 	var app *App
 	var set *Set
 	var m *Module
-	
+
 	if m, err = GetModuleById(moduleID); err != nil {
 		return
 	}
-	
+
 	if appID != m.ApplicationId {
 		err = errors.New("不能跨业务进行主机转移")
 	}
-	
+
 	if app, err = GetAppById(appID); err != nil {
 		return
 	}
-	
+
 	if set, err = GetSetById(m.SetId); err != nil {
 		return
 	}
-	
+
 	num, err = o.QueryTable("host").Filter("HostID__in", hostIds).Update(orm.Params{
-		"ApplicationID": appID,
+		"ApplicationID":   appID,
 		"ApplicationName": app.ApplicationName,
-		"SetID": set.SetID,
-		"SetName": set.SetName,
-		"ModuleID": moduleID,
-		"ModuleName": m.ModuleName,
-		"IsDistributed": true,
+		"SetID":           set.SetID,
+		"SetName":         set.SetName,
+		"ModuleID":        moduleID,
+		"ModuleName":      m.ModuleName,
+		"IsDistributed":   true,
 	})
 	return
 }
@@ -326,26 +287,26 @@ func DelHostModule(appID int, moduleName string, hostIds []int) (num int64, err 
 	var app *App
 	var set Set
 	var m Module
-	
+
 	if app, err = GetAppById(appID); err != nil {
 		return
 	}
-	
+
 	if set, err = GetDesetidByAppId(appID); err != nil {
 		return
 	}
-	
+
 	if err = o.QueryTable("module").Filter("ApplicationId", appID).Filter("SetId", set.SetID).Filter("ModuleName", moduleName).One(&m); err != nil {
 		return
 	}
-	
+
 	num, err = o.QueryTable("host").Filter("HostID__in", hostIds).Update(orm.Params{
-		"ApplicationID": appID,
+		"ApplicationID":   appID,
 		"ApplicationName": app.ApplicationName,
-		"SetID": set.SetID,
-		"SetName": set.SetName,
-		"ModuleID": m.Id,
-		"ModuleName": m.ModuleName,
+		"SetID":           set.SetID,
+		"SetName":         set.SetName,
+		"ModuleID":        m.Id,
+		"ModuleName":      m.ModuleName,
 	})
 	return
 }
