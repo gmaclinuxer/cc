@@ -127,4 +127,4 @@ CREATE TABLE `user` (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES ('1', 'admin', 'admin@example.com', '7fef6171469e80d32c0559f88b377245', 'SecretKEY', '1458897589', '127.0.0.1', '0');
+INSERT INTO `user` VALUES ('1', 'admin', 'admin@example.com', '40327ca92a32c61b97a6d7ad5b1c73b5', 'SecretKEY', '1458897589', '127.0.0.1', '0');
