@@ -2,10 +2,11 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/astaxie/beego"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/astaxie/beego"
 
 	"github.com/shwinpiocess/cc/models"
 	"github.com/shwinpiocess/cc/utils"
@@ -48,7 +49,7 @@ func (this *MainController) Login() {
 				user.LastLogin = time.Now().Unix()
 				models.UpdateUser(user)
 
-				authkey := utils.Md5([]byte(this.getClientIP() + "|" + user.Password + user.Salt))
+				authkey := utils.Md5([]byte(user.Password + "|" + user.Salt))
 
 				if remember == "yes" {
 					this.Ctx.SetCookie("auth", strconv.Itoa(user.Id)+"|"+authkey, 7*86400)

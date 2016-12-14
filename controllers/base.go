@@ -15,23 +15,23 @@ import (
 type BaseController struct {
 	beego.Controller
 
-	userId         int
-	userName       string
-	
+	userId   int
+	userName string
+
 	requestPath string
-	today string
-	
-	firstApp bool
-	firstSet bool
+	today       string
+
+	firstApp   bool
+	firstSet   bool
 	firtModule bool
-	
+
 	defaultApp *models.App
 }
 
 func (this *BaseController) Prepare() {
 	this.requestPath = this.Ctx.Input.URL()
 	this.today = time.Now().Format("20060102")
-	
+
 	this.auth()
 
 	var fields []string
@@ -45,10 +45,10 @@ func (this *BaseController) Prepare() {
 	query["default"] = strconv.FormatBool(false)
 
 	apps, _ := models.GetAllApp(query, fields, sortby, order, offset, limit)
-	
+
 	if len(apps) > 0 {
 		defaultAppId := this.Ctx.GetCookie("defaultAppId")
-		
+
 		if defaultAppId, err := strconv.Atoi(defaultAppId); err == nil {
 			if app, err := models.GetAppById(defaultAppId); err != nil {
 				defaultApp := apps[0].(models.App)
@@ -106,7 +106,7 @@ func (this *BaseController) auth() {
 		userId, _ := strconv.Atoi(idstr)
 		if userId > 0 {
 			user, err := models.GetUserById(userId)
-			if err == nil && password == utils.Md5([]byte(this.getClientIP()+"|"+user.Password+user.Salt)) {
+			if err == nil && password == utils.Md5([]byte(user.Password+"|"+user.Salt)) {
 				this.userId = user.Id
 				this.userName = user.UserName
 			}
