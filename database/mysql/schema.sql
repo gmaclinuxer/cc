@@ -37,12 +37,22 @@ CREATE TABLE `app` (
 DROP TABLE IF EXISTS `host`;
 CREATE TABLE `host` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `create_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `model` varchar(32) NOT NULL default '',
+  `cpu` int(3) NOT NULL default '0',
+  `memory` int(3) NOT NULL default '0',
   `host_name` varchar(255) DEFAULT NULL,
   `inner_ip` varchar(32) NOT NULL COMMENT '内网IP地址',
+  `inner_gate` varchar(32) DEFAULT NULL,
+  `inner_interface` varchar(255) DEFAULT NULL,
   `bgp_ip` varchar(255) DEFAULT NULL,
+  `bgp_gate` varchar(32) DEFAULT NULL,
+  `bgp_interface` varchar(255) DEFAULT NULL,
   `outer_ip` varchar(32) DEFAULT NULL COMMENT '外网IP地址',
+  `outer_gate` varchar(32) DEFAULT NULL,
+  `outer_interface` varchar(255) DEFAULT NULL,
   `ilo_ip` varchar(255) DEFAULT NULL,
+  `source` tinyint(1) unsigned NOT NULL COMMENT '来源，1腾讯云，3其他云',
   `module_id` int(11) DEFAULT NULL,
   `module_name` varchar(255) DEFAULT NULL,
   `set_id` int(11) DEFAULT NULL,
@@ -53,8 +63,7 @@ CREATE TABLE `host` (
   `checked` varchar(255) DEFAULT NULL,
   `is_distributed` tinyint(1) unsigned NOT NULL COMMENT '是否已被分配，0未分配，1已分配',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `inner_ip` (`inner_ip`),
-  KEY `sn` (`sn`)
+  UNIQUE KEY `inner_ip` (`inner_ip`)
 ) ENGINE=InnoDB AUTO_INCREMENT=85 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -83,7 +92,7 @@ CREATE TABLE `set` (
   `application_id` int(11) unsigned NOT NULL COMMENT '所属业务',
   `capacity` int(11) NOT NULL DEFAULT '0' COMMENT '集群容量',
   `chn_name` varchar(255) DEFAULT NULL COMMENT '中文名称',
-  `create_time` timestamp NULL DEFAULT '0000-00-00 00:00:00',
+  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `default` tinyint(1) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL COMMENT '集群描述信息',
   `envi_type` tinyint(1) DEFAULT NULL COMMENT '环境类型',
@@ -118,4 +127,4 @@ CREATE TABLE `user` (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES ('1', 'admin', 'admin@example.com', '7fef6171469e80d32c0559f88b377245', '', '1458897589', '127.0.0.1', '0');
+INSERT INTO `user` VALUES ('1', 'admin', 'admin@example.com', '7fef6171469e80d32c0559f88b377245', 'This is a Secret KEY', '1458897589', '127.0.0.1', '0');
